@@ -11,18 +11,18 @@ afterEach(() => {
 
 describe('DocumentTitle', () => {
   it('projects a durable title and restores the product title', () => {
-    vi.stubEnv('DSH_CLIENT_TITLE', 'DeepSeek Harness')
+    vi.stubEnv('DSH_CLIENT_TITLE', 'HiveForge')
     document.title = 'stale title'
     const mounted = render(<DocumentTitle />)
-    expect(document.title).toBe('DeepSeek Harness')
+    expect(document.title).toBe('HiveForge')
     mounted.rerender(<DocumentTitle title="First title" />)
-    expect(document.title).toBe('First title — DeepSeek Harness')
+    expect(document.title).toBe('First title — HiveForge')
     mounted.rerender(<DocumentTitle title="Revised title" />)
-    expect(document.title).toBe('Revised title — DeepSeek Harness')
+    expect(document.title).toBe('Revised title — HiveForge')
     mounted.rerender(<DocumentTitle />)
-    expect(document.title).toBe('DeepSeek Harness')
+    expect(document.title).toBe('HiveForge')
     mounted.unmount()
-    expect(document.title).toBe('DeepSeek Harness')
+    expect(document.title).toBe('HiveForge')
   })
 
   it('uses the generic title when the build provides no title', () => {

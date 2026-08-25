@@ -1,5 +1,5 @@
 /**
- * Curated editor for the direct DeepSeek adapter's advisory model catalog.
+ * Curated editor for the direct adapter's advisory model catalog.
  * The settings layer replaces `models` as one array, so the parent supplies
  * the effective inherited rows until the first edit materializes a user
  * override; reset removes that override instead of copying defaults into it.
@@ -143,7 +143,7 @@ export interface DeepSeekModelsEditorProps {
 }
 
 /**
- * Render the direct DeepSeek adapter's model catalog: id and display name on
+ * Render the direct adapter's model catalog: id and display name on
  * each row, capacities behind the row's own disclosure.
  * @param props - effective rows plus the array-level override actions.
  * @returns the catalog editor.

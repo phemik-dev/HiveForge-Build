@@ -1,6 +1,6 @@
 /**
  * Models settings and product-onboarding plugin, browser half. It registers
- * the Models page plus the ordered internal-testing and official-DeepSeek
+ * the Models page plus the ordered internal-testing and legacy-import
  * onboarding dialogs, whose UI shares this package's modal wrapper. The Host
  * settings and credential contracts stay behind their existing wire APIs.
  * Export discipline:
@@ -17,8 +17,8 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import { ModelsSection } from './ModelsSection.tsx'
 import type { ModelsSectionInjected } from './ModelsSection.tsx'
-import { DeepSeekOnboardingDialog } from './DeepSeekOnboardingDialog.tsx'
-import type { DeepSeekOnboardingInjected } from './DeepSeekOnboardingDialog.tsx'
+import { LegacyImportDialog } from './LegacyImportDialog.tsx'
+import type { LegacyImportInjected } from './LegacyImportDialog.tsx'
 import { WelcomeNotice } from './WelcomeNotice.tsx'
 import type { WelcomeNoticeInjected } from './WelcomeNotice.tsx'
 import { decodeWelcomeSection, WelcomeNoticeStore } from './welcome-store.ts'
@@ -80,19 +80,24 @@ export function apply(ctx: ClientContext): void {
     schema,
     t,
   })
-  const deepSeekOnboardingInjected = (): DeepSeekOnboardingInjected => ({
+  const onboardingScope = ctx.settingsScope.bind({
+    namespace: WELCOME_NOTICE_SETTINGS_NAMESPACE,
+    decode: decodeWelcomeSection,
+  })
+  const legacyOnboardingActions: LegacyImportInjected['onboardingActions'] = {
+    dismiss: () => onboardingScope.set('legacyImportDismissed', true),
+    markImported: () => onboardingScope.set('legacyImportCompleted', true),
+  }
+  const legacyImportInjected = (): LegacyImportInjected => ({
     controller,
-    hooks: { models: controller.store },
-    api: connection.api,
-    schema,
+    hooks: { models: controller.store, onboarding: onboardingScope },
+    api: { migration: connection.api.migration },
+    onboardingActions: legacyOnboardingActions,
     t,
   })
   // The scope's own memory mode is what keeps a remote browser process-local,
   // so the store needs no isLoopback branch of its own.
-  const welcomeController = new WelcomeNoticeStore(ctx.settingsScope.bind({
-    namespace: WELCOME_NOTICE_SETTINGS_NAMESPACE,
-    decode: decodeWelcomeSection,
-  }))
+  const welcomeController = new WelcomeNoticeStore(onboardingScope)
   const welcomeInjected = (): WelcomeNoticeInjected => ({
     controller: welcomeController,
     hooks: { welcome: welcomeController.store },
@@ -133,8 +138,8 @@ export function apply(ctx: ClientContext): void {
   }, WelcomeNotice))
   ctx.slots.inject('settings.onboarding', () => ctx.slots.register({
     name: 'settings.onboarding',
-    id: 'deepseek-official',
+    id: 'legacy-import',
     order: 0,
-    inject: deepSeekOnboardingInjected,
-  }, DeepSeekOnboardingDialog))
+    inject: legacyImportInjected,
+  }, LegacyImportDialog))
 }

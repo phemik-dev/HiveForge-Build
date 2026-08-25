@@ -6,37 +6,36 @@ import { onboardingReadiness, providerUsable } from '../src/client/store.ts'
 
 const missingCredential: CredentialView = { configured: false, writable: true }
 
-function row(overrides: Partial<ProviderRow> = {}): ProviderRow {
+function keyProvider(overrides: Partial<ProviderRow> = {}): ProviderRow {
   return {
     entry: {
-      provider: 'deepseek-official',
-      displayName: 'DeepSeek',
-      settingsNs: 'llm-deepseek',
-      settingsPath: [],
+      provider: 'alpha',
+      displayName: 'Alpha',
+      settingsNs: 'llm-pi-ai',
+      settingsPath: ['providers', 'alpha'],
       active: true,
     },
     configured: true,
-    removable: false,
-    apiKeyEnv: 'DEEPSEEK_API_KEY',
+    removable: true,
+    apiKeyEnv: 'ALPHA_API_KEY',
     credential: missingCredential,
     ...overrides,
   }
 }
 
-/** A second provider the user configured themselves. */
-function otherRow(overrides: Partial<ProviderRow> = {}): ProviderRow {
+function nativeProvider(overrides: Partial<ProviderRow> = {}): ProviderRow {
   return {
     entry: {
-      provider: 'hfai',
-      displayName: 'HFAI',
+      provider: 'native',
+      displayName: 'Native',
       settingsNs: 'llm-pi-ai',
-      settingsPath: ['providers', 'hfai'],
+      settingsPath: ['providers', 'native'],
       active: true,
     },
     configured: true,
     removable: true,
-    apiKeyEnv: 'HFAI_API_KEY',
-    credential: { configured: true, source: 'file', writable: true },
+    apiKeyEnv: undefined,
+    credential: undefined,
     ...overrides,
   }
 }
@@ -47,7 +46,7 @@ function state(overrides: Partial<ModelsSettingsState> = {}): ModelsSettingsStat
     error: null,
     credentialError: null,
     writable: true,
-    rows: [row()],
+    rows: [keyProvider()],
     namespaces: new Map(),
     ...overrides,
   }
@@ -55,51 +54,33 @@ function state(overrides: Partial<ModelsSettingsState> = {}): ModelsSettingsStat
 
 describe('providerUsable', () => {
   it('requires a registered route and a stored key for every named reference', () => {
-    expect(providerUsable(otherRow())).toBe(true)
-    expect(providerUsable(otherRow({ entry: { ...otherRow().entry, active: false } }))).toBe(false)
-    expect(providerUsable(otherRow({ credential: missingCredential }))).toBe(false)
-    expect(providerUsable(otherRow({ credential: undefined }))).toBe(false)
+    expect(providerUsable(keyProvider({ credential: { configured: true, source: 'file', writable: true } }))).toBe(true)
+    expect(providerUsable(keyProvider({ entry: { ...keyProvider().entry, active: false } }))).toBe(false)
+    expect(providerUsable(keyProvider({ credential: missingCredential }))).toBe(false)
+    expect(providerUsable(keyProvider({ credential: undefined }))).toBe(false)
   })
 
   it('treats a reference-free registered route as provider-native authentication', () => {
-    expect(providerUsable(otherRow({ apiKeyEnv: undefined, credential: undefined }))).toBe(true)
+    expect(providerUsable(nativeProvider())).toBe(true)
   })
 })
 
 describe('onboardingReadiness', () => {
-  it('waits for the first join and skips onboarding when the adapter directory entry is absent', () => {
+  it('waits for the first join', () => {
     expect(onboardingReadiness(state({ status: 'idle', rows: [] }))).toEqual({ kind: 'loading' })
     expect(onboardingReadiness(state({ status: 'loading', rows: [] }))).toEqual({ kind: 'loading' })
-    expect(onboardingReadiness(state({ rows: [] }))).toEqual({ kind: 'adapter-absent' })
-    expect(onboardingReadiness(state({
-      rows: [row({
-        entry: {
-          ...row().entry,
-          settingsNs: '',
-        },
-      })],
-    }))).toEqual({ kind: 'adapter-absent' })
   })
 
-  it('reports a missing writable effective credential', () => {
-    expect(onboardingReadiness(state())).toEqual({ kind: 'credential-missing' })
-  })
-
-  it('ends onboarding once any other registered provider can serve requests', () => {
-    expect(onboardingReadiness(state({ rows: [row(), otherRow()] }))).toEqual({ kind: 'provider-ready' })
-    // A provider the user cannot reach yet leaves the prompt in place.
+  it('ends onboarding once any provider can serve requests', () => {
+    expect(onboardingReadiness(state({ rows: [nativeProvider()] }))).toEqual({ kind: 'provider-ready' })
     expect(onboardingReadiness(state({
-      rows: [row(), otherRow({ credential: missingCredential })],
-    }))).toEqual({ kind: 'credential-missing' })
-  })
-
-  it('accepts file and process-environment credentials without prompting', () => {
-    expect(onboardingReadiness(state({
-      rows: [row({ credential: { configured: true, source: 'file', writable: true } })],
+      rows: [keyProvider({ credential: { configured: true, source: 'env', writable: false } })],
     }))).toEqual({ kind: 'provider-ready' })
-    expect(onboardingReadiness(state({
-      rows: [row({ credential: { configured: true, source: 'env', writable: false } })],
-    }))).toEqual({ kind: 'provider-ready' })
+  })
+
+  it('offers onboarding when no provider is usable', () => {
+    expect(onboardingReadiness(state({ rows: [keyProvider()] }))).toEqual({ kind: 'provider-missing' })
+    expect(onboardingReadiness(state({ rows: [] }))).toEqual({ kind: 'provider-missing' })
   })
 
   it('turns missing capabilities into diagnostics that never block the product', () => {
@@ -108,21 +89,18 @@ describe('onboardingReadiness', () => {
       reason: 'load-failed',
     })
     expect(onboardingReadiness(state({
-      rows: [row({ entry: { ...row().entry, active: false } })],
-    }))).toEqual({ kind: 'unavailable', reason: 'provider-inactive' })
-    expect(onboardingReadiness(state({
       credentialError: 'credentials service is absent',
+      rows: [keyProvider({ credential: undefined })],
     }))).toEqual({
       kind: 'unavailable',
       reason: 'credentials-unavailable',
     })
+    // A reference-free route still reads as usable even when credential introspection is down.
     expect(onboardingReadiness(state({
-      rows: [row({ credential: undefined })],
-    }))).toEqual({ kind: 'unavailable', reason: 'credentials-unavailable' })
-    expect(onboardingReadiness(state({
-      rows: [row({ credential: { configured: false, writable: false } })],
-    }))).toEqual({ kind: 'unavailable', reason: 'credential-read-only' })
-    expect(onboardingReadiness(state({ writable: false }))).toEqual({
+      credentialError: 'credentials service is absent',
+      rows: [nativeProvider()],
+    }))).toEqual({ kind: 'provider-ready' })
+    expect(onboardingReadiness(state({ writable: false, rows: [keyProvider()] }))).toEqual({
       kind: 'unavailable',
       reason: 'settings-read-only',
     })

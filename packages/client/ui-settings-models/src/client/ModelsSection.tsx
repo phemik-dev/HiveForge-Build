@@ -160,9 +160,7 @@ function targetOf(row: ProviderRow): EditorTarget {
 
 /** Stable visible and accessible identity for one provider target. */
 export function providerTargetLabel(target: ProviderIdentity): string {
-  return target.provider === target.displayName
-    ? target.provider
-    : `${target.displayName} (${target.provider})`
+  return target.displayName.length > 0 ? target.displayName : target.provider
 }
 
 /** Replace the one provider placeholder in localized destructive-action copy. */

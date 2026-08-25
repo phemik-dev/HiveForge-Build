@@ -4,10 +4,11 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import { mkdir, stat } from 'node:fs/promises'
+import { mkdir, readFile, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 import { z as zod } from 'zod'
+import { parseDocument } from 'yaml'
 import type { Context } from '@deepseek-ai/cordis'
 import { installModelSelection } from '@deepseek-ai/dsh-agent'
 import type { Agent, ModelSelection, ModelSelectionRef, AgentOptions, AgentStatus } from '@deepseek-ai/dsh-agent'
@@ -81,7 +82,8 @@ import type {} from '@deepseek-ai/dsh-skill'
 // provider still serves every other domain.
 import { SettingsConflictError, settingsNamespace } from '@deepseek-ai/dsh-settings'
 import type { SettingsDescriptor, SettingsNamespace, SettingsPathOp } from '@deepseek-ai/dsh-settings'
-import { credentialRef } from '@deepseek-ai/dsh-credentials'
+import { credentialRef, parseCredentialKey } from '@deepseek-ai/dsh-credentials'
+import { parseCredentialsDocument } from '@deepseek-ai/dsh-credentials-local'
 // Value edge: the rename impl narrows the title service's validation failure; the import also resolves `ctx.get('sessionTitle')`.
 import { SessionTitleInvalidError } from '@deepseek-ai/dsh-session-title'
 import type { CallId } from '@deepseek-ai/dsh-llm/brand'
@@ -1726,6 +1728,27 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
   }
 
   /**
+   * Build the visibility set for session.search.
+   *
+   * session.search authorizes provider hits by membership in this set. It does
+   * not need full SessionSummary rows, so avoid cold-session summarization work:
+   * large persistence stores must not make search unusably slow.
+   */
+  async function listVisibleSessionIds(signal?: AbortSignal): Promise<Set<SessionId>> {
+    signal?.throwIfAborted()
+    const ids = new Set(ctx.sessions.list().map(session => session.id))
+    signal?.throwIfAborted()
+    const persistence = ctx.get('sessionPersistence')
+    if (persistence !== undefined) {
+      for (const meta of await persistence.list(signal)) {
+        if (meta.cwd === undefined) continue
+        ids.add(meta.id)
+      }
+    }
+    return ids
+  }
+
+  /**
    * Resolve the goal service THIS agent runs.
    *
    * The service is per session: an agent preset mounts it behind an `isolate`
@@ -1935,6 +1958,117 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
     return ok(request, namespaceView(descriptor))
   }
 
+  /** Whether a filesystem error means absence; every non-ENOENT failure must surface. */
+  function isENOENT(error: unknown): boolean {
+    return (error as NodeJS.ErrnoException | null)?.code === 'ENOENT'
+  }
+
+  /** Describe one YAML parser error without quoting any source line. */
+  function describeYamlError(error: { code?: unknown; linePos?: Array<{ line: number; col: number }> }): string {
+    const at = error.linePos?.[0]
+    /* v8 ignore next -- yaml prettyErrors populates linePos on every error; the guard answers its optional type */
+    const where = at === undefined ? '' : ` at line ${String(at.line)}, column ${String(at.col)}`
+    return `${String(error.code)}${where}`
+  }
+
+  /** Parse a YAML document as a map, reporting only safe diagnostics. */
+  function parseYamlMap(text: string, filename: string): Record<string, unknown> {
+    const document = parseDocument(text, { prettyErrors: true })
+    if (document.errors.length > 0) {
+      throw new Error(
+        `migration: invalid document at ${filename}: ${document.errors.map(describeYamlError).join('; ')}`,
+      )
+    }
+    const root: unknown = document.toJS() ?? {}
+    if (typeof root !== 'object' || root === null || Array.isArray(root)) {
+      throw new TypeError(`migration: ${filename} must be a mapping`)
+    }
+    return root as Record<string, unknown>
+  }
+
+  /** Read a file when present, returning a safe error message on failure. */
+  async function readTextIfPresent(path: string): Promise<{ present: boolean; text?: string; error?: string }> {
+    try {
+      await stat(path)
+    } catch (error) {
+      if (isENOENT(error)) return { present: false }
+      return {
+        present: true,
+        error: `failed to stat: ${error instanceof Error ? error.message : String(error)}`,
+      }
+    }
+    try {
+      return { present: true, text: await readFile(path, 'utf8') }
+    } catch (error) {
+      return {
+        present: true,
+        error: `failed to read: ${error instanceof Error ? error.message : String(error)}`,
+      }
+    }
+  }
+
+  /** Compute the default legacy home path for this platform. */
+  function defaultLegacyHome(): string {
+    return join(homedir(), '.dsh')
+  }
+
+  /** Build a preview of legacy documents without returning any secret values. */
+  async function previewLegacy(legacyHome: string) {
+    const settingsPath = join(legacyHome, 'settings.yaml')
+    const credentialsPath = join(legacyHome, '.credentials.yaml')
+
+    const settingsRead = await readTextIfPresent(settingsPath)
+    const settingsPreview: {
+      present: boolean
+      namespaces: string[]
+      error?: string
+    } = {
+      present: settingsRead.present,
+      namespaces: [],
+      ...settingsRead.error === undefined ? {} : { error: settingsRead.error },
+    }
+    if (settingsRead.present && settingsRead.text !== undefined) {
+      try {
+        const doc = parseYamlMap(settingsRead.text, settingsPath)
+        settingsPreview.namespaces = Object.keys(doc)
+        delete settingsPreview.error
+      } catch (error) {
+        settingsPreview.error = error instanceof Error ? error.message : String(error)
+      }
+    }
+
+    const credentialsRead = await readTextIfPresent(credentialsPath)
+    const credentialsPreview: {
+      present: boolean
+      refs: string[]
+      recordCount: number
+      error?: string
+    } = {
+      present: credentialsRead.present,
+      refs: [],
+      recordCount: 0,
+      ...credentialsRead.error === undefined ? {} : { error: credentialsRead.error },
+    }
+    if (credentialsRead.present && credentialsRead.text !== undefined) {
+      try {
+        const parsed = parseCredentialsDocument(credentialsRead.text, credentialsPath)
+        credentialsPreview.refs = [...parsed.refs.keys()]
+        credentialsPreview.recordCount = parsed.records.size
+        delete credentialsPreview.error
+      } catch (error) {
+        credentialsPreview.error = error instanceof Error ? error.message : String(error)
+      }
+    }
+
+    return {
+      legacyHome,
+      settingsPath,
+      credentialsPath,
+      settings: settingsPreview,
+      credentials: credentialsPreview,
+    }
+  }
+
   return {
     sessions: {
       // Attached sessions summarize from memory; persisted-but-unattached (cold)
@@ -1961,10 +2095,9 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
           })
         }
         try {
-          const visible = await listVisibleSessionSummaries(signal)
+          const visibleIds = await listVisibleSessionIds(signal)
           if (isAborted(signal)) return cancelled()
-          if (visible.length === 0) return ok(request, { items: [], hasMore: false })
-          const visibleIds = new Set(visible.map(item => item.sessionId))
+          if (visibleIds.size === 0) return ok(request, { items: [], hasMore: false })
           const authorized: SessionSearchItem[] = []
           const acceptedIds = new Set<SessionId>()
           const seenCursors = new Set<SessionSearchCursor>()
@@ -3321,6 +3454,148 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             details: { settingsNs, ...baseURL === undefined ? {} : { baseURL } },
           })
         }
+      },
+    },
+
+    migration: {
+      async preview(request) {
+        const legacyHome = request.payload.legacyHome ?? defaultLegacyHome()
+        return ok(request, await previewLegacy(legacyHome))
+      },
+
+      async apply(request) {
+        const settings = ctx.get('settings')
+        if (settings === undefined) return err(request, settingsAbsent())
+        const credentials = ctx.get('credentials')
+        if (credentials === undefined) return err(request, credentialsAbsent())
+
+        const legacyHome = request.payload.legacyHome ?? defaultLegacyHome()
+        const settingsPath = join(legacyHome, 'settings.yaml')
+        const credentialsPath = join(legacyHome, '.credentials.yaml')
+
+        const result = {
+          legacyHome,
+          settings: {
+            imported: [] as string[],
+            skipped: [] as Array<{ ns: string; reason: 'unregistered' | 'invalid-namespace' | 'invalid-section' | 'rejected' }>,
+            error: undefined as string | undefined,
+          },
+          credentials: {
+            importedRefs: [] as string[],
+            skippedRefs: [] as Array<{ ref: string; reason: 'invalid-ref' | 'locked' | 'rejected' }>,
+            importedRecords: 0,
+            skippedRecords: 0,
+            error: undefined as string | undefined,
+          },
+        }
+
+        const settingsRead = await readTextIfPresent(settingsPath)
+        if (settingsRead.present && settingsRead.text !== undefined) {
+          try {
+            const doc = parseYamlMap(settingsRead.text, settingsPath)
+            const registered = new Set(settings.describe().map(descriptor => String(descriptor.ns)))
+            for (const [ns, section] of Object.entries(doc)) {
+              if (!registered.has(ns)) {
+                result.settings.skipped.push({ ns, reason: 'unregistered' })
+                continue
+              }
+              let branded: SettingsNamespace
+              try {
+                branded = settingsNamespace(ns)
+              } catch {
+                result.settings.skipped.push({ ns, reason: 'invalid-namespace' })
+                continue
+              }
+              if (typeof section !== 'object' || section === null || Array.isArray(section)) {
+                result.settings.skipped.push({ ns, reason: 'invalid-section' })
+                continue
+              }
+              try {
+                await settings.replace(branded, section as object)
+                result.settings.imported.push(ns)
+              } catch {
+                result.settings.skipped.push({ ns, reason: 'rejected' })
+              }
+            }
+          } catch (error) {
+            result.settings.error = error instanceof Error ? error.message : String(error)
+          }
+        } else if (settingsRead.error !== undefined) {
+          result.settings.error = settingsRead.error
+        }
+
+        const credentialsRead = await readTextIfPresent(credentialsPath)
+        if (credentialsRead.present && credentialsRead.text !== undefined) {
+          let parsed
+          try {
+            parsed = parseCredentialsDocument(credentialsRead.text, credentialsPath)
+          } catch (error) {
+            result.credentials.error = error instanceof Error ? error.message : String(error)
+            parsed = undefined
+          }
+          if (parsed !== undefined) {
+            for (const [ref, value] of parsed.refs.entries()) {
+              let brandedRef
+              try {
+                brandedRef = credentialRef(ref)
+              } catch {
+                result.credentials.skippedRefs.push({ ref, reason: 'invalid-ref' })
+                continue
+              }
+              let info
+              try {
+                info = await credentials.describe(brandedRef)
+              } catch {
+                result.credentials.skippedRefs.push({ ref, reason: 'rejected' })
+                continue
+              }
+              if (!info.writable) {
+                result.credentials.skippedRefs.push({ ref, reason: 'locked' })
+                continue
+              }
+              try {
+                await credentials.set(brandedRef, value)
+                result.credentials.importedRefs.push(ref)
+              } catch {
+                result.credentials.skippedRefs.push({ ref, reason: 'rejected' })
+              }
+            }
+            for (const [key, record] of parsed.records.entries()) {
+              let brandedKey
+              try {
+                brandedKey = parseCredentialKey(key)
+              } catch {
+                result.credentials.skippedRecords++
+                continue
+              }
+              let info
+              try {
+                info = await credentials.describeRecord(brandedKey)
+              } catch {
+                result.credentials.skippedRecords++
+                continue
+              }
+              if (!info.writable) {
+                result.credentials.skippedRecords++
+                continue
+              }
+              try {
+                await credentials.modifyRecord(brandedKey, async () => record)
+                result.credentials.importedRecords++
+              } catch {
+                result.credentials.skippedRecords++
+              }
+            }
+          }
+        } else if (credentialsRead.error !== undefined) {
+          result.credentials.error = credentialsRead.error
+        }
+
+        // Drop empty optional fields to keep the wire payload minimal.
+        if (result.settings.error === undefined) delete result.settings.error
+        if (result.credentials.error === undefined) delete result.credentials.error
+
+        return ok(request, result)
       },
     },
 

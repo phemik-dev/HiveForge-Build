@@ -78,7 +78,7 @@ const MARKDOWN_FIXTURE = [
   '| history | rendered |',
   '| streaming | stable |',
   '',
-  '[DeepSeek](https://www.deepseek.com)',
+  '[HiveForge](https://example.com)',
   '',
   '```ts',
   'const markdown = true',
@@ -253,20 +253,20 @@ const READ_SAMPLE_TEXT = READ_SAMPLE_SOURCE.map((text, index) => `${READ_SAMPLE_
  * search view minus its wire discriminants.
  */
 const WEB_SEARCH_RESULT: Omit<Extract<ToolResultView, { card: 'web'; kind: 'search' }>, 'card' | 'kind'> = {
-  answer: 'DeepSeek Harness is a plugin-based agent harness on vendored Cordis where **every capability is a plugin**.',
+  answer: 'HiveForge is a plugin-based agent harness on vendored Cordis where **every capability is a plugin**.',
   sources: [
     {
-      url: 'https://github.com/deepseek-ai/deepseek-harness',
-      title: 'DeepSeek Harness — plugin-based agent harness',
+      url: 'https://example.com/hiveforge',
+      title: 'HiveForge — plugin-based agent harness',
       snippet: 'Everything is a plugin: session, tools, agent-loop, and LLM adapters all mount on the same Cordis context.',
       publishedAt: '2026-07-01',
     },
     {
-      url: 'https://www.deepseek.com/blog/harness-architecture',
+      url: 'https://example.com/hiveforge/architecture',
       snippet: 'The capability-seam pattern splits each capability into interface, implementation, and consumer packages.',
     },
     {
-      url: 'https://docs.deepseek.com/harness/plugins',
+      url: 'https://example.com/hiveforge/plugins',
       title: 'Writing a harness plugin',
       publishedAt: '2026-06-15',
     },
@@ -276,7 +276,7 @@ const WEB_SEARCH_RESULT: Omit<Extract<ToolResultView, { card: 'web'; kind: 'sear
 
 /** The `web_fetch` result view for the web-fetch turn, authored inline for the same reason. */
 const WEB_FETCH_RESULT: Omit<Extract<ToolResultView, { card: 'web'; kind: 'fetch' }>, 'card' | 'kind'> = {
-  url: 'https://www.deepseek.com/blog/harness-architecture',
+  url: 'https://example.com/hiveforge/architecture',
   statusCode: 200,
   truncated: false,
 }
@@ -305,17 +305,17 @@ function fixtureModelGroups(): ModelProviderGroup[] {
   return [
     {
       id: 'deepseek-official',
-      name: 'DeepSeek',
+      name: 'HiveForge',
       models: [
         {
           id: 'deepseek-v4-flash',
-          name: 'DeepSeek-V4-Flash',
+          name: 'V4 Flash',
           description: '快速响应',
           reasoning: DEEPSEEK_REASONING,
         },
         {
           id: 'deepseek-v4-pro',
-          name: 'DeepSeek-V4-Pro',
+          name: 'V4 Pro',
           description: '复杂任务',
           reasoning: DEEPSEEK_REASONING,
         },
@@ -3040,7 +3040,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
     llm: {
       providers: request => ok(request, {
         providers: [
-          { provider: 'deepseek-official', displayName: 'DeepSeek', settingsNs: 'llm-deepseek', settingsPath: [], active: true },
+          { provider: 'deepseek-official', displayName: 'HiveForge', settingsNs: 'llm-deepseek', settingsPath: [], active: true },
           { provider: 'openai', displayName: 'openai', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'openai'], active: true, declared: false },
           { provider: 'anthropic', displayName: 'anthropic', settingsNs: 'llm-pi-ai', settingsPath: ['providers', 'anthropic'], active: false, declared: false },
           // One hand-declared route, so a surface reading this fixture meets
@@ -3055,6 +3055,26 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
       discoverModels: request => ok(request, {
         models: fixtureModelGroups().flatMap(group => group.models.map(model => ({ id: model.id, name: model.name }))),
       }),
+    },
+    migration: {
+      preview: (request) => {
+        const legacyHome = request.payload.legacyHome ?? `${FIXTURE_HOME}/.dsh`
+        return ok(request, {
+          legacyHome,
+          settingsPath: `${legacyHome}/settings.yaml`,
+          credentialsPath: `${legacyHome}/.credentials.yaml`,
+          settings: { present: false, namespaces: [] },
+          credentials: { present: false, refs: [], recordCount: 0 },
+        })
+      },
+      apply: (request) => {
+        const legacyHome = request.payload.legacyHome ?? `${FIXTURE_HOME}/.dsh`
+        return ok(request, {
+          legacyHome,
+          settings: { imported: [], skipped: [] },
+          credentials: { importedRefs: [], skippedRefs: [], importedRecords: 0, skippedRecords: 0 },
+        })
+      },
     },
     respond(message: ClientResponse): Promise<RpcReceipt> {
       // Same routing discipline as the host: rpcId first, then the payload's
@@ -3227,6 +3247,8 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'llm.providers': return this.api.llm.providers(request)
       case 'llm.models': return this.api.llm.models(request)
       case 'llm.discoverModels': return this.api.llm.discoverModels(request, signal)
+      case 'migration.preview': return this.api.migration.preview(request)
+      case 'migration.apply': return this.api.migration.apply(request)
     }
   }
 

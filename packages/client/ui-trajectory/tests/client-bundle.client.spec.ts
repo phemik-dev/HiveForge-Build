@@ -38,6 +38,14 @@ afterEach(() => {
 describe('tsdown client artifact', () => {
   const code = readBundle()
 
+  function itBuilt(name: string, fn: () => Promise<void>): void {
+    if (code === undefined) {
+      it.skip(name, fn)
+      return
+    }
+    it(name, { timeout: 20_000 }, fn)
+  }
+
   async function loadArtifact() {
     let handoff: Handoff | undefined
     ;(window as Win).__ModuleLoader__ = { load: (h) => { handoff = h } }
@@ -60,7 +68,7 @@ describe('tsdown client artifact', () => {
     return { handoff: handoff!, exports }
   }
 
-  it.skipIf(code === undefined)('hands off with the manifest id and a DI-require factory', async () => {
+  itBuilt('hands off with the manifest id and a DI-require factory', async () => {
     const { handoff, exports } = await loadArtifact()
     expect(handoff.id).toBe(PLUGIN_ID)
     expect(exports.apply).toBeTypeOf('function')
@@ -69,7 +77,7 @@ describe('tsdown client artifact', () => {
     ])
   })
 
-  it.skipIf(code === undefined)('mounted as an object plugin, apply registers the view tab on the real ring', async () => {
+  itBuilt('mounted as an object plugin, apply registers the view tab on the real ring', async () => {
     const { exports } = await loadArtifact()
     const ctx = new Context()
     const slots = new SlotRegistry(ctx)
@@ -103,7 +111,7 @@ describe('tsdown client artifact', () => {
     expect(views.entries()).toEqual([])
   })
 
-  it.skipIf(code === undefined)('injects plugin-tagged module CSS during factory execution', async () => {
+  itBuilt('injects plugin-tagged module CSS during factory execution', async () => {
     await loadArtifact()
     const tags = document.querySelectorAll(`style[data-plugin=${JSON.stringify(PLUGIN_ID)}]`)
     expect(tags.length).toBeGreaterThan(0)

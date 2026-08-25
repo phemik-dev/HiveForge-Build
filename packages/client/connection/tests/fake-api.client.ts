@@ -97,6 +97,42 @@ export class FakeApiClient implements IApiClient {
   onCreateDirectory: (payload: unknown) => Promise<RpcResponse<{ path: string }>> =
     () => Promise.resolve(ok({ path: '/home/fake/new' }))
 
+  onMigrationPreview: (payload: unknown) => Promise<RpcResponse<{
+    legacyHome: string
+    settingsPath: string
+    credentialsPath: string
+    settings: { present: boolean; namespaces: string[]; error?: string }
+    credentials: { present: boolean; refs: string[]; recordCount: number; error?: string }
+  }>> =
+    () => Promise.resolve(ok({
+      legacyHome: '/home/fake/.dsh',
+      settingsPath: '/home/fake/.dsh/settings.yaml',
+      credentialsPath: '/home/fake/.dsh/.credentials.yaml',
+      settings: { present: false, namespaces: [] },
+      credentials: { present: false, refs: [], recordCount: 0 },
+    }))
+
+  onMigrationApply: (payload: unknown) => Promise<RpcResponse<{
+    legacyHome: string
+    settings: {
+      imported: string[]
+      skipped: { ns: string; reason: 'unregistered' | 'invalid-namespace' | 'invalid-section' | 'rejected' }[]
+      error?: string
+    }
+    credentials: {
+      importedRefs: string[]
+      skippedRefs: { ref: string; reason: 'invalid-ref' | 'locked' | 'rejected' }[]
+      importedRecords: number
+      skippedRecords: number
+      error?: string
+    }
+  }>> =
+    () => Promise.resolve(ok({
+      legacyHome: '/home/fake/.dsh',
+      settings: { imported: [], skipped: [] },
+      credentials: { importedRefs: [], skippedRefs: [], importedRecords: 0, skippedRecords: 0 },
+    }))
+
   private readonly muxConns: StreamConn<MuxFrame>[] = []
   private readonly hostConns: StreamConn<HostFrame>[] = []
   lastSearchSignal: AbortSignal | undefined
@@ -223,6 +259,11 @@ export class FakeApiClient implements IApiClient {
     providers: payload => this.record('llm.providers', payload, Promise.resolve(ok({ providers: [] }))),
     models: payload => this.record('llm.models', payload, Promise.resolve(ok({ groups: [], failures: [] }))),
     discoverModels: payload => this.record('llm.discoverModels', payload, Promise.resolve(ok({ models: [] }))),
+  }
+
+  readonly migration: IApiClient['migration'] = {
+    preview: payload => this.record('migration.preview', payload, this.onMigrationPreview(payload)),
+    apply: payload => this.record('migration.apply', payload, this.onMigrationApply(payload)),
   }
 
   /** When true, streams never fire onOpen (misbehaving-carrier material for the handshake timeout guard). */

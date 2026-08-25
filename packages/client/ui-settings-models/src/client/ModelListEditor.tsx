@@ -25,7 +25,7 @@ import type { en } from './locales.ts'
 import styles from './ModelsSection.module.css'
 
 /**
- * One configured model row. Structurally open, exactly like the DeepSeek
+ * One configured model row. Structurally open, exactly like the curated
  * catalog editor's rows: a profile field this card does not edit — one a future
  * schema adds, or one hand-written in `settings.yaml` — has to survive being
  * edited here rather than being dropped by a rebuild.
@@ -134,7 +134,7 @@ const CAPACITY_HINT: Readonly<Record<CapacityField, string>> = {
 
 /**
  * Spell a stored count for a field that may be unset. The spelling itself is
- * {@link formatCapacity}, shared with the DeepSeek catalog editor so both
+ * {@link formatCapacity}, shared with the curated catalog editor so both
  * surfaces read and write one K/M vocabulary.
  * @param value - stored capacity, or `undefined` for an unset field.
  * @returns the field text, empty when unset.

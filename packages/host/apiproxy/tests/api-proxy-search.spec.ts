@@ -750,22 +750,20 @@ describe('session.search', () => {
     expect(searchSessions.mock.calls[0]?.[0]).not.toHaveProperty('sessionFilters')
   })
 
-  it('propagates cancellation through visible-session collection and stops cold-summary work', async () => {
+  it('propagates cancellation through visible-session collection and stops before querying the provider', async () => {
     const ctx = await baseContext()
     const controller = new AbortController()
     const cold = Array.from({ length: 32 }, (_, index) => header(`cold-${index}`, `/cold-${index}`))
-    const list = vi.fn((signal?: AbortSignal) => {
+    const list = vi.fn(async (signal?: AbortSignal) => {
       expect(signal).toBe(controller.signal)
-      return Promise.resolve(cold)
+      controller.abort()
+      signal?.throwIfAborted()
+      return cold
     })
-    let locateCalls = 0
+    const locate = vi.fn()
     ctx.provide('sessionPersistence', {
       list,
-      locate: () => {
-        locateCalls++
-        controller.abort()
-        return undefined
-      },
+      locate,
     } as never)
     const searchSessions = vi.fn()
     ctx.provide('sessionQuery', { searchSessions } as never)
@@ -780,50 +778,39 @@ describe('session.search', () => {
       error: { code: 'cancelled' },
     })
     expect(list).toHaveBeenCalledOnce()
-    expect(locateCalls).toBe(1)
+    expect(locate).not.toHaveBeenCalled()
     expect(searchSessions).not.toHaveBeenCalled()
   })
 
-  it('awaits every started cold-summary stat before returning cancellation', async () => {
+  it('does not start cold-summary stat work while building the search visibility set', async () => {
     const ctx = await baseContext()
-    const controller = new AbortController()
     const cold = Array.from({ length: 16 }, (_, index) => header(`cold-${index}`, `/cold-${index}`))
-    const statGates = cold.map(() => Promise.withResolvers<{ mtimeMs: number }>())
-    const statMock = vi.mocked(stat)
-    statMock.mockClear()
-    for (const gate of statGates) {
-      statMock.mockImplementationOnce((() => gate.promise) as never)
-    }
+    const locate = vi.fn((meta: SessionHeader) => ({ kind: 'jsonl', path: `/logs/${meta.id}.jsonl` }))
     ctx.provide('sessionPersistence', {
       list: () => Promise.resolve(cold),
-      locate: (meta: SessionHeader) => ({ kind: 'jsonl', path: `/logs/${meta.id}.jsonl` }),
+      locate,
     } as never)
-    const searchSessions = vi.fn()
+    const searchSessions = vi.fn((
+      _request: SessionSearchRequest,
+      _exec?: { signal?: AbortSignal },
+    ) => Promise.resolve({ items: [] }))
     ctx.provide('sessionQuery', { searchSessions } as never)
 
-    let settled = false
-    const responsePromise = createApiProxy(ctx, defaults).sessions.search(
-      request('cancel-during-cold-stats'),
-      controller.signal,
-    ).finally(() => {
-      settled = true
-    })
-    await vi.waitFor(() => {
-      expect(statMock).toHaveBeenCalledTimes(16)
-    })
+    const statMock = vi.mocked(stat)
+    statMock.mockClear()
 
-    controller.abort()
-    statGates[0]!.resolve({ mtimeMs: 101 })
-    await new Promise<void>(resolve => setImmediate(resolve))
-    expect(settled).toBe(false)
+    const response = await createApiProxy(ctx, defaults).sessions.search(
+      request('no-cold-stats'),
+      new AbortController().signal,
+    )
 
-    for (const gate of statGates.slice(1)) gate.resolve({ mtimeMs: 102 })
-    const response = await responsePromise
     expect(response.result).toMatchObject({
-      ok: false,
-      error: { code: 'cancelled' },
+      ok: true,
+      value: { items: [], hasMore: false },
     })
-    expect(searchSessions).not.toHaveBeenCalled()
+    expect(statMock).not.toHaveBeenCalled()
+    expect(locate).not.toHaveBeenCalled()
+    expect(searchSessions).toHaveBeenCalledOnce()
   })
 
   it('maps missing composition, query cancellation, and provider failure', async () => {

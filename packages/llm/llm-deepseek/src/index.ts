@@ -81,11 +81,11 @@ const DEFAULT_API_KEY_ENV = 'DEEPSEEK_API_KEY'
 const PROVIDER = 'deepseek-official'
 
 const DEFAULT_MODELS: DeepSeekCatalogModel[] = [
-  { id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash', contextWindow: DEFAULT_CONTEXT_WINDOW },
-  { id: 'deepseek-v4-pro', name: 'DeepSeek-V4-Pro', contextWindow: DEFAULT_CONTEXT_WINDOW },
+  { id: 'deepseek-v4-flash', name: 'V4 Flash', contextWindow: DEFAULT_CONTEXT_WINDOW },
+  { id: 'deepseek-v4-pro', name: 'V4 Pro', contextWindow: DEFAULT_CONTEXT_WINDOW },
   {
     id: 'deepseek-v4-flash-vision-exp',
-    name: 'DeepSeek-V4-Flash-Vision-Exp',
+    name: 'V4 Flash Vision (exp)',
     contextWindow: DEFAULT_CONTEXT_WINDOW,
     inputModalities: ['text', 'image'],
     imagePixelBudget: DEFAULT_REQUEST_IMAGE_PIXEL_BUDGET,
@@ -440,7 +440,7 @@ export function apply(ctx: Context, config: Config): void {
     resolveAttachments: () => ctx.get('attachments'),
   })
   ctx.llm.registerConfigurableProviders([
-    { provider: PROVIDER, displayName: 'DeepSeek', settingsNs: NS, settingsPath: [] },
+    { provider: PROVIDER, displayName: 'HiveForge', settingsNs: NS, settingsPath: [] },
   ])
   // Route effects bind to this apply fiber via the stable `ctx` reference,
   // even when a swap runs inside the scoped settings callback below.
