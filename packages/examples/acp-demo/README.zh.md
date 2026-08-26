@@ -1,18 +1,18 @@
-# @deepseek-ai/dsh-acp-demo
+# @hiveforge-ai/dsh-acp-demo
 
 [English](README.md) | 中文
 
-ACP（Agent Client Protocol）自动化服务器应用：默认 agent（智能体）主干、客户端通过 [`@deepseek-ai/dsh-acp`](../../acp/acp/README.zh.md) 创建的 agent、JSONL 持久化，以及语义检查点机制，并通过一个 JSON-RPC stdio bin 对外提供服务。程序化客户端创建新会话；此包不挂载人工交互 UI。
+ACP（Agent Client Protocol）自动化服务器应用：默认 agent（智能体）主干、客户端通过 [`@hiveforge-ai/dsh-acp`](../../acp/acp/README.zh.md) 创建的 agent、JSONL 持久化，以及语义检查点机制，并通过一个 JSON-RPC stdio bin 对外提供服务。程序化客户端创建新会话；此包不挂载人工交互 UI。
 
 ## 组合
 
 | 插件 | 角色 |
 |---|---|
-| `@deepseek-ai/dsh-agent-spine-demo` | 不含提供方且不预创建 agent 的 agent 主干；`session/new` 创建每个 agent。 |
-| `@deepseek-ai/dsh-session-persistence-jsonl` | 检查点、可观测性和快照回放所使用的持久会话日志。 |
-| `@deepseek-ai/dsh-session-checkpoint-policy` | 在模型调用和顶层工具 effect 前建立持久性屏障，并为已完成步骤建立检查点。 |
-| `@deepseek-ai/dsh-session-query-sqlite` | 派生的精确／FTS 会话查询服务；先于 ACP 传输打开，使叶节点消费方在首次模型请求前就绪。 |
-| `@deepseek-ai/dsh-acp` | 通过 stdin／stdout 提供的纯自动化 ACP 传输。 |
+| `@hiveforge-ai/dsh-agent-spine-demo` | 不含提供方且不预创建 agent 的 agent 主干；`session/new` 创建每个 agent。 |
+| `@hiveforge-ai/dsh-session-persistence-jsonl` | 检查点、可观测性和快照回放所使用的持久会话日志。 |
+| `@hiveforge-ai/dsh-session-checkpoint-policy` | 在模型调用和顶层工具 effect 前建立持久性屏障，并为已完成步骤建立检查点。 |
+| `@hiveforge-ai/dsh-session-query-sqlite` | 派生的精确／FTS 会话查询服务；先于 ACP 传输打开，使叶节点消费方在首次模型请求前就绪。 |
+| `@hiveforge-ai/dsh-acp` | 通过 stdin／stdout 提供的纯自动化 ACP 传输。 |
 
 应用不安装命令、用户交互、会话导航、配置选择器或 stdout logger。它通过一个有序 effect 拥有这些插件，因此查询服务会在 ACP 接受工作前就绪，而 ACP 会话会在检查点与持久化插件卸载前完全停稳。叶节点配置负责提供 LLM（大语言模型）、执行器、沙箱、审批、文件系统和面向模型的工具插件。
 
@@ -38,7 +38,7 @@ ACP（Agent Client Protocol）自动化服务器应用：默认 agent（智能�
 | `toolJobs` | 拥有者默认值 | 通用后台任务控制配置，或 `false`。 |
 | `goals` | 拥有者默认值 | 持久化的同会话目标领域与模型工具，或 `false`。 |
 
-已交付的 [`examples/acp-agent/cordis.yml`](../../../examples/acp-agent/cordis.yml) 添加 DeepSeek 适配器、沙箱化 bash 与文件系统提供方、一次性审批策略、压缩（compaction）、subagent、工作流、钩子，以及面向模型的工具。应用提供派生会话查询索引，而面向模型的查询消费方仍由叶节点显式选用。快照 overlay 只替换非确定性提供方或策略值。
+已交付的 [`examples/acp-agent/cordis.yml`](../../../examples/acp-agent/cordis.yml) 添加 HiveForge 适配器、沙箱化 bash 与文件系统提供方、一次性审批策略、压缩（compaction）、subagent、工作流、钩子，以及面向模型的工具。应用提供派生会话查询索引，而面向模型的查询消费方仍由叶节点显式选用。快照 overlay 只替换非确定性提供方或策略值。
 
 ## Bin
 

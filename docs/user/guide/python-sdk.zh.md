@@ -9,7 +9,7 @@
 - Python 3.10 或更高版本
 - Git
 - Linux x64、Linux arm64 或 macOS 14 或更高版本的 arm64
-- DeepSeek 兼容的 API 端点与凭据
+- HiveForge 兼容的 API 端点与凭据
 - agent 可以修改的隔离 workspace
 
 ## 安装 SDK
@@ -17,23 +17,23 @@
 克隆仓库以使用其中的可运行示例，创建虚拟环境，并安装 SDK 及其同版本内置运行时：
 
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone https://github.com/hiveforge-ai/hiveforge-harness.git
+cd hiveforge-harness
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install deepseek-harness-sdk
+python -m pip install hiveforge-harness-sdk
 ```
 
 安装后的运行时不需要系统提供 Node.js。需要从源码构建运行时或 wheel 包的仓库贡献者应使用 [Python 贡献者工作流](../../../python/development.zh.md)。
 
 ## 运行仓库内置示例
 
-请在环境中设置凭据。如果模型不是由默认 DeepSeek 端点提供，而是通过 OpenAI 兼容代理提供，还需要设置 `DEEPSEEK_BASE_URL`。
+请在环境中设置凭据。如果模型不是由默认 HiveForge 端点提供，而是通过 OpenAI 兼容代理提供，还需要设置 `HIVEFORGE_BASE_URL`。
 
 ```sh
-export DEEPSEEK_API_KEY=sk-your-key-here
-# export DEEPSEEK_BASE_URL=http://127.0.0.1:8000/v1
-# export DSH_MODEL=deepseek-v4-flash
+export HIVEFORGE_API_KEY=sk-your-key-here
+# export HIVEFORGE_BASE_URL=http://127.0.0.1:8000/v1
+# export DSH_MODEL=hiveforge-v4-flash
 # export DSH_SYSTEM_PROMPT='You are a helpful software engineer assistant.'
 ```
 
@@ -56,15 +56,15 @@ python examples/jsonrpc-agent/minimal.py \
 ```python
 from pathlib import Path
 
-from deepseek_harness import DeepSeekHarness
+from hiveforge_harness import HiveForgeHarness
 
 config = Path("examples/jsonrpc-agent/minimal.cordis.yml").resolve()
 workspace = Path("/absolute/path/to/workspace").resolve()
 sessions = Path("/absolute/path/to/sessions").resolve()
 
-with DeepSeekHarness(
-    provider="deepseek-official",
-    model="deepseek-v4-flash",
+with HiveForgeHarness(
+    provider="hiveforge-official",
+    model="hiveforge-v4-flash",
     max_tokens=49_152,
     cwd=str(workspace),
     session_root=str(sessions),
@@ -78,14 +78,14 @@ with DeepSeekHarness(
 print(result.final_response)
 ```
 
-`DeepSeekHarness` 会延迟启动内置运行时，并持续复用，直至退出上下文管理器。复用同一个 harness 与 session id 会保留该会话拥有的 Bash 进程，包括其工作目录、已导出的变量与 shell 函数。独立任务应使用新的 session id；只有下一次调用需要延续同一段持久化对话时，才复用原有 id。
+`HiveForgeHarness` 会延迟启动内置运行时，并持续复用，直至退出上下文管理器。复用同一个 harness 与 session id 会保留该会话拥有的 Bash 进程，包括其工作目录、已导出的变量与 shell 函数。独立任务应使用新的 session id；只有下一次调用需要延续同一段持久化对话时，才复用原有 id。
 
 ## 了解示例组合
 
 | 属性 | 值 |
 |---|---|
 | 系统提示词 | `DSH_SYSTEM_PROMPT`；未设置时使用 `You are a helpful software engineer assistant.` |
-| `minimal.py` 使用的模型 | `--model`，其次为 `DSH_MODEL`，最后为 `deepseek-v4-flash` |
+| `minimal.py` 使用的模型 | `--model`，其次为 `DSH_MODEL`，最后为 `hiveforge-v4-flash` |
 | 面向模型的工具 | 仅持久 `bash` 与 `str_replace_editor` |
 | Bash 超时 | 300 秒 |
 | 编辑器输出上限 | 16,000 个字符 |

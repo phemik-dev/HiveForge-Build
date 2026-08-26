@@ -8,17 +8,17 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import SessionStore from '@deepseek-ai/dsh-session'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import type { Agent, AgentHandle, CreateAgentOptions } from '@deepseek-ai/dsh-agent'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import SessionTitleService from '@deepseek-ai/dsh-session-title'
-import UserQuestionService from '@deepseek-ai/dsh-user-questions'
-import type { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { RpcRequest } from '@deepseek-ai/dsh-host-apiproxy/api/rpc'
-import { RpcId } from '@deepseek-ai/dsh-host-apiproxy/api/rpc'
-import { createApiProxy } from '@deepseek-ai/dsh-host-apiproxy'
+import { Context } from '@hiveforge-ai/cordis'
+import SessionStore from '@hiveforge-ai/dsh-session'
+import AgentRegistry from '@hiveforge-ai/dsh-agent'
+import type { Agent, AgentHandle, CreateAgentOptions } from '@hiveforge-ai/dsh-agent'
+import { createUserMessage } from '@hiveforge-ai/dsh-llm'
+import SessionTitleService from '@hiveforge-ai/dsh-session-title'
+import UserQuestionService from '@hiveforge-ai/dsh-user-questions'
+import type { Session, SessionId } from '@hiveforge-ai/dsh-session'
+import type { RpcRequest } from '@hiveforge-ai/dsh-host-apiproxy/api/rpc'
+import { RpcId } from '@hiveforge-ai/dsh-host-apiproxy/api/rpc'
+import { createApiProxy } from '@hiveforge-ai/dsh-host-apiproxy'
 
 const sid = (id: string): SessionId => id as SessionId
 

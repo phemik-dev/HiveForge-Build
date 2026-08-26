@@ -1,4 +1,4 @@
-# `@deepseek-ai/dsh-session-reference`
+# `@hiveforge-ai/dsh-session-reference`
 
 English | [中文](README.zh.md)
 

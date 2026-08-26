@@ -3,7 +3,7 @@
 
 - insert:
     - id: time-context
-      name: '@deepseek-ai/dsh-time-context'
+      name: '@hiveforge-ai/dsh-time-context'
 
     - id: schedule
-      name: '@deepseek-ai/dsh-schedule'
+      name: '@hiveforge-ai/dsh-schedule'

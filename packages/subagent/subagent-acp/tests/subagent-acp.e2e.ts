@@ -3,20 +3,20 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import SubagentRuntime from '@deepseek-ai/dsh-subagent'
-import LocalSubprocessRuntime from '@deepseek-ai/dsh-subprocess-local'
-import { resolveExampleLaunch } from '@deepseek-ai/dsh-loader-smoke'
+import { Context } from '@hiveforge-ai/cordis'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
+import SubagentRuntime from '@hiveforge-ai/dsh-subagent'
+import LocalSubprocessRuntime from '@hiveforge-ai/dsh-subprocess-local'
+import { resolveExampleLaunch } from '@hiveforge-ai/dsh-loader-smoke'
 import * as acp from '../src/index.ts'
 
 /**
  * With-key cross-process boundary proof: the backend spawns the real acp-agent example, speaks ACP over
  * stdio, and returns its real model answer. This is the out-of-process counterpart to in-process
- * spawn coverage and self-skips without `DEEPSEEK_API_KEY`.
+ * spawn coverage and self-skips without `HIVEFORGE_API_KEY`.
  */
 
-// The real acp-agent example: its bin + cordis.yml (the live DeepSeek config).
+// The real acp-agent example: its bin + cordis.yml (the live HiveForge config).
 const binScript = fileURLToPath(new URL('../../../examples/acp-demo/src/bin.ts', import.meta.url))
 const exampleConfig = fileURLToPath(new URL('../../../../examples/acp-agent/cordis.yml', import.meta.url))
 const repoTsconfig = fileURLToPath(new URL('../../../../tsconfig.json', import.meta.url))
@@ -29,8 +29,8 @@ const childLaunch = resolveExampleLaunch({
   configArgs: ['--config', exampleConfig],
   tsconfigPath: repoTsconfig,
   env: {
-    ...process.env.DEEPSEEK_API_KEY !== undefined ? { DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY } : {},
-    ...process.env.DEEPSEEK_BASE_URL !== undefined ? { DEEPSEEK_BASE_URL: process.env.DEEPSEEK_BASE_URL } : {},
+    ...process.env.HIVEFORGE_API_KEY !== undefined ? { HIVEFORGE_API_KEY: process.env.HIVEFORGE_API_KEY } : {},
+    ...process.env.HIVEFORGE_BASE_URL !== undefined ? { HIVEFORGE_BASE_URL: process.env.HIVEFORGE_BASE_URL } : {},
     DSH_PERMISSION_MODE: 'danger-full-access',
   },
 })
@@ -48,7 +48,7 @@ afterEach(async () => {
   workdir = undefined
 })
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)('ACP backend with-key e2e (drive our own acp-agent)', () => {
+describe.skipIf(!process.env.HIVEFORGE_API_KEY)('ACP backend with-key e2e (drive our own acp-agent)', () => {
   it('drives the real acp-agent example process to answer a prompt', async () => {
     workdir = await mkdtemp(join(tmpdir(), 'dsh-subagent-acp-e2e-'))
     ctx = new Context()

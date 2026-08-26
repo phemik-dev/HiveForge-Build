@@ -28,7 +28,7 @@ export default async function open(url) {
     url,
     status: response.status,
     bootManifest: html.includes('__DSH_BOOT__'),
-    apiKeyPresent: process.env.DEEPSEEK_API_KEY !== undefined,
+    apiKeyPresent: process.env.HIVEFORGE_API_KEY !== undefined,
     dshHomePresent: process.env.DSH_HOME !== undefined,
   })}`)
   // The Windows launcher writes the server-exit marker only while its helper

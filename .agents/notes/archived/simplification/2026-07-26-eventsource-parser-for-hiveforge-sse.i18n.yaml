@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/archived/simplification/2026-07-26-eventsource-parser-for-hiveforge-sse.md
+2026-07-26-eventsource-parser-for-hiveforge-sse.md: 5f98859986db55c49919e49a22834769d5e12b62
+2026-07-26-eventsource-parser-for-hiveforge-sse.zh.md: 1222c75ae5f8c1e366f6f95ab08759f531af83bd

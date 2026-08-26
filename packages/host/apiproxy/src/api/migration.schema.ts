@@ -7,7 +7,6 @@ import type {
   LegacyCredentialsPreview,
   LegacySettingsPreview,
   MigrationApplyValue,
-  MigrationPreviewValue,
   SkippedCredentialRef,
   SkippedSettingsNamespace,
 } from './migration.ts'

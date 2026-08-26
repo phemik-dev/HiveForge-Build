@@ -1,13 +1,13 @@
 {
-  "name": "@deepseek-ai/dsh-permission-presets",
-  "description": "User-facing permission presets (ctx.permissionPresets) for the DeepSeek Harness: one product-level Permissions select bundling the sandbox-mode and approval-policy knobs, written through to their own session events",
+  "name": "@hiveforge-ai/dsh-permission-presets",
+  "description": "User-facing permission presets (ctx.permissionPresets) for the HiveForge Harness: one product-level Permissions select bundling the sandbox-mode and approval-policy knobs, written through to their own session events",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/interaction/permission-presets"
   },
   "type": "module",
@@ -41,31 +41,31 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-shell": "workspace:^",
-    "@deepseek-ai/dsh-commands": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-sandbox": "workspace:^",
-    "@deepseek-ai/dsh-sandbox-policy": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-projection": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-shell": "workspace:^",
+    "@hiveforge-ai/dsh-commands": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-sandbox": "workspace:^",
+    "@hiveforge-ai/dsh-sandbox-policy": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-session-projection": "workspace:^",
+    "@hiveforge-ai/dsh-settings": "workspace:^",
+    "@hiveforge-ai/dsh-user-approval": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@hiveforge-ai/schemastery": "workspace:^",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-shell": "workspace:^",
-    "@deepseek-ai/dsh-commands": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-sandbox": "workspace:^",
-    "@deepseek-ai/dsh-sandbox-policy": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-projection": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-shell": "workspace:^",
+    "@hiveforge-ai/dsh-commands": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-sandbox": "workspace:^",
+    "@hiveforge-ai/dsh-sandbox-policy": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-session-projection": "workspace:^",
+    "@hiveforge-ai/dsh-settings": "workspace:^",
+    "@hiveforge-ai/dsh-user-approval": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   }
 }

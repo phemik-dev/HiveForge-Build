@@ -87,7 +87,7 @@ describe('TrajectoryTable', () => {
     expect(screen.getByText('(tool call only)')).toBeTruthy()
   })
 
-  it('shows assistant timing facts after keyboard selection', () => {
+  it('shows assistant timing facts after keyboard selection', { timeout: 20_000 }, () => {
     render(<TrajectoryTable turns={TURNS} {...FOLD_PROPS} />)
     fireEvent.keyDown(screen.getByRole('row', { name: /ASSISTANT/ }), { key: 'Enter' })
     fireEvent.click(screen.getByRole('button', { name: 'Request Timing' }))

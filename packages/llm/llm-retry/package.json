@@ -1,13 +1,13 @@
 {
-  "name": "@deepseek-ai/dsh-llm-retry",
-  "description": "Provider-routed LLM request retry policy for the DeepSeek Harness",
+  "name": "@hiveforge-ai/dsh-llm-retry",
+  "description": "Provider-routed LLM request retry policy for the HiveForge Harness",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/llm/llm-retry"
   },
   "type": "module",
@@ -36,34 +36,34 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-brand": "workspace:^",
+    "@hiveforge-ai/dsh-agent": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-timeout": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@hiveforge-ai/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop-testkit": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-llm-deepseek": "workspace:^",
-    "@deepseek-ai/dsh-llm-mock-server": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-persistence-jsonl": "workspace:^",
-    "@deepseek-ai/dsh-session-persistence-sqlite": "workspace:^",
-    "@deepseek-ai/dsh-system-prompt": "workspace:^",
-    "@deepseek-ai/dsh-timeout": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-brand": "workspace:^",
+    "@hiveforge-ai/cordis-plugin-include": "workspace:^",
+    "@hiveforge-ai/cordis-plugin-loader": "workspace:^",
+    "@hiveforge-ai/dsh-agent": "workspace:^",
+    "@hiveforge-ai/dsh-agent-loop": "workspace:^",
+    "@hiveforge-ai/dsh-agent-loop-testkit": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-llm-hiveforge": "workspace:^",
+    "@hiveforge-ai/dsh-llm-mock-server": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-session-persistence-jsonl": "workspace:^",
+    "@hiveforge-ai/dsh-session-persistence-sqlite": "workspace:^",
+    "@hiveforge-ai/dsh-system-prompt": "workspace:^",
+    "@hiveforge-ai/dsh-timeout": "workspace:^",
+    "@hiveforge-ai/dsh-tools": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   }
 }

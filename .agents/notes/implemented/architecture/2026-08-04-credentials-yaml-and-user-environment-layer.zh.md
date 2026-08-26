@@ -6,7 +6,7 @@ Status: implemented
 
 ## Problem
 
-`$DSH_HOME/.env` 同时承担了两件互不相容的工作。它是 [`credentials-local`](../../../../packages/credentials/credentials-local/README.zh.md) 的可写密钥存储，因此任何表层都不能把它提升进 `process.env`——一旦提升，每个已存密钥都会读作只读的启动时覆盖，从而阻断从 Models 页轮换密钥。但它的文件名和 dotenv 格式承诺的是一个环境文件，于是用户把非机密值放进去，而那些值哪儿也到不了：同一个文件里，一个能用的 `DEEPSEEK_API_KEY` 旁边的 `DEEPSEEK_BASE_URL` 会被静默忽略，因为只有凭据 provider 读这份文档，而它只寻址凭据引用。
+`$DSH_HOME/.env` 同时承担了两件互不相容的工作。它是 [`credentials-local`](../../../../packages/credentials/credentials-local/README.zh.md) 的可写密钥存储，因此任何表层都不能把它提升进 `process.env`——一旦提升，每个已存密钥都会读作只读的启动时覆盖，从而阻断从 Models 页轮换密钥。但它的文件名和 dotenv 格式承诺的是一个环境文件，于是用户把非机密值放进去，而那些值哪儿也到不了：同一个文件里，一个能用的 `HIVEFORGE_API_KEY` 旁边的 `HIVEFORGE_BASE_URL` 会被静默忽略，因为只有凭据 provider 读这份文档，而它只寻址凭据引用。
 
 一个文件无法既是由 Harness 拥有并隔离的存储，又是按普通环境规则传播的层。[请求级凭据决策](2026-07-29-request-level-llm-config-credentials.zh.md)当初选择 dotenv 是为了对齐同类产品的 home `.env`，而这种混同直到有非机密值需要用同一个文件时才暴露出来。
 
@@ -17,7 +17,7 @@ Status: implemented
 **`.credentials.yaml` 是 provider 管理的存储。** 一份从 `CredentialRef` 到非空字符串的严格 YAML 映射，没有 `version` 字段，也没有包装层：
 
 ```yaml
-DEEPSEEK_API_KEY: sk-…
+HIVEFORGE_API_KEY: sk-…
 OPENAI_API_KEY: sk-…
 ```
 

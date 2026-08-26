@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-theme
+# @hiveforge-ai/dsh-client-ui-theme
 
 [English](README.md) | 中文
 

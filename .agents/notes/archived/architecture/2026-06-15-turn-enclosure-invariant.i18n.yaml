@@ -1,6 +1,6 @@
 # Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
-#   pnpm run verify-translation-pairing --write
-2026-06-15-turn-enclosure-invariant.md: f38f5b2600b57ad8f5fc4c8975579e281b5f3a49
-2026-06-15-turn-enclosure-invariant.zh.md: b74ddf3f6b65a7990329a8a903aafe2e4ca41c90
+#   pnpm run verify-translation-pairing --write .agents/notes/archived/architecture/2026-06-15-turn-enclosure-invariant.md
+2026-06-15-turn-enclosure-invariant.md: b6ba4057d1eb71f9933ad7052b0504509ce4caa6
+2026-06-15-turn-enclosure-invariant.zh.md: 82f9965b3d2df94c9264916e2594512d7b562862

@@ -12,10 +12,10 @@
 - text: "Using ONE run_code program: run bash `echo CODE_ROUND_OK`, then read the file missing.txt catching its error in the program. Return an object with both outcomes. Then reply DONE and stop. {{clock}}"
 - button "Copy":
   - img
-- button "Context injection @deepseek-ai/dsh-system-prompt":
+- button "Context injection @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @deepseek-ai/dsh-system-prompt
+  - text: Context injection @hiveforge-ai/dsh-system-prompt
 - 'button "Think The user wants me to write a single `run_code` program that:"':
   - img
   - img
@@ -47,8 +47,8 @@
 - button "Commands":
   - img
 - 'button "Access mode, current: Workspace Write"': Workspace Write
-- button "Select model, current DeepSeek-V4-Flash":
-  - text: DeepSeek-V4-Flash
+- button "Select model, current HiveForge-V4-Flash":
+  - text: HiveForge-V4-Flash
   - img
 - button "7% of context used"
 - button "Send message" [disabled]

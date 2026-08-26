@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import type { IApiClient, RpcResult } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SnapshotStore, SettingsScope } from '@deepseek-ai/dsh-client-runtime/client'
-import type { InjectFace, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { Button } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { IApiClient, RpcResult } from '@hiveforge-ai/dsh-api-remotes/client'
+import type { SnapshotStore, SettingsScope } from '@hiveforge-ai/dsh-client-runtime/client'
+import type { InjectFace, PropsRuntime } from '@hiveforge-ai/dsh-client-ui-slots'
+import { Button } from '@hiveforge-ai/dsh-client-ui-primitives'
 import type { ModelsSettingsState, ModelsSettingsStore, OnboardingReadiness } from './store.ts'
 import { onboardingReadiness } from './store.ts'
 import type { en } from './locales.ts'
@@ -141,7 +141,7 @@ export function LegacyImportDialog(props: LegacyImportDialogProps): ReactNode {
         <p className={css.error} role="alert">{previewError}</p>
         <div className={css.actions}>
           <Button
-            variant="secondary"
+            variant="outline"
             className={css.secondary}
             onClick={() => { void onboardingActions.dismiss().finally(() => finish()) }}
           >
@@ -152,25 +152,26 @@ export function LegacyImportDialog(props: LegacyImportDialogProps): ReactNode {
     )
   }
 
-  // Past the error guard, preview is present.
-  const hasAnything = (preview!.settings.present || preview!.credentials.present)
+  if (preview === null) return null
+
+  const hasAnything = preview.settings.present || preview.credentials.present
   if (!hasAnything) return null
 
-  const settingsLine = preview!.settings.present
-    ? preview!.settings.error === undefined
-      ? t('legacyImportSettingsFound').replace('{count}', String(preview!.settings.namespaces.length))
+  const settingsLine = preview.settings.present
+    ? preview.settings.error === undefined
+      ? t('legacyImportSettingsFound').replace('{count}', String(preview.settings.namespaces.length))
       : t('legacyImportSettingsFoundWithError')
     : t('legacyImportSettingsMissing')
 
-  const credentialsLine = preview!.credentials.present
-    ? preview!.credentials.error === undefined
+  const credentialsLine = preview.credentials.present
+    ? preview.credentials.error === undefined
       ? t('legacyImportCredentialsFound')
-        .replace('{refs}', String(preview!.credentials.refs.length))
-        .replace('{records}', String(preview!.credentials.recordCount))
+        .replace('{refs}', String(preview.credentials.refs.length))
+        .replace('{records}', String(preview.credentials.recordCount))
       : t('legacyImportCredentialsFoundWithError')
     : t('legacyImportCredentialsMissing')
 
-  const canImport = preview!.settings.error === undefined && preview!.credentials.error === undefined
+  const canImport = preview.settings.error === undefined && preview.credentials.error === undefined
 
   const importNow = async (): Promise<void> => {
     /* v8 ignore next -- defensive re-entry: the UI disables import while importing */
@@ -178,7 +179,7 @@ export function LegacyImportDialog(props: LegacyImportDialogProps): ReactNode {
     setImportError(null)
     setImporting(true)
     try {
-      const response = await api.migration.apply({ legacyHome: preview!.legacyHome })
+      const response = await api.migration.apply({ legacyHome: preview.legacyHome })
       if (!response.result.ok) {
         setImportError(response.result.error.message)
         return
@@ -197,7 +198,7 @@ export function LegacyImportDialog(props: LegacyImportDialogProps): ReactNode {
   return (
     <OnboardingModal title={t('legacyImportTitle')} focusTitle>
       <p className={css.description}>
-        {t('legacyImportDescription').replace('{path}', preview!.legacyHome)}
+        {t('legacyImportDescription').replace('{path}', preview.legacyHome)}
       </p>
       <ul className={css.summary}>
         <li>{settingsLine}</li>
@@ -206,7 +207,7 @@ export function LegacyImportDialog(props: LegacyImportDialogProps): ReactNode {
       {importError === null ? null : <p className={css.error} role="alert">{importError}</p>}
       <div className={css.actions}>
         <Button
-          variant="secondary"
+          variant="outline"
           className={css.secondary}
           disabled={importing}
           onClick={() => { void onboardingActions.dismiss().finally(() => finish()) }}

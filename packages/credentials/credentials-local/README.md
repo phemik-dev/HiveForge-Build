@@ -11,7 +11,7 @@ File-backed [credentials](../credentials/README.md) provider: four layers, one h
 | `<invocation cwd>/.env` | `project-env` | not here | over the user `.env` |
 | `$DSH_HOME/.env` | `user-env` | not here | otherwise |
 
-The launching environment wins because a per-run override (`DEEPSEEK_API_KEY=… dsh`, a CI secret, a container `-e`) is operator intent for this run — and because it cannot be edited from inside, it must be *visibly* read-only: `describe()` reports `source: 'env', writable: false`, and `set`/`unset` reject instead of writing a change the reader would never see.
+The launching environment wins because a per-run override (`HIVEFORGE_API_KEY=… dsh`, a CI secret, a container `-e`) is operator intent for this run — and because it cannot be edited from inside, it must be *visibly* read-only: `describe()` reports `source: 'env', writable: false`, and `set`/`unset` reject instead of writing a change the reader would never see.
 
 Everything below it loses to the managed store, so a key written by the Models page takes effect immediately even when an older key sits in a `.env`. Those two layers still resolve when nothing is stored, and `describe()` names them `project-env` or `user-env` with `writable: true` — storing a key replaces them as the effective source.
 
@@ -34,7 +34,7 @@ A versioned YAML document with one section per key space, and nothing else:
 version: 1
 
 refs:
-  DEEPSEEK_API_KEY: sk-…
+  HIVEFORGE_API_KEY: sk-…
   OPENAI_API_KEY: sk-…
 
 records:

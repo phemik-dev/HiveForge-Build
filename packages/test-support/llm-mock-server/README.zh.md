@@ -1,4 +1,4 @@
-# `@deepseek-ai/dsh-llm-mock-server`
+# `@hiveforge-ai/dsh-llm-mock-server`
 
 [English](README.md) | 中文
 
@@ -18,11 +18,11 @@ pnpm run mock:llm -- \
   --partial-text "discard this half"
 ```
 
-将发布的 DeepSeek 适配器指向服务器；它会将 `/chat/completions` 追加到已配置 base：
+将发布的 HiveForge 适配器指向服务器；它会将 `/chat/completions` 追加到已配置 base：
 
 ```sh
-DEEPSEEK_BASE_URL=http://127.0.0.1:8000/v1 \
-DEEPSEEK_API_KEY=mock-key \
+HIVEFORGE_BASE_URL=http://127.0.0.1:8000/v1 \
+HIVEFORGE_API_KEY=mock-key \
 pnpm dsh --profile headless "test provider recovery"
 ```
 

@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-subagent-spawn-in-process",
+  "name": "@hiveforge-ai/dsh-subagent-spawn-in-process",
   "description": "In-process spawn subagent backend: runs a fresh child agent on ctx.agents",
   "version": "0.1.1-rc.2",
   "publishConfig": {
@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/subagent/subagent-spawn-in-process"
   },
   "type": "module",
@@ -32,29 +32,29 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-subagent": "workspace:^",
-    "@deepseek-ai/dsh-subagent-in-process-driver": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-subagent": "workspace:^",
+    "@hiveforge-ai/dsh-subagent-in-process-driver": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@hiveforge-ai/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop-testkit": "workspace:^",
-    "@deepseek-ai/dsh-bash-local": "workspace:^",
-    "@deepseek-ai/dsh-subprocess-local": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-llm-deepseek": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-subagent": "workspace:^",
-    "@deepseek-ai/dsh-subagent-in-process-driver": "workspace:^",
-    "@deepseek-ai/dsh-tool-bash": "workspace:^",
-    "@deepseek-ai/dsh-tool-subagent": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/cordis-plugin-loader": "workspace:^",
+    "@hiveforge-ai/dsh-agent": "workspace:^",
+    "@hiveforge-ai/dsh-agent-loop": "workspace:^",
+    "@hiveforge-ai/dsh-agent-loop-testkit": "workspace:^",
+    "@hiveforge-ai/dsh-bash-local": "workspace:^",
+    "@hiveforge-ai/dsh-subprocess-local": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-llm-hiveforge": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-subagent": "workspace:^",
+    "@hiveforge-ai/dsh-subagent-in-process-driver": "workspace:^",
+    "@hiveforge-ai/dsh-tool-bash": "workspace:^",
+    "@hiveforge-ai/dsh-tool-subagent": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   }
 }

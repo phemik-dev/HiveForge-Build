@@ -79,8 +79,8 @@ describe('jsonrpc-agent keyless smoke', () => {
     ], {
       cwd: repoRoot,
       env: {
-        DEEPSEEK_API_KEY: 'keyless-smoke-no-call',
-        DEEPSEEK_BASE_URL: `http://127.0.0.1:${address.port}`,
+        HIVEFORGE_API_KEY: 'keyless-smoke-no-call',
+        HIVEFORGE_BASE_URL: `http://127.0.0.1:${address.port}`,
         DSH_CWD: root,
         DSH_SESSION_ROOT: join(root, '.sessions'),
         ...(envValue === undefined ? {} : { DSH_MAX_TOKENS_AS_SUCCESS: envValue }),
@@ -105,13 +105,13 @@ describe('jsonrpc-agent keyless smoke', () => {
         jsonrpc: '2.0',
         id: 1,
         method: 'initialize',
-        params: { cwd: root, provider: 'deepseek-official', model: 'deepseek-v4-pro', maxTokens: 1234 },
+        params: { cwd: root, provider: 'hiveforge-official', model: 'hiveforge-v4-pro', maxTokens: 1234 },
       })}\n`)
       const initialized = await waitForLine(lines, value => value.id === 1, () => stderr)
       expect(initialized).toMatchObject({
         jsonrpc: '2.0',
         id: 1,
-        result: { serverInfo: { name: 'deepseek-harness-sdk-runtime' } },
+        result: { serverInfo: { name: 'hiveforge-harness-sdk-runtime' } },
       })
 
       child.stdin.write(`${JSON.stringify({
@@ -184,7 +184,7 @@ describe('jsonrpc-agent keyless smoke', () => {
     ], {
       cwd: repoRoot,
       env: {
-        DEEPSEEK_API_KEY: 'keyless-smoke-no-call',
+        HIVEFORGE_API_KEY: 'keyless-smoke-no-call',
         DSH_MAX_TOKENS_AS_SUCCESS: 'sometimes',
       },
       stdin: 'ignore',
@@ -196,7 +196,7 @@ describe('jsonrpc-agent keyless smoke', () => {
     expect(exitCode, stderr).toBe(1)
     expect(stdout).toBe('')
     expect(stderr).toContain('plugin tree failed to load')
-    expect(stderr).toContain('failed to apply loader entry sdk-jsonrpc-server (@deepseek-ai/dsh-sdk-jsonrpc-server)')
+    expect(stderr).toContain('failed to apply loader entry sdk-jsonrpc-server (@hiveforge-ai/dsh-sdk-jsonrpc-server)')
     expect(stderr).toContain('sometimes')
   }, 30_000)
 })

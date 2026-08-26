@@ -18,10 +18,10 @@ Status: implemented
 
 遵循[能力 seam Agent Note](../architecture/2026-06-13-capability-seams.zh.md)，压缩以独立包发布，使约定、算法和（后续的）消费方 API 各自独立演进：
 
-1. **接口** — `@deepseek-ai/dsh-compaction`：抽象 `CompactionEngine`，拥有 `ctx.compaction` 键、`CompactionResult` 词汇、`compaction/*` 会话事件、手动失败分类体系以及规范的检查点消息来源。它将 `compactIfNeeded()`、`compactNow()` 和 `compactRegion()` 声明为**抽象方法**——约定说明压缩*做什么*，而非*怎么做*。
-2. **实现** — `@deepseek-ai/dsh-compaction-basic`：具体的 `BasicCompactionEngine`，消费 `ctx.tokenMeter`，并拥有尾→头保留遍历、通过 `ctx.llm.stream()` 生成摘要、surface 替换、锁、步骤前压力处理和规范的上下文溢出恢复。`summarize()` 是其唯一的子类钩子；计价与回放仍归 meter 所有。
-3. **无模型配套服务** — `@deepseek-ai/dsh-compaction-tool-result-pruner`：一个具体的可选服务，在后端选择摘要范围之前，重写当前过大的 `tool/result` 节点。它不是第二种压缩实现，也不实现 `CompactionEngine`。
-4. **面向用户的消费方** — `@deepseek-ai/dsh-command-compact` 通过 `ctx.commands` 注册无参数 `/compact`，并调用后端无关的 `compactNow()` 操作。它是供用户直接控制的命令，不是面向模型的工具。
+1. **接口** — `@hiveforge-ai/dsh-compaction`：抽象 `CompactionEngine`，拥有 `ctx.compaction` 键、`CompactionResult` 词汇、`compaction/*` 会话事件、手动失败分类体系以及规范的检查点消息来源。它将 `compactIfNeeded()`、`compactNow()` 和 `compactRegion()` 声明为**抽象方法**——约定说明压缩*做什么*，而非*怎么做*。
+2. **实现** — `@hiveforge-ai/dsh-compaction-basic`：具体的 `BasicCompactionEngine`，消费 `ctx.tokenMeter`，并拥有尾→头保留遍历、通过 `ctx.llm.stream()` 生成摘要、surface 替换、锁、步骤前压力处理和规范的上下文溢出恢复。`summarize()` 是其唯一的子类钩子；计价与回放仍归 meter 所有。
+3. **无模型配套服务** — `@hiveforge-ai/dsh-compaction-tool-result-pruner`：一个具体的可选服务，在后端选择摘要范围之前，重写当前过大的 `tool/result` 节点。它不是第二种压缩实现，也不实现 `CompactionEngine`。
+4. **面向用户的消费方** — `@hiveforge-ai/dsh-command-compact` 通过 `ctx.commands` 注册无参数 `/compact`，并调用后端无关的 `compactNow()` 操作。它是供用户直接控制的命令，不是面向模型的工具。
 
 ### 约定依赖 `dsh-session` 和 `dsh-llm`——有意为之的偏离
 
@@ -33,7 +33,7 @@ Status: implemented
 
 将完整算法（保留遍历、token 求和、文本提取）作为接口上的具体方法，会将约定重新耦合到一种策略：想要不同保留策略或事件排序的后端必须与继承来的具体代码对抗。将三个操作都设为抽象，把所有*怎么做*的决策放在后端，并让接口保持为*做什么*的声明。token 测量根本不是压缩钩子；单例服务使多个消费方能够共享逐会话的回放折叠。
 
-`compactIfNeeded(agent, trigger, signal)` 接受显式的 `'pressure' | 'context-overflow'` 触发原因与取消信号。它只读取最新的持久化已路由请求；没有 header 就不执行工作，任何已路由的提供方/模型目标都使用单例估算器。`compactNow(agent, signal)` 要求 agent 处于 idle，即使未达到压力也进行一次有效的平衡缩减；不存在这种范围时返回 `null`，且不写入任何内容。`compactRegion(start, end, agent, signal?)` 将 `agent.session` 作为唯一会话身份，并为显式调用方保留可选 signal。默认摘要器依次从显式配置、最新记录的已路由目标和 agent 选项解析目标，并在任何 `llm/stream` 路由后记录提供方/模型对。它回放已路由请求的前缀，并将压缩指令追加为尾部 user 消息，从而复用提供方的热 KV Cache；见[摘要前缀缓存 Agent Note](../bug-fix/2026-07-21-compaction-summary-prefix-cache-reuse.zh.md)。该结果携带 `llmStreamCall: true`，因为生成它时恰好通过此上下文的 LLM 服务发起了一次调用；只有满足相同条件时，子类才设置该标记，因为单有保留的 `rawOutput` 并不能判定调用路径。该调用将提供方无关的 `GenerateOptions.purpose` 设为 `compaction`；适配器可以将此用途映射为对模型隐藏的传输元数据，DeepSeek 适配器会发送 `x-deepseek-harness-compact: 1`。
+`compactIfNeeded(agent, trigger, signal)` 接受显式的 `'pressure' | 'context-overflow'` 触发原因与取消信号。它只读取最新的持久化已路由请求；没有 header 就不执行工作，任何已路由的提供方/模型目标都使用单例估算器。`compactNow(agent, signal)` 要求 agent 处于 idle，即使未达到压力也进行一次有效的平衡缩减；不存在这种范围时返回 `null`，且不写入任何内容。`compactRegion(start, end, agent, signal?)` 将 `agent.session` 作为唯一会话身份，并为显式调用方保留可选 signal。默认摘要器依次从显式配置、最新记录的已路由目标和 agent 选项解析目标，并在任何 `llm/stream` 路由后记录提供方/模型对。它回放已路由请求的前缀，并将压缩指令追加为尾部 user 消息，从而复用提供方的热 KV Cache；见[摘要前缀缓存 Agent Note](../bug-fix/2026-07-21-compaction-summary-prefix-cache-reuse.zh.md)。该结果携带 `llmStreamCall: true`，因为生成它时恰好通过此上下文的 LLM 服务发起了一次调用；只有满足相同条件时，子类才设置该标记，因为单有保留的 `rawOutput` 并不能判定调用路径。该调用将提供方无关的 `GenerateOptions.purpose` 设为 `compaction`；适配器可以将此用途映射为对模型隐藏的传输元数据，HiveForge 适配器会发送 `x-hiveforge-harness-compact: 1`。
 
 ### 成功的持久步骤工作完成后运行自动压力检查
 

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Fiber } from '@deepseek-ai/cordis'
-import LlmRuntime, { createUserMessage, CallId, EMPTY_RESPONSE_CODE, LlmAdapter, LlmError, resolveRetryPolicy  } from '@deepseek-ai/dsh-llm'
+import { Context } from '@hiveforge-ai/cordis'
+import type { Fiber } from '@hiveforge-ai/cordis'
+import LlmRuntime, { createUserMessage, CallId, EMPTY_RESPONSE_CODE, LlmAdapter, LlmError, resolveRetryPolicy  } from '@hiveforge-ai/dsh-llm'
 import type {
   AlwaysRetryPolicyConfig,
   BackoffConfig,
@@ -10,15 +10,15 @@ import type {
   ResolvedRetryPolicy,
   RetryPolicyConfig,
   StreamChunk,
-} from '@deepseek-ai/dsh-llm'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import type { SessionEvent, SessionEventMap } from '@deepseek-ai/dsh-session'
-import type { LlmRetryEventData } from '@deepseek-ai/dsh-llm-retry/types'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime, { defineContentToolFixture } from '@deepseek-ai/dsh-tools'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import type { Agent, RequestErrorAction } from '@deepseek-ai/dsh-agent'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
+} from '@hiveforge-ai/dsh-llm'
+import SessionStore, { SessionId } from '@hiveforge-ai/dsh-session'
+import type { SessionEvent, SessionEventMap } from '@hiveforge-ai/dsh-session'
+import type { LlmRetryEventData } from '@hiveforge-ai/dsh-llm-retry/types'
+import SystemPrompt from '@hiveforge-ai/dsh-system-prompt'
+import ToolRuntime, { defineContentToolFixture } from '@hiveforge-ai/dsh-tools'
+import AgentRegistry from '@hiveforge-ai/dsh-agent'
+import type { Agent, RequestErrorAction } from '@hiveforge-ai/dsh-agent'
+import AgentLoop from '@hiveforge-ai/dsh-agent-loop'
 import * as retry from '../src/index.ts'
 
 type ScriptEntry = Error | Iterable<StreamChunk> | AsyncIterable<StreamChunk>
@@ -82,7 +82,7 @@ function textResponse(text: string): StreamChunk[] {
 /**
  * A degenerate empty provider completion as an error finish chunk. Both
  * adapters emit this shape and the EMPTY_RESPONSE code (the field the policy
- * routes on); the message text here is the deepseek adapter's phrasing (pi-ai
+ * routes on); the message text here is the hiveforge adapter's phrasing (pi-ai
  * qualifies it with the model name).
  */
 function emptyCompletion(): StreamChunk[] {

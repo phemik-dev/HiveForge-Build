@@ -7,14 +7,14 @@ import { join } from 'node:path'
 import type { Browser, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it, onTestFailed } from 'vitest'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import { createUserMessage } from '@hiveforge-ai/dsh-llm'
 import {
   SESSION_FORMAT_VERSION,
   Session,
   SessionId,
-} from '@deepseek-ai/dsh-session'
-import type {} from '@deepseek-ai/dsh-session-reference/types'
-import type {} from '@deepseek-ai/dsh-session-title'
+} from '@hiveforge-ai/dsh-session'
+import type {} from '@hiveforge-ai/dsh-session-reference/types'
+import type {} from '@hiveforge-ai/dsh-session-title'
 import {
   assertFixtureInventory,
   captureStableAria,

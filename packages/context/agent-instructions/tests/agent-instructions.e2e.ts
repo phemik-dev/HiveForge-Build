@@ -1,22 +1,22 @@
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import { createUserMessage } from '@hiveforge-ai/dsh-llm'
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import LlmRuntime from '@deepseek-ai/dsh-llm'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
-import * as WorkspaceContext from '@deepseek-ai/dsh-agent-instructions'
+import { Context } from '@hiveforge-ai/cordis'
+import LlmRuntime from '@hiveforge-ai/dsh-llm'
+import SessionStore, { SessionId } from '@hiveforge-ai/dsh-session'
+import SystemPrompt from '@hiveforge-ai/dsh-system-prompt'
+import ToolRuntime from '@hiveforge-ai/dsh-tools'
+import AgentRegistry from '@hiveforge-ai/dsh-agent'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
+import AgentLoop from '@hiveforge-ai/dsh-agent-loop'
+import * as LlmHiveForge from '@hiveforge-ai/dsh-llm-hiveforge'
+import * as WorkspaceContext from '@hiveforge-ai/dsh-agent-instructions'
 import { candidateScopeKey } from '../src/render.ts'
-import LocalFileSystem from '@deepseek-ai/dsh-fs-local'
-import * as ToolFs from '@deepseek-ai/dsh-tool-fs'
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
+import LocalFileSystem from '@hiveforge-ai/dsh-fs-local'
+import * as ToolFs from '@hiveforge-ai/dsh-tool-fs'
+import type { SessionEvent } from '@hiveforge-ai/dsh-session'
 
 const PROBE = 'banana-271828'
 const NESTED_PROBE = 'papaya-314159'
@@ -46,11 +46,11 @@ async function harness(): Promise<{ ctx: Context; agent: Agent }> {
   await ctx.plugin(ToolFs)
   await ctx.plugin(WorkspaceContext, { maxBytes: 65536 })
   await ctx.plugin(AgentLoop, { agents: [] })
-  await ctx.plugin(LlmDeepSeek, { models: [{ id: 'deepseek-v4-flash' }] })
+  await ctx.plugin(LlmHiveForge, { models: [{ id: 'hiveforge-v4-flash' }] })
   const handle = await ctx.agents.create({
     sessionId: SessionId('workspace-context-e2e-session'),
     meta: { cwd: workdir },
-    agentOptions: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+    agentOptions: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
   })
   return { ctx, agent: handle.agent }
 }
@@ -75,7 +75,7 @@ function finalText(events: SessionEvent[]): string {
     .join('')
 }
 
-describe.skipIf(!process.env.DEEPSEEK_API_KEY)('workspace context e2e: real model sees AGENTS.md baseline', () => {
+describe.skipIf(!process.env.HIVEFORGE_API_KEY)('workspace context e2e: real model sees AGENTS.md baseline', () => {
   it('obeys a probe instruction loaded from the workspace', async () => {
     const live = await harness()
 

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-web
+# @hiveforge-ai/dsh-client-web
 
 English | [中文](README.zh.md)
 

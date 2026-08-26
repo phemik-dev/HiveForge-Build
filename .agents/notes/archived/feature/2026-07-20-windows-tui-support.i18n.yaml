@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/archived/feature/2026-07-20-windows-tui-support.md
-2026-07-20-windows-tui-support.md: 9308df7fb43378610cb2d480324c55bff07ea108
-2026-07-20-windows-tui-support.zh.md: 8b4a1eb4cef3056b47b911a07ed62202b52d1f73
+2026-07-20-windows-tui-support.md: 97fb96ec4361f8faa4b3ec60a62277b9b9d8b6e9
+2026-07-20-windows-tui-support.zh.md: bca7869a7f0e209169dec241f5c85d3ace116278

@@ -18,7 +18,7 @@ Status: rejected — 下列每一项替换在证据上都未达到净简化门�
 - **以 `vscode-languageserver-types` 承担 lsp-stdio 的协议类型子集**：约 80 行类型加约 45 行守卫，但上游守卫在两个方向上都与本仓库不一致（接受本仓库必须拒绝的 `uri: undefined`；强制要求本仓库容忍缺失的 `targetRange`），而且 initialize 结果的形状住在 `vscode-languageserver-protocol` 里，会把 `vscode-jsonrpc` 拖成运行时依赖——为 80 行严格贴合规范的代码付出约 1 MB。
 - **以 `json-rpc-2.0` 替换 `dsh-sdk-jsonrpc-server`**：可删除的关联/分发代码确实存在（约 100–130 行），但 NDJSON 协议格式（wire format）必须与手写的 Python SDK 客户端逐位一致，该包只有单一维护者，且 [GUI RPC 决策](../../implemented/architecture/2026-07-19-gui-layering-and-rpc-protocol.zh.md)已把这个包当作冻结的窄接口面对待。`vscode-jsonrpc` 更不合适（Content-Length 分帧、该协议并不具备的取消词汇）。
 - **以 `jsonrpcclient` 承担 Python SDK 客户端**：v4 只做消息的构造/解析——约 20 行——而真正要紧的 500 行（子进程生命周期、线程化读取器、id 关联、双向的服务端角色应答）全都保留；该库处于低维护模式。
-- **以 `eventsource-parser` 替换 apiproxy 的 `readSse`**：可删除的分帧只有约 15 行，线路两端都在仓库内，规范符合性无关紧要，而且这会给一个浏览器安全的包添加依赖。（对比[已归档的 llm-deepseek 依赖决策](../../archived/simplification/2026-07-26-eventsource-parser-for-deepseek-sse.md)：那里线路对面是真实的提供方。）
+- **以 `eventsource-parser` 替换 apiproxy 的 `readSse`**：可删除的分帧只有约 15 行，线路两端都在仓库内，规范符合性无关紧要，而且这会给一个浏览器安全的包添加依赖。（对比[已归档的 llm-hiveforge 依赖决策](../../archived/simplification/2026-07-26-eventsource-parser-for-hiveforge-sse.md)：那里线路对面是真实的提供方。）
 
 **重试、定时器与异步：**
 
@@ -34,7 +34,7 @@ Status: rejected — 下列每一项替换在证据上都未达到净简化门�
 - **以 `structuredClone` 替换会话的 `snapshotJsonValue`/`isJsonValue`**：它是校验器加分离器，以「每个 getter 只读一次」和跨 realm 内建对象检查强制执行无损 JSON 边界；`structuredClone` 接受 Map/Date/-0，什么都不强制。有意保持零依赖、针对被模型篡改的 realm 做过加固的 `code-runtime-worker` 镜像实现同理。
 - **以 `fast-deep-equal` 替换会话接口面的 `isDeepEqualJson`**、**以 `safe-stable-stringify` 承担 repeat-tool-reminder 的规范化**：两项替换在机械层面都可行，但每一项都是拿约 17–20 行带注释、有测试的代码，去换一个核心包的第一个外部运行时依赖——在这个体量上是净亏损。
 - **以 zod/valibot 承担持久事件的严格解码器**（goal fold、tool-ralph、session）：它们是位于持久化边界、键集精确匹配、失败即明确报错、带事件专属报错信息的解码器；在仓库标准 schemastery 之外再放一个 schema 库是政策变更，不是删除。
-- **以 `gpt-tokenizer`/tiktoken 替换 token-meter**：[回放 token 计量决策](../../implemented/architecture/2026-07-15-replay-token-meter-service.zh.md)已明确否决分词器后端；GPT 的 BPE 对 DeepSeek 模型来说也是错误的分词器，而且这个包约 350 行是回放折叠簿记，任何分词器都覆盖不了。
+- **以 `gpt-tokenizer`/tiktoken 替换 token-meter**：[回放 token 计量决策](../../implemented/architecture/2026-07-15-replay-token-meter-service.zh.md)已明确否决分词器后端；GPT 的 BPE 对 HiveForge 模型来说也是错误的分词器，而且这个包约 350 行是回放折叠簿记，任何分词器都覆盖不了。
 - **以 `partial-json` 处理流式工具调用参数**：无可替换——按已记录的约定，参数端到端保持为原始 JSON 字符串；`JSON.parse` 只在完整载荷上运行。
 
 **文件系统、子进程与终端：**

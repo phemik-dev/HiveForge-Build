@@ -9,7 +9,7 @@ English | [中文](2026-07-21-tui-no-banner.zh.md)
 
 ## Problem
 
-The TUI opened with a boxed product banner ("DEEPSEEK HARNESS" + model/session detail), most recently with a sweep-in animation ([banner sweep Agent Note](2026-07-21-tui-banner-sweep.md)). The user's verdict: remove it. A product title re-read on every boot is chrome, the box spends four rows before any content, and the identifying facts it carried (model, session) have better homes.
+The TUI opened with a boxed product banner ("HIVEFORGE HARNESS" + model/session detail), most recently with a sweep-in animation ([banner sweep Agent Note](2026-07-21-tui-banner-sweep.md)). The user's verdict: remove it. A product title re-read on every boot is chrome, the box spends four rows before any content, and the identifying facts it carried (model, session) have better homes.
 
 ## Decision
 
@@ -31,10 +31,10 @@ This supersedes the [banner sweep Agent Note](2026-07-21-tui-banner-sweep.md) en
 
 - Startup output is fully deterministic again — no animation frames at all; the interval-lifecycle machinery from the two animation iterations is gone.
 - All 26 pi-tui terminal snapshots re-recorded (`test:snapshot:refresh`): banner rows gone, footer rows gain the model prefix.
-- Anything that anchored on banner text (`DEEPSEEK`, box corners) re-anchors on the footer model name; `main-session-` no longer appears in boot output.
+- Anything that anchored on banner text (`HIVEFORGE`, box corners) re-anchors on the footer model name; `main-session-` no longer appears in boot output.
 - `/clear` now wipes the welcome line too: it is an ordinary transcript line, and `/clear` empties the transcript (the old banner survived `/clear` only by sitting outside it).
 - The footer's left segment is wider; on narrow terminals the right status segment clips earlier.
 
 ## Testing
 
-`packages/ui/tui/tests/tui.spec.ts` pins: no box corners/product title and an empty transcript when `welcome` is unset, with the model in the footer; a configured welcome as the first transcript line without a banner; and the welcome surviving a palette-swap transcript rebuild. The PTY smoke boots on the footer model name and asserts `DEEPSEEK HARNESS` is absent. Snapshots verify the full frames.
+`packages/ui/tui/tests/tui.spec.ts` pins: no box corners/product title and an empty transcript when `welcome` is unset, with the model in the footer; a configured welcome as the first transcript line without a banner; and the welcome surviving a palette-swap transcript rebuild. The PTY smoke boots on the footer model name and asserts `HIVEFORGE HARNESS` is absent. Snapshots verify the full frames.

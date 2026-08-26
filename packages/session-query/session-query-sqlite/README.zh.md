@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-session-query-sqlite
+# @hiveforge-ai/dsh-session-query-sqlite
 
 [English](README.md) | 中文
 

@@ -1,4 +1,4 @@
-declare module '@deepseek-ai/cordis' {
+declare module '@hiveforge-ai/cordis' {
   export class Service { protected readonly __service?: never }
 
   export interface Context {}

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-locale
+# @hiveforge-ai/dsh-client-locale
 
 English | [中文](README.zh.md)
 

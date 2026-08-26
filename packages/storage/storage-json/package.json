@@ -1,13 +1,13 @@
 {
-  "name": "@deepseek-ai/dsh-storage-json",
-  "description": "JSON file KV storage backend for the DeepSeek Harness storage hub",
+  "name": "@hiveforge-ai/dsh-storage-json",
+  "description": "JSON file KV storage backend for the HiveForge Harness storage hub",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/storage/storage-json"
   },
   "type": "module",
@@ -32,16 +32,16 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-storage": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-storage": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@hiveforge-ai/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-storage": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-storage": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   }
 }

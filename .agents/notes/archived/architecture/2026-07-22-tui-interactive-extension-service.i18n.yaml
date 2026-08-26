@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/archived/architecture/2026-07-22-tui-interactive-extension-service.md
-2026-07-22-tui-interactive-extension-service.md: e523361ceb920d2848369d7d3cf1093765d296d4
-2026-07-22-tui-interactive-extension-service.zh.md: 23c46f6bc18d576912aaa648b26877873ea60eda
+2026-07-22-tui-interactive-extension-service.md: aeb3e903e9c0d51780f2cb7512931730808242c9
+2026-07-22-tui-interactive-extension-service.zh.md: d35341380ac1b5beb543486c9641286a6c691a76

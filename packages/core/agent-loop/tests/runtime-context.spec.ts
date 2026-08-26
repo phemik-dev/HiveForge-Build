@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
+import { Context } from '@hiveforge-ai/cordis'
+import { createUserMessage } from '@hiveforge-ai/dsh-llm'
+import SessionStore, { SessionId } from '@hiveforge-ai/dsh-session'
 import { RuntimeContextProjection } from '../src/runtime-context.ts'
 
-const SOURCE = '@deepseek-ai/dsh-system-prompt'
+const SOURCE = '@hiveforge-ai/dsh-system-prompt'
 
 function contextMessage(text: string) {
   return createUserMessage({

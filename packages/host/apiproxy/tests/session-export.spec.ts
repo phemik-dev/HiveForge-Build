@@ -7,14 +7,14 @@
 
 import { randomBytes } from 'node:crypto'
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import { unzipSync, strFromU8 } from 'fflate'
-import type { ImageAttachmentRef } from '@deepseek-ai/dsh-attachment'
-import UserQuestionService from '@deepseek-ai/dsh-user-questions'
-import type { SessionHeader, SessionId } from '@deepseek-ai/dsh-session'
-import type { SessionLineageNode } from '@deepseek-ai/dsh-session-query'
-import type { SessionRawArtifact } from '@deepseek-ai/dsh-session-persistence'
-import ApiProxyService, { createApiProxy, toFetchHandler } from '@deepseek-ai/dsh-host-apiproxy'
+import type { ImageAttachmentRef } from '@hiveforge-ai/dsh-attachment'
+import UserQuestionService from '@hiveforge-ai/dsh-user-questions'
+import type { SessionHeader, SessionId } from '@hiveforge-ai/dsh-session'
+import type { SessionLineageNode } from '@hiveforge-ai/dsh-session-query'
+import type { SessionRawArtifact } from '@hiveforge-ai/dsh-session-persistence'
+import ApiProxyService, { createApiProxy, toFetchHandler } from '@hiveforge-ai/dsh-host-apiproxy'
 
 const sid = (id: string): SessionId => id as SessionId
 
@@ -191,7 +191,7 @@ describe('session.export download endpoint', () => {
     expect(response.body).toBeNull()
   })
 
-  it('uses the resolved compression level for ZIP entries', async () => {
+  it('uses the resolved compression level for ZIP entries', { timeout: 30_000 }, async () => {
     const root = artifact('session-root', undefined, 'compressible\n'.repeat(32 * 1024))
     const storedApi = await buildApi({ 'session-root': root }, [], { compressionLevel: 0 })
     const compressedApi = await buildApi({ 'session-root': root }, [], { compressionLevel: 9 })

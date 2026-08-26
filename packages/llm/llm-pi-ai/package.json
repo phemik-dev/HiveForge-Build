@@ -1,13 +1,13 @@
 {
-  "name": "@deepseek-ai/dsh-llm-pi-ai",
-  "description": "pi-ai-backed DeepSeek adapter for the DeepSeek Harness LLM seam (design-verification twin of dsh-llm-deepseek)",
+  "name": "@hiveforge-ai/dsh-llm-pi-ai",
+  "description": "pi-ai-backed HiveForge adapter for the HiveForge Harness LLM seam (design-verification twin of dsh-llm-hiveforge)",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/llm/llm-pi-ai"
   },
   "type": "module",
@@ -32,30 +32,30 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-attachment": "workspace:^",
-    "@deepseek-ai/dsh-authorization": "workspace:^",
-    "@deepseek-ai/dsh-credentials": "workspace:^",
-    "@deepseek-ai/dsh-launch-environment": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-attachment": "workspace:^",
+    "@hiveforge-ai/dsh-authorization": "workspace:^",
+    "@hiveforge-ai/dsh-credentials": "workspace:^",
+    "@hiveforge-ai/dsh-launch-environment": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-settings": "workspace:^",
+    "@hiveforge-ai/dsh-timeout": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "^0.82.1",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@hiveforge-ai/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-attachment": "workspace:^",
-    "@deepseek-ai/dsh-authorization": "workspace:^",
-    "@deepseek-ai/dsh-credentials": "workspace:^",
-    "@deepseek-ai/dsh-launch-environment": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-llm-deepseek": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-attachment": "workspace:^",
+    "@hiveforge-ai/dsh-authorization": "workspace:^",
+    "@hiveforge-ai/dsh-credentials": "workspace:^",
+    "@hiveforge-ai/dsh-launch-environment": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-llm-hiveforge": "workspace:^",
+    "@hiveforge-ai/dsh-settings": "workspace:^",
+    "@hiveforge-ai/dsh-timeout": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   }
 }

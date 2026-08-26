@@ -1,7 +1,7 @@
 /**
  * Keyless snapshot coverage for the TypeScript SDK path: each scenario spawns
  * the REAL `dsh-jsonrpc-agent` runtime (per `DSH_EXAMPLE_MODE`) through the
- * REAL `@deepseek-ai/dsh-sdk-client`, drives one turn over stdio JSON-RPC,
+ * REAL `@hiveforge-ai/dsh-sdk-client`, drives one turn over stdio JSON-RPC,
  * and pins the SDK `RunResult`, the complete notification stream, and the
  * persisted session logs. Replay serves recorded model
  * responses via `llm-replay` (`cordis.snapshot.yml`); `DSH_SNAPSHOT=record`
@@ -27,9 +27,9 @@ import {
   tokenizeSessionFixtureCwd,
   type HarvestedLog,
   type NormalizeContext,
-} from '@deepseek-ai/dsh-acp-snapshot'
-import { resolveExampleLaunch } from '@deepseek-ai/dsh-loader-smoke'
-import { DeepSeekHarness, type HarnessNotification, type RunResult } from '@deepseek-ai/dsh-sdk-client'
+} from '@hiveforge-ai/dsh-acp-snapshot'
+import { resolveExampleLaunch } from '@hiveforge-ai/dsh-loader-smoke'
+import { HiveForgeHarness, type HarnessNotification, type RunResult } from '@hiveforge-ai/dsh-sdk-client'
 
 const testsDir = dirOf(import.meta.url)
 const snapshotsDir = join(testsDir, 'snapshots')
@@ -189,7 +189,7 @@ function assembledRuntimeContexts(log: PersistedLog): string[] {
     }
     if (event.type !== 'user/message'
       || event.data?.source?.kind !== 'plugin'
-      || event.data.source.plugin !== '@deepseek-ai/dsh-system-prompt') return []
+      || event.data.source.plugin !== '@hiveforge-ai/dsh-system-prompt') return []
     return event.data.content?.flatMap(block => block.type === 'text' && typeof block.text === 'string' ? [block.text] : []) ?? []
   })
 }
@@ -294,7 +294,7 @@ async function runScenario(scenario: SdkScenario): Promise<{
     ...scenario.environment,
   }
 
-  const harness = new DeepSeekHarness({
+  const harness = new HiveForgeHarness({
     launch: {
       command: launch.command,
       args: launch.args,
@@ -303,8 +303,8 @@ async function runScenario(scenario: SdkScenario): Promise<{
       requestTimeoutMs: 110_000,
     },
     cwd,
-    provider: 'deepseek-official',
-    model: 'deepseek-v4-flash',
+    provider: 'hiveforge-official',
+    model: 'hiveforge-v4-flash',
   })
   try {
     const notifications: HarnessNotification[] = []

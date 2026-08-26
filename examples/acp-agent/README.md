@@ -5,17 +5,17 @@ English | [中文](README.zh.md)
 Automation-oriented [Agent Client Protocol](https://agentclientprotocol.com) server over JSON-RPC stdio. It is intended for parent agents, subagent providers, and other programmatic clients, not as the product UI.
 
 ```sh
-pnpm run demo:acp             # needs DEEPSEEK_API_KEY (repo-root .env or env)
+pnpm run demo:acp             # needs HIVEFORGE_API_KEY (repo-root .env or env)
 pnpm run demo:code-mode       # same protocol with the Code Mode tool transport
 ```
 
-The leaf loads the ACP app, DeepSeek adapter, sandboxed bash and filesystem stacks, one-shot approval policy, compaction, subagents, workflows, hooks, a derived session-query index, and repeat guard. The app creates one fresh agent per `session/new`, persists sessions to JSONL, and keeps stdout protocol-pure. Optional overlays add session queries, filesystem spill storage, Code Mode, or web fetching.
+The leaf loads the ACP app, HiveForge adapter, sandboxed bash and filesystem stacks, one-shot approval policy, compaction, subagents, workflows, hooks, a derived session-query index, and repeat guard. The app creates one fresh agent per `session/new`, persists sessions to JSONL, and keeps stdout protocol-pure. Optional overlays add session queries, filesystem spill storage, Code Mode, or web fetching.
 
 ## Protocol channel
 
-Stdout carries only newline-delimited ACP JSON-RPC. `@deepseek-ai/dsh-acp-demo` installs no stdout logger; leaf additions must use stderr for diagnostics.
+Stdout carries only newline-delimited ACP JSON-RPC. `@hiveforge-ai/dsh-acp-demo` installs no stdout logger; leaf additions must use stderr for diagnostics.
 
-The automation contract — supported methods, baseline prompt content, committed-text output, and the intentionally absent UI surfaces — lives in [`@deepseek-ai/dsh-acp`](../../packages/acp/acp/README.md).
+The automation contract — supported methods, baseline prompt content, committed-text output, and the intentionally absent UI surfaces — lives in [`@hiveforge-ai/dsh-acp`](../../packages/acp/acp/README.md).
 
 ## Session workspaces and permissions
 

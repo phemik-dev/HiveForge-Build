@@ -1,23 +1,23 @@
 /**
- * Fresh-process SDK subagent client. Drives one child DeepSeek Harness
- * runtime over stdio JSON-RPC through `@deepseek-ai/dsh-sdk-client` and owns
+ * Fresh-process SDK subagent client. Drives one child HiveForge Harness
+ * runtime over stdio JSON-RPC through `@hiveforge-ai/dsh-sdk-client` and owns
  * cancellation and quiescent disposal. Structure mirrors the ACP backend
- * (`@deepseek-ai/dsh-subagent-acp`): publish after the child handshake,
+ * (`@hiveforge-ai/dsh-subagent-acp`): publish after the child handshake,
  * flatten child failures into stop reasons, tear down to quiescence. The
  * child is spawned BY the SDK client rather than through `ctx.subprocess` —
  * the subprocess seam's documented exception for SDK-managed transports —
  * so this driver applies the seam's shared env scrub itself.
  *
- * @module @deepseek-ai/dsh-subagent-dsh-sdk/run
+ * @module @hiveforge-ai/dsh-subagent-dsh-sdk/run
  */
 
 import { randomUUID } from 'node:crypto'
-import { DeepSeekHarness, type HarnessNotification } from '@deepseek-ai/dsh-sdk-client'
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
-import { SessionId, type SessionEvent, type TurnEndReason } from '@deepseek-ai/dsh-session'
-import type { SubagentResult, SubagentRun, SubagentStartRequest, SubagentStopReason } from '@deepseek-ai/dsh-subagent'
-import { AssistantOutputFold, settleRunResult, subprocessRunHandle } from '@deepseek-ai/dsh-subagent'
-import { scrubbedParentEnv } from '@deepseek-ai/dsh-subprocess'
+import { HiveForgeHarness, type HarnessNotification } from '@hiveforge-ai/dsh-sdk-client'
+import type { ContentBlock } from '@hiveforge-ai/dsh-llm'
+import { SessionId, type SessionEvent, type TurnEndReason } from '@hiveforge-ai/dsh-session'
+import type { SubagentResult, SubagentRun, SubagentStartRequest, SubagentStopReason } from '@hiveforge-ai/dsh-subagent'
+import { AssistantOutputFold, settleRunResult, subprocessRunHandle } from '@hiveforge-ai/dsh-subagent'
+import { scrubbedParentEnv } from '@hiveforge-ai/dsh-subprocess'
 
 /** Resolved spawn spec for an SDK runtime child process (no defaults — see Config). */
 export interface SdkRunSpec {
@@ -39,7 +39,7 @@ export interface SdkRunSpec {
   maxTokens?: number
   /**
    * Extra environment variables to ADD for the child (e.g. the child
-   * runtime's own `DEEPSEEK_API_KEY`, or `DSH_CORDIS_CONFIG`). Merged after
+   * runtime's own `HIVEFORGE_API_KEY`, or `DSH_CORDIS_CONFIG`). Merged after
    * the seam's `scrubbedParentEnv()` base, so an explicit credential or
    * current `DSH_*` fact survives while ambient namesakes never leak.
    */
@@ -115,7 +115,7 @@ export async function startSdkRun(request: SubagentStartRequest, spec: SdkRunSpe
   // (minted below, private to the wire) exists only inside the child process.
   const id = SessionId(randomUUID())
 
-  const harness = new DeepSeekHarness({
+  const harness = new HiveForgeHarness({
     launch: {
       command: spec.command,
       args: spec.args,

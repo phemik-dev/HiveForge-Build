@@ -1,13 +1,13 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import type { Context } from '@deepseek-ai/cordis'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import { defineTool } from '@deepseek-ai/dsh-tools'
+import type { Context } from '@hiveforge-ai/cordis'
+import { CallId } from '@hiveforge-ai/dsh-llm'
+import { defineTool } from '@hiveforge-ai/dsh-tools'
 import type {
   ToolDispatchExecution,
   ToolExecution,
   ToolExecutionInput,
   ToolRunContext,
-} from '@deepseek-ai/dsh-tools'
+} from '@hiveforge-ai/dsh-tools'
 
 function inputAndExecutionContracts(
   input: ToolExecutionInput,

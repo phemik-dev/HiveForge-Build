@@ -3,10 +3,10 @@
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
-import type { SettingsScope, SettingsScopeSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-test-runtime'
+import type { RpcResponse } from '@hiveforge-ai/dsh-api-remotes/client'
+import { createSnapshotStore } from '@hiveforge-ai/dsh-client-runtime/client'
+import type { SettingsScope, SettingsScopeSnapshot } from '@hiveforge-ai/dsh-client-runtime/client'
+import { bindSnapshotSelector } from '@hiveforge-ai/dsh-client-test-runtime'
 import { LegacyImportDialog } from '../src/client/LegacyImportDialog.tsx'
 import type { LegacyImportDialogProps } from '../src/client/LegacyImportDialog.tsx'
 import type { ModelsSettingsState } from '../src/client/store.ts'
@@ -40,7 +40,9 @@ function readyModels(overrides: Partial<ModelsSettingsState> = {}): ModelsSettin
   }
 }
 
-function scopeSnapshot(overrides: Partial<SettingsScopeSnapshot<Record<string, unknown>>> = {}): SettingsScopeSnapshot<Record<string, unknown>> {
+function scopeSnapshot(
+  overrides: Partial<SettingsScopeSnapshot<Record<string, unknown>>> = {},
+): SettingsScopeSnapshot<Record<string, unknown>> {
   return {
     status: 'ready',
     value: {},
@@ -57,7 +59,7 @@ function stubScope(initial: SettingsScopeSnapshot<Record<string, unknown>>) {
   const store = createSnapshotStore(initial)
   const scope: SettingsScope<Record<string, unknown>> = {
     getSnapshot: () => store.getSnapshot(),
-    subscribe: (listener) => store.subscribe(listener),
+    subscribe: listener => store.subscribe(listener),
     set: () => Promise.resolve(),
     unset: () => Promise.resolve(),
   }

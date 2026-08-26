@@ -6,16 +6,16 @@
  */
 
 import { expect } from 'vitest'
-import { FiberState, Inject, RegistryService, ValidationError } from '@deepseek-ai/cordis'
-import type { Context, Plugin } from '@deepseek-ai/cordis'
-import { AttachmentStore } from '@deepseek-ai/dsh-attachment'
+import { FiberState, Inject, RegistryService, ValidationError } from '@hiveforge-ai/cordis'
+import type { Context, Plugin } from '@hiveforge-ai/cordis'
+import { AttachmentStore } from '@hiveforge-ai/dsh-attachment'
 import type {
   ImageAttachmentLimits,
   ImageAttachmentRef,
   SaveImageAttachment,
   StoredImageAttachment,
-} from '@deepseek-ai/dsh-attachment'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
+} from '@hiveforge-ai/dsh-attachment'
+import InvariantRegistry from '@hiveforge-ai/dsh-invariants'
 
 declare global {
   interface ImportMeta {

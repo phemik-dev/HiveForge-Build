@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { ModelSelection } from '@deepseek-ai/dsh-api-remotes/client'
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ModelSelection } from '@hiveforge-ai/dsh-api-remotes/client'
+import { createSnapshotStore } from '@hiveforge-ai/dsh-client-runtime/client'
 import type { ComponentProps } from 'react'
 import type { ModelDirectoryState } from '../src/client/directory.ts'
 import { ModelSelect } from '../src/client/ModelSelect.tsx'
 import { zh } from '../src/client/locales.ts'
-import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import { zh as commonZh } from '@hiveforge-ai/dsh-client-locale/src/locales/zh.ts'
 
 // The seat's key domain is model ∪ common; the stub mirrors the real lookup
 // chain: package dictionary, then common vocabulary, then the key.
@@ -31,12 +31,12 @@ const reasoning = {
 
 function state(overrides: Partial<ModelDirectoryState> = {}): ModelDirectoryState {
   return {
-    current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+    current: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
     routable: true,
     groups: [{
-      id: 'deepseek-official',
+      id: 'hiveforge-official',
       name: 'HiveForge',
-      models: [{ id: 'deepseek-v4-flash', name: 'V4 Flash', reasoning }],
+      models: [{ id: 'hiveforge-v4-flash', name: 'V4 Flash', reasoning }],
     }],
     failures: [],
     status: 'ready',
@@ -74,8 +74,8 @@ describe('ModelSelect reasoning effort', () => {
     fireEvent.click(screen.getByRole('menuitemradio', { name: /Max/ }))
     await waitFor(() => {
       expect(select).toHaveBeenCalledWith({
-        provider: 'deepseek-official',
-        model: 'deepseek-v4-flash',
+        provider: 'hiveforge-official',
+        model: 'hiveforge-v4-flash',
         reasoningEffort: 'max',
       })
       expect(trigger.getAttribute('aria-label')).toBe('选择模型，当前 V4 Flash，推理等级 Max')
@@ -114,7 +114,7 @@ describe('ModelSelect reasoning effort', () => {
 
   it('prompts for a selection when the current model is no longer advertised', () => {
     const directory = createSnapshotStore(state({
-      current: { provider: 'deepseek-official', model: 'removed-model' },
+      current: { provider: 'hiveforge-official', model: 'removed-model' },
     }))
     const select = vi.fn().mockResolvedValue(true)
     render(<ModelSelect
@@ -137,11 +137,11 @@ describe('ModelSelect reasoning effort', () => {
 
   it('announces a rejected selection as a transient toast and keeps the in-menu strip for loads', async () => {
     const groups = [{
-      id: 'deepseek-official',
+      id: 'hiveforge-official',
       name: 'HiveForge',
       models: [
-        { id: 'deepseek-v4-flash', name: 'V4 Flash', reasoning },
-        { id: 'deepseek-v4-pro', name: 'V4 Pro' },
+        { id: 'hiveforge-v4-flash', name: 'V4 Flash', reasoning },
+        { id: 'hiveforge-v4-pro', name: 'V4 Pro' },
       ],
     }]
     const directory = createSnapshotStore<ModelDirectoryState>(state({ groups }))

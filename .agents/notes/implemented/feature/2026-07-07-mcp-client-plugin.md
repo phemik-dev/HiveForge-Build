@@ -14,7 +14,7 @@ The `ToolRuntime` already accepts raw JSON Schema tool definitions (documented i
 
 ### Package
 
-A single package `@deepseek-ai/dsh-mcp-client` at `packages/mcp/mcp-client/`. No capability-seam three-package split — there is no foreseeable second MCP client implementation, and the convention is "don't split preemptively" ([capability seams Agent Note](../architecture/2026-06-13-capability-seams.md)).
+A single package `@hiveforge-ai/dsh-mcp-client` at `packages/mcp/mcp-client/`. No capability-seam three-package split — there is no foreseeable second MCP client implementation, and the convention is "don't split preemptively" ([capability seams Agent Note](../architecture/2026-06-13-capability-seams.md)).
 
 ### SDK
 
@@ -60,7 +60,7 @@ Example `cordis.yml` usage:
 
 ```yaml
 - id: mcp-github
-  name: '@deepseek-ai/dsh-mcp-client'
+  name: '@hiveforge-ai/dsh-mcp-client'
   config:
     serverName: github
     transport: stdio
@@ -70,7 +70,7 @@ Example `cordis.yml` usage:
       GITHUB_TOKEN: !!js process.env.GITHUB_TOKEN
 
 - id: mcp-web
-  name: '@deepseek-ai/dsh-mcp-client'
+  name: '@hiveforge-ai/dsh-mcp-client'
   config:
     serverName: web
     transport: streamable-http
@@ -104,7 +104,7 @@ This server-qualified shape is the de-facto standard among multi-server agent cl
 
 ### Public name normalization
 
-MCP allows tool names up to 128 characters including `.`; the DeepSeek function-name contract allows `[A-Za-z0-9_-]` and at most 64. Public names are normalized deterministically: invalid characters become `_`, and when replacement or truncation changed the name, a 12-hex-char SHA-256 hash of the `(serverName, rawName)` identity is appended so distinct MCP identities can never collapse into the same public name:
+MCP allows tool names up to 128 characters including `.`; the HiveForge function-name contract allows `[A-Za-z0-9_-]` and at most 64. Public names are normalized deterministically: invalid characters become `_`, and when replacement or truncation changed the name, a 12-hex-char SHA-256 hash of the `(serverName, rawName)` identity is appended so distinct MCP identities can never collapse into the same public name:
 
 ```typescript
 function publicToolName(serverName: string, rawName: string): string {
@@ -131,7 +131,7 @@ Tools are never silently skipped; which tools are available never depends on plu
 ### Naming invariants
 
 1. Every MCP tool has the stable identity `(serverName, rawName)`; every active identity has exactly one public name.
-2. Public names are deterministic, globally unique, and satisfy the DeepSeek 64-char `[A-Za-z0-9_-]` contract.
+2. Public names are deterministic, globally unique, and satisfy the HiveForge 64-char `[A-Za-z0-9_-]` contract.
 3. MCP `tools/call` always receives the original raw name.
 4. Connecting, disconnecting, or re-syncing an unrelated server never renames an existing tool.
 5. Registration order never determines which tool is available.
@@ -187,7 +187,7 @@ Rejected. The remote name is untrusted, non-unique across deployments, and chang
 
 ### Preserve multiple TextBlocks in tool result
 
-Rejected. `flattenText()` in the DeepSeek serializer uses `join('')` (no separator) when flattening `ContentBlock[]` to wire format. Multiple text blocks would silently lose inter-block boundaries — a correctness bug. All existing tools return a single TextBlock; the MCP bridge follows suit.
+Rejected. `flattenText()` in the HiveForge serializer uses `join('')` (no separator) when flattening `ContentBlock[]` to wire format. Multiple text blocks would silently lose inter-block boundaries — a correctness bug. All existing tools return a single TextBlock; the MCP bridge follows suit.
 
 ### Replace the canonical MCP result with core `ContentBlock[]`
 

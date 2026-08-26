@@ -6,9 +6,9 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import type { SessionId } from '@deepseek-ai/dsh-session'
-import type { ApiProxy, GoalRef, HostFrame, MuxFrame, RpcMessage, RpcRequest, RpcResponse } from '@deepseek-ai/dsh-host-apiproxy'
-import { InProcessApiClient, RpcId, toFetchHandler } from '@deepseek-ai/dsh-host-apiproxy'
+import type { SessionId } from '@hiveforge-ai/dsh-session'
+import type { ApiProxy, GoalRef, HostFrame, MuxFrame, RpcMessage, RpcRequest, RpcResponse } from '@hiveforge-ai/dsh-host-apiproxy'
+import { InProcessApiClient, RpcId, toFetchHandler } from '@hiveforge-ai/dsh-host-apiproxy'
 
 const sid = (id: string): SessionId => id as SessionId
 
@@ -28,6 +28,7 @@ function scriptedApi(overrides: {
   settings?: Partial<ApiProxy['settings']>
   credentials?: Partial<ApiProxy['credentials']>
   llm?: Partial<ApiProxy['llm']>
+  migration?: Partial<ApiProxy['migration']>
   respond?: ApiProxy['respond']
 } = {}): ApiProxy {
   async function *empty<F>(): AsyncGenerator<RpcRequest<F>> { /* no frames */ }
@@ -41,10 +42,10 @@ function scriptedApi(overrides: {
       history: r => ok(r, {
         events: [],
         hasMore: false,
-        modelSelection: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+        modelSelection: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
       }),
       models: r => ok(r, {
-        current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+        current: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
         routable: true,
         groups: [],
         failures: [],
@@ -127,6 +128,21 @@ function scriptedApi(overrides: {
       models: r => ok(r, { groups: [], failures: [] }),
       discoverModels: err,
       ...overrides.llm,
+    },
+    migration: {
+      preview: r => ok(r, {
+        legacyHome: '/legacy',
+        settingsPath: '/legacy/settings.yaml',
+        credentialsPath: '/legacy/.credentials.yaml',
+        settings: { present: false, namespaces: [] },
+        credentials: { present: false, refs: [], recordCount: 0 },
+      }),
+      apply: r => ok(r, {
+        legacyHome: '/legacy',
+        settings: { imported: [], skipped: [] },
+        credentials: { importedRefs: [], skippedRefs: [], importedRecords: 0, skippedRecords: 0 },
+      }),
+      ...overrides.migration,
     },
     events: { mux: () => empty<MuxFrame>(), host: () => empty<HostFrame>(), ...overrides.events },
     respond: overrides.respond ?? (() => Promise.resolve({ accepted: false as const, reason: 'not-pending' as const })),
@@ -720,7 +736,7 @@ describe('config unary surface', () => {
     const seen: { method: string; payload: unknown }[] = []
     const record = recorderInto(seen)
     const view = {
-      ns: 'llm-deepseek',
+      ns: 'llm-hiveforge',
       schema: { uid: 1, refs: { 1: { type: 'object' } } },
       value: { baseURL: 'https://next' },
       user: { baseURL: 'https://next' },
@@ -735,7 +751,7 @@ describe('config unary surface', () => {
       settingsPath: ['providers', 'openai'],
       active: false,
     }
-    const group = { id: 'deepseek-official', name: 'DeepSeek', models: [{ id: 'deepseek-v4-flash', name: 'Flash' }] }
+    const group = { id: 'hiveforge-official', name: 'HiveForge', models: [{ id: 'hiveforge-v4-flash', name: 'Flash' }] }
     const api = scriptedApi({
       settings: {
         describe: record('settings.describe', r => ok(r, { writable: true, hasDocument: false, namespaces: [view] })),
@@ -760,12 +776,12 @@ describe('config unary surface', () => {
     const described = await c.settings.describe({})
     expect(described.result).toEqual({ ok: true, value: { writable: true, hasDocument: false, namespaces: [view] } })
     expect((await c.settings.openDocument({})).result).toEqual({ ok: true, value: { opened: true } })
-    const updated = await c.settings.update({ ns: 'llm-deepseek', patch: { baseURL: 'https://next' } })
+    const updated = await c.settings.update({ ns: 'llm-hiveforge', patch: { baseURL: 'https://next' } })
     expect(updated.result).toEqual({ ok: true, value: view })
-    const replaced = await c.settings.replace({ ns: 'llm-deepseek', section: {} })
+    const replaced = await c.settings.replace({ ns: 'llm-hiveforge', section: {} })
     expect(replaced.result).toEqual({ ok: true, value: view })
     const mutated = await c.settings.mutate({
-      ns: 'llm-deepseek',
+      ns: 'llm-hiveforge',
       ops: [{ op: 'unset', path: ['baseURL'] }],
       expectedRevision: 0,
     })
@@ -791,9 +807,9 @@ describe('config unary surface', () => {
       'credentials.describe', 'credentials.set', 'credentials.unset',
       'llm.providers', 'llm.models', 'llm.discoverModels',
     ])
-    expect(seen[2]?.payload).toEqual({ ns: 'llm-deepseek', patch: { baseURL: 'https://next' } })
+    expect(seen[2]?.payload).toEqual({ ns: 'llm-hiveforge', patch: { baseURL: 'https://next' } })
     expect(seen[4]?.payload)
-      .toEqual({ ns: 'llm-deepseek', ops: [{ op: 'unset', path: ['baseURL'] }], expectedRevision: 0 })
+      .toEqual({ ns: 'llm-hiveforge', ops: [{ op: 'unset', path: ['baseURL'] }], expectedRevision: 0 })
     expect(seen[6]?.payload).toEqual({ ref: 'OPENAI_API_KEY', value: 'sk-x' })
     // The draft crosses whole, credential included: the host needs it for this
     // one interrogation and stores none of it.

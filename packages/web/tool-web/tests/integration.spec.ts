@@ -9,15 +9,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
 import { AddressInfo } from 'node:net'
-import { Context } from '@deepseek-ai/cordis'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime, { type ToolExecutionResult } from '@deepseek-ai/dsh-tools'
-import WebRuntime from '@deepseek-ai/dsh-web'
-import * as WebFetchLocal from '@deepseek-ai/dsh-web-fetch-http'
-import * as WebSearchExa from '@deepseek-ai/dsh-web-search-exa'
-import * as ToolWeb from '@deepseek-ai/dsh-tool-web'
-import * as TimeoutPolicy from '@deepseek-ai/dsh-tool-call-timeout-policy'
+import { Context } from '@hiveforge-ai/cordis'
+import { CallId } from '@hiveforge-ai/dsh-llm'
+import SystemPrompt from '@hiveforge-ai/dsh-system-prompt'
+import ToolRuntime, { type ToolExecutionResult } from '@hiveforge-ai/dsh-tools'
+import WebRuntime from '@hiveforge-ai/dsh-web'
+import * as WebFetchLocal from '@hiveforge-ai/dsh-web-fetch-http'
+import * as WebSearchExa from '@hiveforge-ai/dsh-web-search-exa'
+import * as ToolWeb from '@hiveforge-ai/dsh-tool-web'
+import * as TimeoutPolicy from '@hiveforge-ai/dsh-tool-call-timeout-policy'
 
 const testToolSignal = new AbortController().signal
 
@@ -97,7 +97,7 @@ describe('web_search integration over the real Exa provider', () => {
       JSON.stringify({ results: [{ url: 'https://result.test', title: 'Result', highlights: ['a highlight'] }] }),
       { status: 200, headers: { 'content-type': 'application/json' } },
     )))
-    const out = await call('web_search', { queries: ['deepseek-official'] })
+    const out = await call('web_search', { queries: ['hiveforge-official'] })
     expect(out.isError).toBe(false)
     expect(out.content.map(b => b.type === 'text' ? b.text : '').join('')).toContain('[Result](https://result.test)')
   })

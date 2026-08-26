@@ -1,5 +1,5 @@
 import { once } from 'node:events'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import {
   CommandExitError,
   FileNotFoundError,
@@ -7,14 +7,14 @@ import {
   type CommandHandle,
   type CommandResult,
   type Sandbox,
-} from '@deepseek-ai/dsh-e2b'
-import type E2BRuntime from '@deepseek-ai/dsh-e2b'
-import type { SubprocessSpawnSpec } from '@deepseek-ai/dsh-subprocess'
-import E2BSubprocessRuntime from '@deepseek-ai/dsh-subprocess-e2b'
+} from '@hiveforge-ai/dsh-e2b'
+import type E2BRuntime from '@hiveforge-ai/dsh-e2b'
+import type { SubprocessSpawnSpec } from '@hiveforge-ai/dsh-subprocess'
+import E2BSubprocessRuntime from '@hiveforge-ai/dsh-subprocess-e2b'
 import * as E2BSubprocessInvariant from '../src/invariant.ts'
 import { E2BBase64Decoder, E2B_OUTPUT_COMPLETE_FRAME, E2BOutputReader } from '../src/output.ts'
 import { E2BSubprocessHandle } from '../src/process.ts'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
+import InvariantRegistry from '@hiveforge-ai/dsh-invariants'
 import { describe, expect, it, vi } from 'vitest'
 
 function commandError(exitCode: number): CommandExitError {
@@ -396,7 +396,7 @@ describe('E2BSubprocessHandle', () => {
         PATH: '/bin',
         'FOO-BAR': 'hyphen-value',
         '--split-string': 'literal-value',
-        DEEPSEEK_API_KEY: 'explicit-secret',
+        HIVEFORGE_API_KEY: 'explicit-secret',
         DSH_MODE: 'test',
         // The seam's tombstone: an explicit undefined removes the ambient entry.
         KEEP: undefined,
@@ -420,7 +420,7 @@ describe('E2BSubprocessHandle', () => {
     })
     const command = fake.commandsSeen.find(value => value.includes('exec "$dsh_e2b_env_bin" -i'))!
     expect(command).toContain('"$dsh_e2b_setsid" --wait -- "$dsh_e2b_bash" -c')
-    expect(command).not.toContain('DEEPSEEK_API_KEY')
+    expect(command).not.toContain('HIVEFORGE_API_KEY')
     expect(command).not.toContain('DSH_MODE')
     expect(command).not.toContain('FOO-BAR')
     expect(command).not.toContain('explicit-secret')
@@ -445,7 +445,7 @@ describe('E2BSubprocessHandle', () => {
       '/workspace/.dsh-e2b/processes/one/stderr.log',
     ])
     expect(fake.writtenFileData.get('/workspace/.dsh-e2b/processes/one/environment')).toBe(
-      'PATH=/bin\0UNICODE=你好\0HOME=/home/user\0FOO-BAR=hyphen-value\0--split-string=literal-value\0DEEPSEEK_API_KEY=explicit-secret\0DSH_MODE=test\0',
+      'PATH=/bin\0UNICODE=你好\0HOME=/home/user\0FOO-BAR=hyphen-value\0--split-string=literal-value\0HIVEFORGE_API_KEY=explicit-secret\0DSH_MODE=test\0',
     )
 
     let piped = ''

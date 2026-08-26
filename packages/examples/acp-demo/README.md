@@ -1,18 +1,18 @@
-# @deepseek-ai/dsh-acp-demo
+# @hiveforge-ai/dsh-acp-demo
 
 English | [中文](README.zh.md)
 
-ACP automation server app: the default agent spine, client-created agents through [`@deepseek-ai/dsh-acp`](../../acp/acp/README.md), JSONL persistence, and semantic checkpointing behind one JSON-RPC stdio bin. Programmatic clients create fresh sessions; this package mounts no human UI.
+ACP automation server app: the default agent spine, client-created agents through [`@hiveforge-ai/dsh-acp`](../../acp/acp/README.md), JSONL persistence, and semantic checkpointing behind one JSON-RPC stdio bin. Programmatic clients create fresh sessions; this package mounts no human UI.
 
 ## Composition
 
 | Plugin | Role |
 |---|---|
-| `@deepseek-ai/dsh-agent-spine-demo` | Providerless agent spine with no pre-created agents; `session/new` creates each agent. |
-| `@deepseek-ai/dsh-session-persistence-jsonl` | Durable session logs used by checkpointing, observability, and snapshot replay. |
-| `@deepseek-ai/dsh-session-checkpoint-policy` | Durability barriers before model calls and top-level tool effects, plus completed-step checkpoints. |
-| `@deepseek-ai/dsh-session-query-sqlite` | Derived exact/FTS session-query service, opened before the ACP transport so leaf consumers are ready for the first model request. |
-| `@deepseek-ai/dsh-acp` | Automation-only ACP transport over stdin/stdout. |
+| `@hiveforge-ai/dsh-agent-spine-demo` | Providerless agent spine with no pre-created agents; `session/new` creates each agent. |
+| `@hiveforge-ai/dsh-session-persistence-jsonl` | Durable session logs used by checkpointing, observability, and snapshot replay. |
+| `@hiveforge-ai/dsh-session-checkpoint-policy` | Durability barriers before model calls and top-level tool effects, plus completed-step checkpoints. |
+| `@hiveforge-ai/dsh-session-query-sqlite` | Derived exact/FTS session-query service, opened before the ACP transport so leaf consumers are ready for the first model request. |
+| `@hiveforge-ai/dsh-acp` | Automation-only ACP transport over stdin/stdout. |
 
 The app does not install commands, user interaction, session navigation, configuration pickers, or a stdout logger. It owns these plugins through one ordered effect so the query service is ready before ACP accepts work and ACP sessions quiesce before checkpointing and persistence detach. Leaf configurations supply LLM, executor, sandbox, approval, filesystem, and model-facing tool plugins.
 
@@ -38,7 +38,7 @@ The app does not install commands, user interaction, session navigation, configu
 | `toolJobs` | owner defaults | Generic background-job control config, or `false`. |
 | `goals` | owner defaults | Persisted same-session goal domain and model tools, or `false`. |
 
-The shipped [`examples/acp-agent/cordis.yml`](../../../examples/acp-agent/cordis.yml) adds the DeepSeek adapter, sandboxed bash and filesystem providers, one-shot approval policy, compaction, subagents, workflows, hooks, and model-facing tools. The app supplies the derived session-query index, while the model-facing query consumer remains an explicit leaf opt-in. Snapshot overlays replace only nondeterministic providers or policy values.
+The shipped [`examples/acp-agent/cordis.yml`](../../../examples/acp-agent/cordis.yml) adds the HiveForge adapter, sandboxed bash and filesystem providers, one-shot approval policy, compaction, subagents, workflows, hooks, and model-facing tools. The app supplies the derived session-query index, while the model-facing query consumer remains an explicit leaf opt-in. Snapshot overlays replace only nondeterministic providers or policy values.
 
 ## Bin
 

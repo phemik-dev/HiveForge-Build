@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { once } from 'node:events'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import {
   CommandExitError,
@@ -9,10 +9,10 @@ import {
   type CommandHandle,
   type CommandResult,
   type Sandbox,
-} from '@deepseek-ai/dsh-e2b'
-import type E2BRuntime from '@deepseek-ai/dsh-e2b'
-import type { SubprocessTerminalSpawnSpec } from '@deepseek-ai/dsh-subprocess'
-import E2BSubprocessRuntime from '@deepseek-ai/dsh-subprocess-e2b'
+} from '@hiveforge-ai/dsh-e2b'
+import type E2BRuntime from '@hiveforge-ai/dsh-e2b'
+import type { SubprocessTerminalSpawnSpec } from '@hiveforge-ai/dsh-subprocess'
+import E2BSubprocessRuntime from '@hiveforge-ai/dsh-subprocess-e2b'
 import { spawnE2BTerminal } from '../src/terminal.ts'
 
 function commandError(exitCode: number): CommandExitError {

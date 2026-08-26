@@ -24,7 +24,13 @@ import type { Api, ApiKeyAuth, Model, Provider, ProviderStreams } from '@earendi
 import { anthropicMessagesApi } from '@earendil-works/pi-ai/api/anthropic-messages.lazy'
 import { openAICompletionsApi } from '@earendil-works/pi-ai/api/openai-completions.lazy'
 import { openAIResponsesApi } from '@earendil-works/pi-ai/api/openai-responses.lazy'
-import { catalogProvider } from './catalog.ts'
+import {
+  catalogProvider,
+  HIVEFORGE_ROUTE,
+  toUpstreamHiveForgeModelId,
+  toUpstreamThinkingFormat,
+  upstreamHiveForgeProviderId,
+} from './catalog.ts'
 
 /**
  * Wire protocols a configured route may name, mapped to pi-ai's lazily loaded
@@ -134,6 +140,36 @@ function routeAuth(spec: ProviderSpec, catalog: Provider | undefined): Provider[
   return { ...catalog.auth, apiKey: harnessApiKeyAuth(spec.displayName) }
 }
 
+function rewriteCompatForDispatch(compat: Model<Api>['compat']): Model<Api>['compat'] {
+  if (compat === undefined) return undefined
+  if (typeof compat !== 'object' || compat === null) return compat
+  if (!('thinkingFormat' in compat)) return compat
+  const current = (compat as { thinkingFormat?: unknown }).thinkingFormat
+  if (current !== 'hiveforge') return compat
+  const mapped = toUpstreamThinkingFormat('hiveforge')
+  if (mapped === undefined) return compat
+  return { ...(compat as Record<string, unknown>), thinkingFormat: mapped } as Model<Api>['compat']
+}
+
+function rewriteModelForDispatch(
+  routeKey: string,
+  baseProviderId: string,
+  model: Model<Api>,
+): Model<Api> {
+  const compat = rewriteCompatForDispatch(model.compat)
+  const rewriteIds = routeKey === HIVEFORGE_ROUTE && baseProviderId === upstreamHiveForgeProviderId()
+  const id = rewriteIds ? toUpstreamHiveForgeModelId(model.id) : model.id
+  const provider = rewriteIds ? baseProviderId : model.provider
+  if (id === model.id && provider === model.provider && compat === model.compat) return model
+  const { compat: _discarded, ...rest } = model as unknown as Record<string, unknown>
+  return {
+    ...rest,
+    id,
+    provider,
+    ...compat === undefined ? {} : { compat },
+  } as Model<Api>
+}
+
 /**
  * Reuse an installed catalog provider with this route's models and identity.
  * Model dispatch stays with the catalog provider, so its API implementations,
@@ -153,8 +189,8 @@ function reuseCatalogProvider(base: Provider, spec: ProviderSpec): Provider {
     getModels: () => spec.models,
     // Delegated rather than copied: the catalog provider stays the receiver, so
     // an implementation holding state on itself keeps working.
-    stream: (model, context, options) => base.stream(model, context, options),
-    streamSimple: (model, context, options) => base.streamSimple(model, context, options),
+    stream: (model, context, options) => base.stream(rewriteModelForDispatch(spec.provider, base.id, model), context, options),
+    streamSimple: (model, context, options) => base.streamSimple(rewriteModelForDispatch(spec.provider, base.id, model), context, options),
   }
 }
 
@@ -181,7 +217,7 @@ export function buildProvider(spec: ProviderSpec): Provider {
       + ` supported protocols are ${supportedProtocols().join(', ')}`,
     )
   }
-  return createProvider({
+  const provider = createProvider({
     id: spec.provider,
     name: spec.displayName,
     ...spec.baseURL === undefined ? {} : { baseUrl: spec.baseURL },
@@ -189,4 +225,17 @@ export function buildProvider(spec: ProviderSpec): Provider {
     models: spec.models,
     api: factory(),
   })
+  return {
+    ...provider,
+    stream: (model, context, options) => provider.stream(
+      rewriteModelForDispatch(spec.provider, provider.id, model),
+      context,
+      options,
+    ),
+    streamSimple: (model, context, options) => provider.streamSimple(
+      rewriteModelForDispatch(spec.provider, provider.id, model),
+      context,
+      options,
+    ),
+  }
 }

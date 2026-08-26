@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-subagent-codex
+# @hiveforge-ai/dsh-subagent-codex
 
 [English](README.md) | 中文
 
@@ -40,18 +40,18 @@
 本包是可选的 Profile Bundle。将它安装进目标 Profile 后重启该 Profile；安装会把官方 wrapper 与一个兼容的原生平台载荷带入该 Profile，而包所声明的 `cordis.patch.yml` 层只注册休眠的 `codex` Host provider，不会启动 Codex 进程。移除该包后，下一次 Profile 启动会撤回这一 provider 及其私有运行时闭包。
 
 ```sh
-dsh plugin --profile <name> add @deepseek-ai/dsh-subagent-codex
-dsh plugin --profile <name> remove @deepseek-ai/dsh-subagent-codex
+dsh plugin --profile <name> add @hiveforge-ai/dsh-subagent-codex
+dsh plugin --profile <name> remove @hiveforge-ai/dsh-subagent-codex
 dsh --profile <name>
 ```
 
 安装决定 Host 可用性，而不是模型权限。Bundle 会提供休眠的默认 `codex` 配置项；Profile 可以替换该配置项的完整 config，也可以挂载更多具有不同 `providerName`、`permissionMode` 与 `env` 的配置项。加载实例本身不会在绑定工具调用前启动 Codex 进程。每个 `dsh-tool-subagent` 配置项指定一个提供方，并需要独立的 `toolName`，因此模型看到的是静态工具，而不是动态提供方选择器。完整 Agent Preset 携带对应的默认产品工具行并设置 `disabled: true`；复制一个 preset 后删除该字段，即可只向由该副本组装的 agent 暴露 `subagent_codex`。其 `one-shot` 策略会让省略 `run_in_background` 或传入 `false` 的调用继续在前台等待，而显式传入 `true` 会返回由父 agent 拥有的 Job ID，供 `job_output` 或 `job_kill` 使用。base host（基础宿主）与完整 preset 已提供通用作业注册表和控制工具。
 
-下列独立组装展示完整的显式能力。基于 `@deepseek-ai/dsh-base` 的 Profile 保留已有 Job 配置项，新增产品提供方与工具配置项，而且不重复挂载 Job 服务。
+下列独立组装展示完整的显式能力。基于 `@hiveforge-ai/dsh-base` 的 Profile 保留已有 Job 配置项，新增产品提供方与工具配置项，而且不重复挂载 Job 服务。
 
 ```yaml
 - id: subagent-codex-safe
-  name: '@deepseek-ai/dsh-subagent-codex'
+  name: '@hiveforge-ai/dsh-subagent-codex'
   config:
     providerName: codex-safe
     permissionMode: never
@@ -59,7 +59,7 @@ dsh --profile <name>
       OPENAI_API_KEY: !!js process.env.OPENAI_API_KEY
 
 - id: subagent-codex-bypass
-  name: '@deepseek-ai/dsh-subagent-codex'
+  name: '@hiveforge-ai/dsh-subagent-codex'
   config:
     providerName: codex-bypass
     permissionMode: dangerously-bypass-approvals-and-sandbox
@@ -69,13 +69,13 @@ dsh --profile <name>
 
 ```yaml
 - id: jobs
-  name: '@deepseek-ai/dsh-jobs-local'
+  name: '@hiveforge-ai/dsh-jobs-local'
 
 - id: tool-jobs
-  name: '@deepseek-ai/dsh-tool-jobs'
+  name: '@hiveforge-ai/dsh-tool-jobs'
 
 - id: tool-subagent-codex-safe
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@hiveforge-ai/dsh-tool-subagent'
   disabled: true
   config:
     provider: codex-safe
@@ -84,7 +84,7 @@ dsh --profile <name>
     maxDepth: provider-managed
 
 - id: tool-subagent-codex-bypass
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@hiveforge-ai/dsh-tool-subagent'
   config:
     provider: codex-bypass
     toolName: subagent_codex_bypass
@@ -136,7 +136,7 @@ Codex 子级会在一个全新的临时线程中，以单个轮次接收这些�
 - **静态选择实例**：Profile 配置项固定提供方名称与工具绑定；调用无法动态选择提供方，而且每个公开工具都需要唯一的 `toolName`。
 - **身份验证与账户状态仍由原生机制管理**：Bundle 会提供 CLI，但不会创建账户、登录、信任项目或改写 Codex 设置；配置与身份验证失败会公开其生命周期阶段与安全的 `unknown` 回退，而不会增加单独的公开分类体系。
 - **委派时必须存在原生平台载荷**：省略 optional dependencies 的安装、不受支持的平台以及缺失或损坏的载荷都会在第一次运行时失败；不会回退到宿主 CLI。
-- **兼容性由开发证据锁定**：若要从已验证的 0.147.0 协议基线升级，必须重新生成上游 schema 证据，并重新运行握手、答案选择、审批、取消、无密钥真实产品以及带密钥的 DeepSeek 随机数测试。
+- **兼容性由开发证据锁定**：若要从已验证的 0.147.0 协议基线升级，必须重新生成上游 schema 证据，并重新运行握手、答案选择、审批、取消、无密钥真实产品以及带密钥的 HiveForge 随机数测试。
 - **没有人工审批路径**：已知的无人值守审批请求会被拒绝，未知服务器请求会以默认拒绝方式使运行失败；三种 Profile 模式都不会创建 DSH 交互通道或逐次调用 allow 策略。
 - **assistant 载荷仅包含最终文本**：失败运行可以额外公开独立的安全诊断；推理、过程说明、中间消息、工具通信、用量信息、原始 stderr 和工作区差异不会进入父会话，通用 Job id、通知与状态来自共享作业运行时。
 - **没有可选的共享能力**：对于本提供方，共享服务会拒绝输出 schema、子任务角色设定、工具筛选和 harness 深度强制约束。

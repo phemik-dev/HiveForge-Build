@@ -16,7 +16,7 @@ Status: implemented
 
 ## 决策
 
-`@deepseek-ai/dsh-timeout` 位于 `packages/util/`（与 `dsh-brand` 同级），负责超时的*计时与分类*这一半；*终止*那一半——硬终止——留在各能力的实现中。它是一个纯函数库，**不是** Cordis 服务或插件：不接收 `ctx`、不注册任何东西、不持有跨调用状态、不发射事件。这里刻意不设中央「超时服务」，因为那样的服务必须知道如何停止每个能力的工作——而这正是微内核要排除在共享层之外的知识，也是 Codex 将 `ExecExpiration` 限定于 exec 族所示范的原则。
+`@hiveforge-ai/dsh-timeout` 位于 `packages/util/`（与 `dsh-brand` 同级），负责超时的*计时与分类*这一半；*终止*那一半——硬终止——留在各能力的实现中。它是一个纯函数库，**不是** Cordis 服务或插件：不接收 `ctx`、不注册任何东西、不持有跨调用状态、不发射事件。这里刻意不设中央「超时服务」，因为那样的服务必须知道如何停止每个能力的工作——而这正是微内核要排除在共享层之外的知识，也是 Codex 将 `ExecExpiration` 限定于 exec 族所示范的原则。
 
 ### 库的对外接口
 
@@ -93,7 +93,7 @@ export function timeoutOf(x: AbortSignal | { reason?: unknown }, code?: string):
 
 - **web_fetch**：工具层保持校验并转发；提供方手写的 controller + `setTimeout` + 手动监听器 + `finally` + `signal.reason` 恢复被替换为提供方自有的 `deadline`/`timeoutOf`。已预先中止的上游信号仍然立即抛出 `WEB_ABORTED`；否则 `fetch` 使用融合后的 `d.signal` 运行，`translateAbortOrNetwork` 根据信号分类抛出的错误（`timeoutOf` → `WEB_FETCH_TIMEOUT`，否则已中止 → `WEB_ABORTED`，否则网络错误 → `WEB_PROVIDER_ERROR`）。公开的错误码约定不变，`TimeoutReason` 永远不会作为公开错误跨越 web seam。
 - **bash**：`resolve()` 将请求钳位为显式规格。前台 `run()` 创建 deadline 并将其信号传给进程执行，后者既有的 abort 监听器执行进程组 kill。执行器将首个 abort 分类为超时或取消。后台启动保持无超时，仅转发上游取消。
-- **LLM（大语言模型）适配器**：`dsh-llm-deepseek` 和 `dsh-llm-pi-ai` 用 `idleWatchdog` 包装实际的传输迭代。配置的五分钟间隔只覆盖尚未结算的提供方 demand，不包括下游消费方在分片之间花费的时间。DeepSeek 直连适配器还会在其 SSE（Server-Sent Events）解析器观察到注释时，对该项尚未结算的 demand 调用 `pulse()`；该注释既不会作为 `StreamChunk` 产出，也不会写入会话日志。pi-ai SDK 不会向其适配器暴露注释活动，因此该路径只能在 SDK 产出值时重新启动定时器。稳定信号在整个调用期间传给 `fetch` 或 SDK，因此超时会关闭底层请求并映射为 `TIMEOUT`，而更早的调用方中止映射为 `ABORTED`。
+- **LLM（大语言模型）适配器**：`dsh-llm-hiveforge` 和 `dsh-llm-pi-ai` 用 `idleWatchdog` 包装实际的传输迭代。配置的五分钟间隔只覆盖尚未结算的提供方 demand，不包括下游消费方在分片之间花费的时间。HiveForge 直连适配器还会在其 SSE（Server-Sent Events）解析器观察到注释时，对该项尚未结算的 demand 调用 `pulse()`；该注释既不会作为 `StreamChunk` 产出，也不会写入会话日志。pi-ai SDK 不会向其适配器暴露注释活动，因此该路径只能在 SDK 产出值时重新启动定时器。稳定信号在整个调用期间传给 `fetch` 或 SDK，因此超时会关闭底层请求并映射为 `TIMEOUT`，而更早的调用方中止映射为 `ABORTED`。
 
 ## 后果
 

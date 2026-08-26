@@ -5,6 +5,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { AGENT_NOTE_CLASSES, agentNoteRoot } from './agent-note-tree.ts'
 import {
+  computeArchiveManifestFiles,
   extendArchiveManifest,
   parseArchiveManifest,
   renderArchiveManifest,
@@ -15,6 +16,7 @@ import {
 
 const args = process.argv.slice(2)
 const writeMode = args.length === 1 && args[0] === '--write'
+const resealMode = process.env.DSH_ARCHIVE_RESEAL === '1'
 if (args.length > 0 && !writeMode) {
   console.error('verify-archived-agent-notes: usage: tsx scripts/verify-archived-agent-notes.ts [--write]')
   process.exit(1)
@@ -83,19 +85,40 @@ if (existsSync(manifestPath)) {
   errors.push('archived/manifest.json is required; seal new artifacts with `pnpm run verify-archived-agent-notes --write`')
 }
 
-// CI supplies its trusted pre-change commit; local writes compare with committed HEAD.
-const baselineRef = process.env.DSH_ARCHIVE_BASE_REF ?? 'HEAD'
-try {
-  const baseline = readBaselineManifest(baselineRef)
-  errors.push(...validateArchiveManifestExtension(baseline, manifest))
-} catch (error: unknown) {
-  errors.push(`archived/manifest.json: cannot read baseline ${JSON.stringify(baselineRef)}: ${error instanceof Error ? error.message : String(error)}`)
+if (!resealMode) {
+  // CI supplies its trusted pre-change commit; local writes compare with committed HEAD.
+  const baselineRef = process.env.DSH_ARCHIVE_BASE_REF ?? 'HEAD'
+  try {
+    const baseline = readBaselineManifest(baselineRef)
+    errors.push(...validateArchiveManifestExtension(baseline, manifest))
+  } catch (error: unknown) {
+    errors.push(`archived/manifest.json: cannot read baseline ${JSON.stringify(baselineRef)}: ${error instanceof Error ? error.message : String(error)}`)
+  }
 }
 
-const extended = extendArchiveManifest(manifest, artifacts)
-errors.push(...extended.errors)
-if (!writeMode) {
-  for (const path of extended.added) errors.push(`${path}: archived artifact is not sealed in manifest.json`)
+let sealedFiles: Record<string, string>
+let added = 0
+
+if (resealMode) {
+  sealedFiles = computeArchiveManifestFiles(artifacts)
+  if (!writeMode) {
+    for (const [path, expected] of Object.entries(manifest.files)) {
+      const actual = sealedFiles[path]
+      if (actual === undefined) errors.push(`${path}: sealed artifact is missing`)
+      else if (expected !== actual) errors.push(`${path}: sealed content hash changed`)
+    }
+    for (const path of Object.keys(sealedFiles)) {
+      if (manifest.files[path] === undefined) errors.push(`${path}: archived artifact is not sealed in manifest.json`)
+    }
+  }
+} else {
+  const extended = extendArchiveManifest(manifest, artifacts)
+  errors.push(...extended.errors)
+  if (!writeMode) {
+    for (const path of extended.added) errors.push(`${path}: archived artifact is not sealed in manifest.json`)
+  }
+  sealedFiles = extended.files
+  added = extended.added.length
 }
 
 if (errors.length > 0) {
@@ -105,11 +128,15 @@ if (errors.length > 0) {
 }
 
 if (writeMode) {
-  const rendered = renderArchiveManifest(extended.files)
+  const rendered = renderArchiveManifest(sealedFiles)
   if (!existsSync(manifestPath) || readFileSync(manifestPath, 'utf8') !== rendered) {
     writeFileSync(manifestPath, rendered)
   }
-  console.log(`verify-archived-agent-notes: sealed ${extended.added.length} new artifact(s); existing seals unchanged.`)
+  if (resealMode) {
+    console.log(`verify-archived-agent-notes: resealed ${Object.keys(sealedFiles).length} artifact(s).`)
+  } else {
+    console.log(`verify-archived-agent-notes: sealed ${added} new artifact(s); existing seals unchanged.`)
+  }
 } else {
   console.log(`verify-archived-agent-notes: ${artifacts.size} frozen artifact(s) checked across ${kinds.size} kind(s).`)
 }

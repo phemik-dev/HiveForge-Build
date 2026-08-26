@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-typert-protocol
+# @hiveforge-ai/dsh-typert-protocol
 
 English | [中文](README.zh.md)
 

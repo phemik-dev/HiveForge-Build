@@ -1,13 +1,13 @@
 {
-  "name": "@deepseek-ai/dsh-compaction-basic",
-  "description": "Token-meter-driven compaction policy and LLM summarization backend for the DeepSeek Harness",
+  "name": "@hiveforge-ai/dsh-compaction-basic",
+  "description": "Token-meter-driven compaction policy and LLM summarization backend for the HiveForge Harness",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/compaction/compaction-basic"
   },
   "type": "module",
@@ -32,39 +32,39 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-compaction": "workspace:^",
-    "@deepseek-ai/dsh-commands": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-token-meter": "workspace:^",
-    "@deepseek-ai/dsh-compaction-tool-result-pruner": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-agent": "workspace:^",
+    "@hiveforge-ai/dsh-compaction": "workspace:^",
+    "@hiveforge-ai/dsh-commands": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-token-meter": "workspace:^",
+    "@hiveforge-ai/dsh-compaction-tool-result-pruner": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "peerDependenciesMeta": {
-    "@deepseek-ai/dsh-compaction-tool-result-pruner": {
+    "@hiveforge-ai/dsh-compaction-tool-result-pruner": {
       "optional": true
     }
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@hiveforge-ai/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop-testkit": "workspace:^",
-    "@deepseek-ai/dsh-compaction": "workspace:^",
-    "@deepseek-ai/dsh-commands": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-llm-retry": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-token-meter": "workspace:^",
-    "@deepseek-ai/dsh-compaction-tool-result-pruner": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/cordis-plugin-include": "workspace:^",
+    "@hiveforge-ai/cordis-plugin-loader": "workspace:^",
+    "@hiveforge-ai/dsh-agent": "workspace:^",
+    "@hiveforge-ai/dsh-agent-loop": "workspace:^",
+    "@hiveforge-ai/dsh-agent-loop-testkit": "workspace:^",
+    "@hiveforge-ai/dsh-compaction": "workspace:^",
+    "@hiveforge-ai/dsh-commands": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-llm": "workspace:^",
+    "@hiveforge-ai/dsh-llm-retry": "workspace:^",
+    "@hiveforge-ai/dsh-session": "workspace:^",
+    "@hiveforge-ai/dsh-token-meter": "workspace:^",
+    "@hiveforge-ai/dsh-compaction-tool-result-pruner": "workspace:^",
+    "@hiveforge-ai/dsh-tools": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   }
 }

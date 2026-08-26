@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-subagent-codex
+# @hiveforge-ai/dsh-subagent-codex
 
 English | [中文](README.zh.md)
 
@@ -40,18 +40,18 @@ Production resolves the `codex` bin declared by its pinned `@openai/codex@0.147.
 This package is an optional Profile Bundle. Install it into the target Profile, then restart that Profile; installation brings the official wrapper and one compatible native platform payload into that Profile, while the declared `cordis.patch.yml` layer registers only the dormant `codex` Host provider and starts no Codex process. Removing the package withdraws that provider and its private runtime closure on the next Profile start.
 
 ```sh
-dsh plugin --profile <name> add @deepseek-ai/dsh-subagent-codex
-dsh plugin --profile <name> remove @deepseek-ai/dsh-subagent-codex
+dsh plugin --profile <name> add @hiveforge-ai/dsh-subagent-codex
+dsh plugin --profile <name> remove @hiveforge-ai/dsh-subagent-codex
 dsh --profile <name>
 ```
 
 Installation controls Host availability, not model permission. The Bundle supplies the dormant default `codex` row; the Profile may replace that row's complete config or mount additional rows with distinct `providerName`, `permissionMode`, and `env` values. Loading an instance starts no Codex process until a bound tool calls it. Each `dsh-tool-subagent` row names one provider and needs its own `toolName`, so the model sees static tools rather than a dynamic provider selector. Full Agent Presets carry a matching default product tool row with `disabled: true`; copy a preset and remove that field to expose `subagent_codex` only to agents composed from the copy. Its `one-shot` policy keeps omitted or `false` `run_in_background` calls in the foreground, while explicit `true` returns a parent-owned Job id for `job_output` or `job_kill`. The base host and full presets already provide the generic Job registry and controls.
 
-The standalone composition below shows the complete explicit capability. A Profile based on `@deepseek-ai/dsh-base` keeps its existing Job rows, adds the product provider and tool rows, and does not mount duplicate Job services.
+The standalone composition below shows the complete explicit capability. A Profile based on `@hiveforge-ai/dsh-base` keeps its existing Job rows, adds the product provider and tool rows, and does not mount duplicate Job services.
 
 ```yaml
 - id: subagent-codex-safe
-  name: '@deepseek-ai/dsh-subagent-codex'
+  name: '@hiveforge-ai/dsh-subagent-codex'
   config:
     providerName: codex-safe
     permissionMode: never
@@ -59,7 +59,7 @@ The standalone composition below shows the complete explicit capability. A Profi
       OPENAI_API_KEY: !!js process.env.OPENAI_API_KEY
 
 - id: subagent-codex-bypass
-  name: '@deepseek-ai/dsh-subagent-codex'
+  name: '@hiveforge-ai/dsh-subagent-codex'
   config:
     providerName: codex-bypass
     permissionMode: dangerously-bypass-approvals-and-sandbox
@@ -69,13 +69,13 @@ The standalone composition below shows the complete explicit capability. A Profi
 
 ```yaml
 - id: jobs
-  name: '@deepseek-ai/dsh-jobs-local'
+  name: '@hiveforge-ai/dsh-jobs-local'
 
 - id: tool-jobs
-  name: '@deepseek-ai/dsh-tool-jobs'
+  name: '@hiveforge-ai/dsh-tool-jobs'
 
 - id: tool-subagent-codex-safe
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@hiveforge-ai/dsh-tool-subagent'
   disabled: true
   config:
     provider: codex-safe
@@ -84,7 +84,7 @@ The standalone composition below shows the complete explicit capability. A Profi
     maxDepth: provider-managed
 
 - id: tool-subagent-codex-bypass
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@hiveforge-ai/dsh-tool-subagent'
   config:
     provider: codex-bypass
     toolName: subagent_codex_bypass
@@ -136,7 +136,7 @@ Append-only: foreground adds one result after the reusable parent prefix, while 
 - **Static instance selection** — Profile rows fix provider names and tool bindings; calls cannot choose a provider dynamically, and every exposed tool needs a unique `toolName`.
 - **Authentication and account state remain native** — the Bundle supplies the CLI but does not create an account, log in, trust a project, or rewrite Codex settings; configuration and authentication failures surface with their lifecycle stage and the safe `unknown` fallback rather than a separate public taxonomy.
 - **The native platform payload is required at delegation time** — installs that omit optional dependencies, unsupported platforms, and missing or damaged payloads fail at the first run; there is no host-CLI fallback.
-- **Compatibility is pinned by development evidence** — upgrading from the verified 0.147.0 protocol baseline requires regenerating upstream schema evidence and rerunning handshake, answer-selection, approval, cancellation, keyless real-product, and credentialed DeepSeek nonce tests.
+- **Compatibility is pinned by development evidence** — upgrading from the verified 0.147.0 protocol baseline requires regenerating upstream schema evidence and rerunning handshake, answer-selection, approval, cancellation, keyless real-product, and credentialed HiveForge nonce tests.
 - **No human approval path** — known unattended approval requests are denied and unknown server requests fail closed; the three Profile modes never create a DSH interaction channel or per-call allow policy.
 - **Assistant payload is final text only** — a failed run may additionally expose the separate safe diagnostic; reasoning, commentary, intermediate messages, tool traffic, usage, raw stderr, and workspace diffs remain outside the parent Session, while generic Job ids, notices, and status come from the shared job runtime.
 - **No optional shared capabilities** — output schemas, child personas, tool filtering, and harness depth enforcement are rejected by the shared service for this provider.

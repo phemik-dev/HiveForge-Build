@@ -1,18 +1,18 @@
 /**
  * `LocalSpillStore`: the host-filesystem implementation of the
- * `@deepseek-ai/dsh-spill` storage seam. Persists a tool's oversized text to a
+ * `@hiveforge-ai/dsh-spill` storage seam. Persists a tool's oversized text to a
  * private, session-scoped file (see `./store.ts` for the traversal-safe naming
  * and exclusive owner-only write) and returns a path locator plus local
  * read/grep retrieval guidance.
  *
- * @module @deepseek-ai/dsh-spill-local
+ * @module @hiveforge-ai/dsh-spill-local
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import { resolve } from 'node:path'
-import z from '@deepseek-ai/schemastery'
-import { SpillLocator, SpillStore } from '@deepseek-ai/dsh-spill'
-import type { SaveTextSpill, SpillRef } from '@deepseek-ai/dsh-spill'
+import z from '@hiveforge-ai/schemastery'
+import { SpillLocator, SpillStore } from '@hiveforge-ai/dsh-spill'
+import type { SaveTextSpill, SpillRef } from '@hiveforge-ai/dsh-spill'
 import { privateRoot, saveTextFile } from './store.ts'
 
 export { encodeSegment, privateRoot, saveTextFile, sessionDir } from './store.ts'

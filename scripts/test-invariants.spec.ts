@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context, FiberState, Service, ValidationError } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import z from '@deepseek-ai/schemastery'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import { Context, FiberState, Service, ValidationError } from '@hiveforge-ai/cordis'
+import Loader from '@hiveforge-ai/cordis-plugin-loader'
+import z from '@hiveforge-ai/schemastery'
+import InvariantRegistry from '@hiveforge-ai/dsh-invariants'
+import type { InvariantInstaller } from '@hiveforge-ai/dsh-invariants'
 import { packageInvariantOwners } from './package-invariants.ts'
 import {
   TEST_INVARIANT_READY_SERVICE,
@@ -13,7 +13,7 @@ import {
   usesManualInvariantTree,
 } from './test-invariants.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@hiveforge-ai/cordis' {
   interface Context {
     testInvariantProbe: TestInvariantProbe
   }

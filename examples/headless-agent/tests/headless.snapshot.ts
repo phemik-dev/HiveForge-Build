@@ -13,12 +13,12 @@ import {
   tokenizeSessionFixtureCwd,
   type HarvestedLog,
   type NormalizeContext,
-} from '@deepseek-ai/dsh-acp-snapshot'
-import { LOADER_SMOKE_TEST_TIMEOUT_MS, runLoaderSmoke } from '@deepseek-ai/dsh-loader-smoke'
+} from '@hiveforge-ai/dsh-acp-snapshot'
+import { LOADER_SMOKE_TEST_TIMEOUT_MS, runLoaderSmoke } from '@hiveforge-ai/dsh-loader-smoke'
 import {
   decompressZstdFrame,
   scanZstdFrames,
-} from '@deepseek-ai/dsh-session-persistence-jsonl/src/zstd.ts'
+} from '@hiveforge-ai/dsh-session-persistence-jsonl/src/zstd.ts'
 import { describe, expect, it } from 'vitest'
 
 const snapshotsDir = join(dirname(fileURLToPath(import.meta.url)), 'snapshots')
@@ -55,7 +55,7 @@ const binScript = fileURLToPath(new URL('./fixtures/headless-driver.ts', import.
 const dshBinScript = fileURLToPath(new URL('../../../apps/cli/src/bin.ts', import.meta.url))
 const tsconfigPath = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
 const reasoningConfigPath = fileURLToPath(new URL('./fixtures/cli.cordis.yml', import.meta.url))
-const deepseekDefaultsConfigPath = fileURLToPath(new URL('./fixtures/deepseek-defaults.cordis.yml', import.meta.url))
+const hiveforgeDefaultsConfigPath = fileURLToPath(new URL('./fixtures/hiveforge-defaults.cordis.yml', import.meta.url))
 const headlessOverlayPath = fileURLToPath(new URL('./fixtures/headless-profile.cordis.yml', import.meta.url))
 const headlessSessionExpected = join(snapshotsDir, 'headless-profile', 'session.expected.jsonl')
 const headlessFailureExpected = join(snapshotsDir, 'headless-profile', 'stderr.expected.txt')
@@ -93,14 +93,14 @@ function projectSessionFixture(rawLog: string): string {
   }).join('\n')
 }
 
-interface DeepSeekDefaultsServer {
+interface HiveForgeDefaultsServer {
   readonly url: string
   readonly requests: JsonObject[]
   close(): Promise<void>
 }
 
-/** Serve one deterministic DeepSeek-compatible response while retaining its request body. */
-async function deepseekDefaultsServer(): Promise<DeepSeekDefaultsServer> {
+/** Serve one deterministic HiveForge-compatible response while retaining its request body. */
+async function hiveforgeDefaultsServer(): Promise<HiveForgeDefaultsServer> {
   const requests: JsonObject[] = []
   const server = createServer((request: IncomingMessage, response: ServerResponse) => {
     let body = ''
@@ -128,7 +128,7 @@ async function deepseekDefaultsServer(): Promise<DeepSeekDefaultsServer> {
   })
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
   const address = server.address()
-  if (address === null || typeof address === 'string') throw new Error('DeepSeek defaults snapshot server has no port')
+  if (address === null || typeof address === 'string') throw new Error('HiveForge defaults snapshot server has no port')
   return {
     url: `http://127.0.0.1:${address.port}`,
     requests,
@@ -336,7 +336,7 @@ describe('headless stream-json snapshots', () => {
         const retries = records.filter(record => record.type === 'llm/retry')
         expect(retries).toHaveLength(1)
         expect(retries[0]?.data).toMatchObject({
-          provider: 'deepseek-official',
+          provider: 'hiveforge-official',
           mode: 'normal',
           policyKey: '["normal",1,["RATE_LIMIT"],1,1,0]',
           retry: 1,
@@ -436,8 +436,8 @@ describe('headless stream-json snapshots', () => {
       tsconfigPath,
       env: {
         // First-run posture: no key in the environment, none under ./.dsh.
-        DEEPSEEK_API_KEY: '',
-        DEEPSEEK_BASE_URL: '',
+        HIVEFORGE_API_KEY: '',
+        HIVEFORGE_BASE_URL: '',
         NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' '),
       },
       prepare: (cwd) => { runCwd = cwd },
@@ -455,9 +455,9 @@ describe('headless stream-json snapshots', () => {
     // environment, and stops there: configuration carries the reference, so
     // there is no literal-key escape hatch left to offer.
     expect(normalized).toContain(
-      'store DEEPSEEK_API_KEY through the credentials service (the web Models page writes it),',
+      'store HIVEFORGE_API_KEY through the credentials service (the web Models page writes it),',
     )
-    expect(normalized).toContain('or export DEEPSEEK_API_KEY in the launching environment')
+    expect(normalized).toContain('or export HIVEFORGE_API_KEY in the launching environment')
     expect(normalized).not.toContain('as a last resort')
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 
@@ -476,8 +476,8 @@ describe('headless stream-json snapshots', () => {
         // A key that exists but no HTTP header can carry — the paste the
         // credential guard exists for: without it, `fetch` refuses to build
         // the header and the turn ends on a retried ByteString TypeError.
-        DEEPSEEK_API_KEY: 'sk-\u{1F600}pasted-from-a-chat-window',
-        DEEPSEEK_BASE_URL: '',
+        HIVEFORGE_API_KEY: 'sk-\u{1F600}pasted-from-a-chat-window',
+        HIVEFORGE_BASE_URL: '',
         NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' '),
       },
       prepare: (cwd) => { runCwd = cwd },
@@ -490,7 +490,7 @@ describe('headless stream-json snapshots', () => {
     // The durable failure names the reference to correct and the writer that
     // usually owns it, and stays true in a composition that mounts no Models
     // page at all.
-    expect(normalized).toContain('the API key resolved from DEEPSEEK_API_KEY contains characters')
+    expect(normalized).toContain('the API key resolved from HIVEFORGE_API_KEY contains characters')
     expect(normalized).toContain('the web Models page writes it')
     // Neither the key nor its transport-level symptom (the ByteString error)
     // may reach the user: the code point of one character is still the key.
@@ -539,24 +539,24 @@ describe('headless stream-json snapshots', () => {
     `)
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 
-  it('keeps provider comments alive and sends DeepSeek defaults through the one-shot app', async () => {
-    const server = await deepseekDefaultsServer()
+  it('keeps provider comments alive and sends HiveForge defaults through the one-shot app', async () => {
+    const server = await hiveforgeDefaultsServer()
     try {
       const result = await runLoaderSmoke({
-        label: 'DeepSeek adapter defaults headless stream-json snapshot',
-        tempDirPrefix: 'headless-snapshot-deepseek-defaults-',
+        label: 'HiveForge adapter defaults headless stream-json snapshot',
+        tempDirPrefix: 'headless-snapshot-hiveforge-defaults-',
         binScript,
         libBinScript: binScript,
-        configPath: deepseekDefaultsConfigPath,
+        configPath: hiveforgeDefaultsConfigPath,
         binArgs: [
-          deepseekDefaultsConfigPath,
+          hiveforgeDefaultsConfigPath,
           'return the deterministic response',
         ],
         tsconfigPath,
         env: {
           // Configuration carries only the reference; the key rides the
           // launching environment, which is the whole credential plane here.
-          DEEPSEEK_API_KEY: 'snapshot-key',
+          HIVEFORGE_API_KEY: 'snapshot-key',
           DSH_SNAPSHOT_BASE_URL: server.url,
           NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' '),
         },
@@ -578,8 +578,8 @@ describe('headless stream-json snapshots', () => {
       expect(header?.config).toMatchInlineSnapshot(`
         {
           "maxTokens": 256000,
-          "model": "deepseek-v4-flash",
-          "provider": "deepseek-official",
+          "model": "hiveforge-v4-flash",
+          "provider": "hiveforge-official",
           "reasoningEffort": "low",
         }
       `)
