@@ -12,13 +12,13 @@
  * strings, and it models global+shadow named registries — this is a
  * per-session singleton with no global layer to merge.
  */
-import { Service } from '@deepseek-ai/cordis'
-import type { Context } from '@deepseek-ai/cordis'
-import type { ConnectionHandle, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SessionRuntime } from '@deepseek-ai/dsh-client-runtime/client'
+import { Service } from '@hiveforge-ai/cordis'
+import type { Context } from '@hiveforge-ai/cordis'
+import type { ConnectionHandle, SessionId } from '@hiveforge-ai/dsh-api-remotes/client'
+import type { SessionRuntime } from '@hiveforge-ai/dsh-client-runtime/client'
 import { ModelDirectory } from './directory.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@hiveforge-ai/cordis' {
   interface Context {
     modelDirectories: ModelDirectoryResolver
   }

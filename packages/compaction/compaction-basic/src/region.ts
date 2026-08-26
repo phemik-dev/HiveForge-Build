@@ -2,7 +2,7 @@
  * Surface retention selection and the shared log-recorded compaction
  * transaction for automatic open-turn and manual idle-session compaction.
  *
- * @module @deepseek-ai/dsh-compaction-basic/region
+ * @module @hiveforge-ai/dsh-compaction-basic/region
  */
 
 import { randomUUID } from 'node:crypto'
@@ -13,14 +13,14 @@ import {
   compactCheckpointSource,
   toolPairingBalancedAfter,
   toolPairingBalancedBefore,
-} from '@deepseek-ai/dsh-compaction'
-import type { CompactionResult } from '@deepseek-ai/dsh-compaction'
-import type { CommandId } from '@deepseek-ai/dsh-commands/brand'
-import { createUserMessage, errorChain } from '@deepseek-ai/dsh-llm'
-import type { Message, UserMessage } from '@deepseek-ai/dsh-llm'
-import type { TokenMeasurement, TokenMeter } from '@deepseek-ai/dsh-token-meter'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import type { Agent } from '@deepseek-ai/dsh-agent'
+} from '@hiveforge-ai/dsh-compaction'
+import type { CompactionResult } from '@hiveforge-ai/dsh-compaction'
+import type { CommandId } from '@hiveforge-ai/dsh-commands/brand'
+import { createUserMessage, errorChain } from '@hiveforge-ai/dsh-llm'
+import type { Message, UserMessage } from '@hiveforge-ai/dsh-llm'
+import type { TokenMeasurement, TokenMeter } from '@hiveforge-ai/dsh-token-meter'
+import type { Session, SessionEvent } from '@hiveforge-ai/dsh-session'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
 import { frameSummary } from './summarizer.ts'
 import type { SummarizationInput, SummaryResult } from './summarizer.ts'
 

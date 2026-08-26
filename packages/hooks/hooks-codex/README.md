@@ -1,8 +1,8 @@
-# @deepseek-ai/dsh-hooks-codex
+# @hiveforge-ai/dsh-hooks-codex
 
 English | [中文](README.zh.md)
 
-A cordis plugin that runs the supported subset of a user's existing **Codex** hook config on the harness's canonical interception points. The **Codex dialect** half of the hooks subsystem. The dialect-agnostic primitives come from [`@deepseek-ai/dsh-hook-protocol`](../hook-protocol/README.md); this bridge owns the Codex-shaped payloads, matcher mode, and decision mapping.
+A cordis plugin that runs the supported subset of a user's existing **Codex** hook config on the harness's canonical interception points. The **Codex dialect** half of the hooks subsystem. The dialect-agnostic primitives come from [`@hiveforge-ai/dsh-hook-protocol`](../hook-protocol/README.md); this bridge owns the Codex-shaped payloads, matcher mode, and decision mapping.
 
 This bridge implements a deliberate subset of Codex's current hook protocol:
 
@@ -17,10 +17,10 @@ A native cordis plugin could do everything this bridge does, more powerfully; th
 ## Config
 
 ```ts
-import type { Config } from '@deepseek-ai/dsh-hooks-codex'
+import type { Config } from '@hiveforge-ai/dsh-hooks-codex'
 const config: Config = {
   configPath: '/path/to/.codex/hooks.json', // required
-  model: 'deepseek-v4',                      // optional: stamped on every payload (Codex includes `model`)
+  model: 'hiveforge-v4',                      // optional: stamped on every payload (Codex includes `model`)
   defaultTimeoutMs: 600_000,                 // optional: per-hook timeout when a hook sets none
   stderrSummaryMaxChars: 500,                // optional: char cap on the hook/result event's persisted stderr summary
 }
@@ -31,7 +31,7 @@ In a `cordis.yml`:
 ```yaml
 - dsh-hooks-codex:
     configPath: ./.codex/hooks.json
-    model: deepseek-v4
+    model: hiveforge-v4
 ```
 
 The config is parsed **once** at load. `configPath` is **process-level** — a relative path resolves against the process launch cwd at load time, not per-session (`TODO(per-session-hook-config)`). A read/parse failure is contained (logs + registers nothing); an invalid regex matcher on an event that consumes matchers is one such failure and reports its pattern and event. Only sync `type: 'command'` hooks run — a non-command or `async: true` hook is parsed-and-skipped with a warning. A hook accepts `timeout` or the `timeoutSec` alias; one that sets neither runs under the protocol's reference default (`DEFAULT_HOOK_TIMEOUT_MS` from `dsh-hook-protocol`, 10 minutes). Events outside the five bridge-supported points are dropped at parse.

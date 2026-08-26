@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-directory-picker-browse`.
- * @module @deepseek-ai/dsh-client-ui-directory-picker-browse/invariant
+ * Package-owned invariant companion for `@hiveforge-ai/dsh-client-ui-directory-picker-browse`.
+ * @module @hiveforge-ai/dsh-client-ui-directory-picker-browse/invariant
  */
 
 /* jscpd:ignore-start */
-import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { Context } from '@hiveforge-ai/cordis'
+import type { InvariantInstaller } from '@hiveforge-ai/dsh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-directory-picker-browse'
+const PACKAGE_NAME = '@hiveforge-ai/dsh-client-ui-directory-picker-browse'
 
 /** Cordis companion plugin name. */
 export const name = 'client-ui-directory-picker-browse-invariant'

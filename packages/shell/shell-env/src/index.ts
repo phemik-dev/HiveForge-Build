@@ -5,18 +5,18 @@
  * the registry itself while plugins can register additional, enumerable facts
  * with effect-scoped disposal.
  *
- * @module @deepseek-ai/dsh-shell-env
+ * @module @hiveforge-ai/dsh-shell-env
  */
 
-import { Service, type Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
-import { DSH_ENV_PREFIX } from '@deepseek-ai/dsh-shell'
-import type { DshEnvironment, DshEnvironmentKey } from '@deepseek-ai/dsh-shell'
-import { DSH_HOME_ENV, resolveDshHome } from '@deepseek-ai/dsh-home-paths'
-import type { ToolExecution } from '@deepseek-ai/dsh-tools'
-import type {} from '@deepseek-ai/dsh-session-persistence'
+import { Service, type Context } from '@hiveforge-ai/cordis'
+import z from '@hiveforge-ai/schemastery'
+import { DSH_ENV_PREFIX } from '@hiveforge-ai/dsh-shell'
+import type { DshEnvironment, DshEnvironmentKey } from '@hiveforge-ai/dsh-shell'
+import { DSH_HOME_ENV, resolveDshHome } from '@hiveforge-ai/dsh-home-paths'
+import type { ToolExecution } from '@hiveforge-ai/dsh-tools'
+import type {} from '@hiveforge-ai/dsh-session-persistence'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@hiveforge-ai/cordis' {
   interface Context {
     shellEnv: ShellEnvRegistry
   }
@@ -27,7 +27,7 @@ export const inject: string[] = []
 
 /** Plugin config (all optional — the built-in facts resolve without defaults). */
 export interface Config {
-  /** DeepSeek Harness home directory exposed as `DSH_HOME`; defaults to `$DSH_HOME` or `~/.dsh`. */
+  /** HiveForge Harness home directory exposed as `DSH_HOME`; defaults to `$DSH_HOME` or `~/.dsh`. */
   dshHome?: string
 }
 

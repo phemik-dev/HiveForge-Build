@@ -10,7 +10,7 @@ Two integration mistakes broke ACP despite full unit coverage: a default export 
 
 ## Summary
 
-The ACP server (`examples/acp-agent`, `@deepseek-ai/dsh-acp`) crashed the instant a real editor (Zed) connected: the first `session/new` request returned `Internal error: cannot get property "agents" without inject`, and `session/load` returned the same for `sessionPersistence`. The bridge was completely non-functional in production despite 178 green unit tests and 100% line coverage. Two independent bugs were hiding behind the same error string, and the test suite missed both for the same reason: every test mounted the plugin through a path that did not exercise how it actually loads or how its services actually resolve.
+The ACP server (`examples/acp-agent`, `@hiveforge-ai/dsh-acp`) crashed the instant a real editor (Zed) connected: the first `session/new` request returned `Internal error: cannot get property "agents" without inject`, and `session/load` returned the same for `sessionPersistence`. The bridge was completely non-functional in production despite 178 green unit tests and 100% line coverage. Two independent bugs were hiding behind the same error string, and the test suite missed both for the same reason: every test mounted the plugin through a path that did not exercise how it actually loads or how its services actually resolve.
 
 ## Impact
 
@@ -26,7 +26,7 @@ The ACP server could not create or load a single session — the two RPCs an edi
 
 ## Root cause #1 — `export default apply` drops the plugin's `inject` (broke `session/new`)
 
-`packages/acp/acp/src/index.ts` is a *namespace plugin*: it exports `name`, `inject`, `Config`, and `apply` as separate named exports, as every other plugin in the repo does (`invariants`, `llm-deepseek`, `tool-bash`, `tui`, …). But it *also* ended with one extra line no other plugin had:
+`packages/acp/acp/src/index.ts` is a *namespace plugin*: it exports `name`, `inject`, `Config`, and `apply` as separate named exports, as every other plugin in the repo does (`invariants`, `llm-hiveforge`, `tool-bash`, `tui`, …). But it *also* ended with one extra line no other plugin had:
 
 ```ts ignore-check
 export const name = 'acp'

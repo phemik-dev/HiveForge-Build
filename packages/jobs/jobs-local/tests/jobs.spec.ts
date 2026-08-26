@@ -1,15 +1,15 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import AgentRegistry, { Inbox } from '@deepseek-ai/dsh-agent'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { bindScopeParent, createScope, scopeOf } from '@deepseek-ai/dsh-scope'
-import type { ScopeKey } from '@deepseek-ai/dsh-scope'
-import { JobId } from '@deepseek-ai/dsh-jobs'
-import type { JobHooks, JobKind, JobOutcome, JobSnapshot, JobStart } from '@deepseek-ai/dsh-jobs'
-import LocalJobRegistry, { type Config as JobsConfig } from '@deepseek-ai/dsh-jobs-local'
+import { Context } from '@hiveforge-ai/cordis'
+import { Session, SessionId } from '@hiveforge-ai/dsh-session'
+import AgentRegistry, { Inbox } from '@hiveforge-ai/dsh-agent'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
+import { bindScopeParent, createScope, scopeOf } from '@hiveforge-ai/dsh-scope'
+import type { ScopeKey } from '@hiveforge-ai/dsh-scope'
+import { JobId } from '@hiveforge-ai/dsh-jobs'
+import type { JobHooks, JobKind, JobOutcome, JobSnapshot, JobStart } from '@hiveforge-ai/dsh-jobs'
+import LocalJobRegistry, { type Config as JobsConfig } from '@hiveforge-ai/dsh-jobs-local'
 
-declare module '@deepseek-ai/dsh-jobs' {
+declare module '@hiveforge-ai/dsh-jobs' {
   interface JobKindMap {
     workflow: 'workflow'
   }
@@ -119,7 +119,7 @@ describe('LocalJobRegistry.start', () => {
     const ctx = new Context()
     await ctx.plugin(LocalJobRegistry)
     expect(() => ctx.jobs.start(producer().spec))
-      .toThrow('background jobs unavailable: no job controller serves this agent (load @deepseek-ai/dsh-tool-jobs in its composition)')
+      .toThrow('background jobs unavailable: no job controller serves this agent (load @hiveforge-ai/dsh-tool-jobs in its composition)')
   })
 
   it('refuses an owner whose own composition attaches no controller', async () => {

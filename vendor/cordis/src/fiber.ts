@@ -1,5 +1,5 @@
-import { defineProperty, isNullable } from '@deepseek-ai/cosmokit'
-import type { Awaitable, Dict } from '@deepseek-ai/cosmokit'
+import { defineProperty, isNullable } from '@hiveforge-ai/cosmokit'
+import type { Awaitable, Dict } from '@hiveforge-ai/cosmokit'
 import { Context } from './context.ts'
 import type { Plugin } from './registry.ts'
 import { buildOuterStack, composeError, DisposableList, getTraceable, isConstructor, isObject, symbols } from './utils.ts'

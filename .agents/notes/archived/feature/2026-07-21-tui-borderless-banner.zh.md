@@ -12,7 +12,7 @@ Archived: 2026-07-26
 ## Decision
 
 - `HeaderComponent` 及其从左到右的扫入动画回归，但以**无边框**方式渲染：没有 `╭─╮`/`╰─╯` 边角，也没有 `│` 侧边。每一行都是一个前导空格加上经 `truncateToWidth` 裁剪的内容，因此扫入的宽度裁剪永远不会撕裂转义序列，也不绘制任何固定边框。扫入大约经过 24 帧完成，每帧间隔 15 ms。
-- 头部承载标题（`DEEPSEEK HARNESS`）、一条 `<model>  •  <session-id>` 详情行，以及——当设置了 `welcome` 时——一条弱化的副标题。`welcome` 未设置时头部只有标题加详情：不含固定或随机标语。
+- 头部承载标题（`HIVEFORGE HARNESS`）、一条 `<model>  •  <session-id>` 详情行，以及——当设置了 `welcome` 时——一条弱化的副标题。`welcome` 未设置时头部只有标题加详情：不含固定或随机标语。
 - 模型**同时**保留在页脚的左段，因此在短暂的横幅滚出视野后，会话使用的模型仍可一瞥可见。
 - `welcome` 恢复为横幅副标题；transcript 第一行的通知从 `rebuildTranscript` 中移除。
 - 仅当 `welcome` 未设置时才播放扫入动画。配置了 `welcome` 会立即渲染整个横幅，使 fixture 和快照保持帧确定性。扫入在 `ui.start()` 成功后启动，并经与之前相同的 `detachListeners` 路径通过 `stopBannerReveal` 清理；后者还会重置裁剪，使扫入中途被销毁的头部重新完整渲染。
@@ -40,7 +40,7 @@ Archived: 2026-07-26
 - 模型现在在启动时出现两次——横幅详情与页脚——这是有意的冗余：横幅短暂，页脚常驻。
 - `/clear` 清空 transcript 但不清头部，因此横幅及其配置的副标题在 `/clear` 后存活，不同于基于 transcript 的欢迎行。
 - 全部 pi-tui 终端快照与 examples/tui-agent 回放快照重新录制（`test:snapshot:refresh`）：横幅行以无盒子字符方式回归；页脚行保留模型前缀。
-- 一切锚定横幅缺失的内容改为锚定其存在：PTY 冒烟测试以详情行的 `main-session-` id 为启动标记（它在扫入后段才被揭示），并断言 `DEEPSEEK`/`HARNESS` 出现且无盒子角。
+- 一切锚定横幅缺失的内容改为锚定其存在：PTY 冒烟测试以详情行的 `main-session-` id 为启动标记（它在扫入后段才被揭示），并断言 `HIVEFORGE`/`HARNESS` 出现且无盒子角。
 
 ## Testing
 

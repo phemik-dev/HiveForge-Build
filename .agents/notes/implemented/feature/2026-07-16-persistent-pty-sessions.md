@@ -102,14 +102,14 @@ The example composition remains opt-in and safe by default:
 
 ```yaml
 plugins:
-  '@deepseek-ai/dsh-sandbox-local':
-  '@deepseek-ai/dsh-sandbox-policy':
+  '@hiveforge-ai/dsh-sandbox-local':
+  '@hiveforge-ai/dsh-sandbox-policy':
     config:
       mode: workspace-write
       workspaceRoot: .
-  '@deepseek-ai/dsh-terminal':
-  '@deepseek-ai/dsh-subprocess-local':
-  '@deepseek-ai/dsh-terminal-bash':
+  '@hiveforge-ai/dsh-terminal':
+  '@hiveforge-ai/dsh-subprocess-local':
+  '@hiveforge-ai/dsh-terminal-bash':
     config:
       scrollbackLines: 10000
       scrollbackMaxBytes: 4194304
@@ -120,7 +120,7 @@ plugins:
       handoffGraceMs: 500
       timeoutMs: 30000
       disposeGraceMs: 3000
-  '@deepseek-ai/dsh-tool-terminal':
+  '@hiveforge-ai/dsh-tool-terminal':
     config:
       enableRunInBackground: true
       maxResultBytes: 262144

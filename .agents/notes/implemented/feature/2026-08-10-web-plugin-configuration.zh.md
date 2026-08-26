@@ -18,11 +18,11 @@ Status: implemented
 
 **分层不变。** 一个分节按 schema 默认值 → 插件的组装条目 → 用户层解析。每个插件把自己的 `cordis.yml` 条目作为 `base` 传入，并通过 source thunk 读取配置，因此存储的变更会作用于下一次使用，而脱离的 settings 提供方会让组装条目继续运行。schema 无法表达的约束——正有限、`graceMs` 的定时器上界、并行上限必须是正整数——成为分节的校验器，因此错误的值在写入时被拒绝，而不是到下一条命令时才失败。
 
-**shell 命名空间命名的是能力，而非某个实现。** `SHELL_SETTINGS_NAMESPACE` 由 `@deepseek-ai/dsh-shell` 导出，因为一个宿主只组装一个 `ctx.shell` 提供方：win32 层会把 POSIX 行换成 pwsh 行，而同时挂载两者会因服务重复注册在加载期失败。因此两个家族都能用自己的 schema 与条目注册同一个命名空间而永不相撞；在平台间携带的 `settings.yaml` 也能在两边继续解析——schemastery 对象会保留当前 schema 未声明的键。
+**shell 命名空间命名的是能力，而非某个实现。** `SHELL_SETTINGS_NAMESPACE` 由 `@hiveforge-ai/dsh-shell` 导出，因为一个宿主只组装一个 `ctx.shell` 提供方：win32 层会把 POSIX 行换成 pwsh 行，而同时挂载两者会因服务重复注册在加载期失败。因此两个家族都能用自己的 schema 与条目注册同一个命名空间而永不相撞；在平台间携带的 `settings.yaml` 也能在两边继续解析——schemastery 对象会保留当前 schema 未声明的键。
 
 **当插件配置大于用户所拥有的部分时，分节就是一个子集。** `agent-loop` 只暴露 `maxParallelToolCalls`；它的 `agents` 数组在服务启动时被消费一次，所以存储在那里的变更只会看起来生效。
 
-**提供方按次投影，而不是固化。** `web-search-deepseek` 交给提供方的是一个 thunk 而非 options 值，因此端点或模型的变更无需重新注册提供方即可作用于下一次搜索——重新注册会让 web seam 的提供方选择以闪断的形式被用户看到。
+**提供方按次投影，而不是固化。** `web-search-hiveforge` 交给提供方的是一个 thunk 而非 options 值，因此端点或模型的变更无需重新注册提供方即可作用于下一次搜索——重新注册会让 web seam 的提供方选择以闪断的形式被用户看到。
 
 **暴露仍是 Host 的白名单。** 这三个命名空间加入 `WEB_SETTINGS_NAMESPACES`；仅有注册依然不会跨越传输边界，而不在该名单中的命名空间会与未注册的命名空间得到完全相同的 `settings-not-exposed`。
 

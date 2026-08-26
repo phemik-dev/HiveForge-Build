@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-llm-replay
+# @hiveforge-ai/dsh-llm-replay
 
 English | [中文](README.zh.md)
 
@@ -34,11 +34,11 @@ Replay keys every call by its calling session id (`GenerateOptions.sessionId`, s
 
 ```yaml
 - id: llm-replay
-  name: '@deepseek-ai/dsh-llm-replay'
+  name: '@hiveforge-ai/dsh-llm-replay'
   config:
     providers:
-      - id: deepseek-official
-        name: DeepSeek
+      - id: hiveforge-official
+        name: HiveForge
         retryPolicy:
           mode: normal
           backoff:
@@ -46,9 +46,9 @@ Replay keys every call by its calling session id (`GenerateOptions.sessionId`, s
             maxDelayMs: 1
             jitterRatio: 0
         models:
-          - id: deepseek-v4-flash
+          - id: hiveforge-v4-flash
             contextWindow: 128000
-          - id: deepseek-v4-pro
+          - id: hiveforge-v4-pro
   # file/overrideFile/childFiles default to $DSH_SNAPSHOT_FILE /
   # $DSH_SNAPSHOT_OVERRIDE / $DSH_SNAPSHOT_CHILD_FILES, set by the snapshot
   # harness per scenario.

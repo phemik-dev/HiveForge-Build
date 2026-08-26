@@ -10,7 +10,7 @@ English | [中文](2026-08-04-configuration-source-ownership.zh.md)
 
 A key stored through the web page stayed shadowed by an older key in the user's own `.env`, because the credential provider compared "the environment" against its file and the environment now included that file. The migration dead end the split was supposed to remove had simply moved.
 
-An endpoint could be redirected by the project. The invoking directory's `.env` is materialized like every other layer, and a base URL decides where a resolved API key is sent — so a `DEEPSEEK_BASE_URL` written into a workspace the model can edit would send the user's own credential, and the prompts carrying their code, to whatever host that file named. Nothing about the flattened view could distinguish that from the operator exporting the same variable.
+An endpoint could be redirected by the project. The invoking directory's `.env` is materialized like every other layer, and a base URL decides where a resolved API key is sent — so a `HIVEFORGE_BASE_URL` written into a workspace the model can edit would send the user's own credential, and the prompts carrying their code, to whatever host that file named. Nothing about the flattened view could distinguish that from the operator exporting the same variable.
 
 And `!!js process.env.X` in the shipped composition made the same value reachable twice: once through the entry config and once through whatever ladder its consumer applied, with the winner decided by layer order rather than by what the value means.
 
@@ -27,7 +27,7 @@ explicit for this run     per-operation override, CLI argument
 > defaults                schema default, provider public default
 ```
 
-Settings sit above composition because that is what the [settings seam](2026-07-28-user-settings-seam.md) does: a plugin registers its cordis entry config as the `base` layer and the user's section layers over it, and the seam cannot tell a value a profile's bundles set from one its user patch layer or a `--patch` overlay set — all arrive as entry config. The product CLI has no lever above stored settings, so a deployment that must pin a field against a user's settings ships its own bin or loader tree, or mounts no settings provider at all. Composition still outranks the environment, so a stale `DEEPSEEK_BASE_URL` in a shell cannot rewrite a configured endpoint.
+Settings sit above composition because that is what the [settings seam](2026-07-28-user-settings-seam.md) does: a plugin registers its cordis entry config as the `base` layer and the user's section layers over it, and the seam cannot tell a value a profile's bundles set from one its user patch layer or a `--patch` overlay set — all arrive as entry config. The product CLI has no lever above stored settings, so a deployment that must pin a field against a user's settings ships its own bin or loader tree, or mounts no settings provider at all. Composition still outranks the environment, so a stale `HIVEFORGE_BASE_URL` in a shell cannot rewrite a configured endpoint.
 
 **Credentials keep a narrower, separate ordering**, and this note does not unify them:
 
@@ -38,7 +38,7 @@ inherited process environment      (read-only, wins)
 > $DSH_HOME/.env
 ```
 
-The launching environment wins because `DEEPSEEK_API_KEY=… dsh`, a CI secret, and a container `-e` are the one override an operator must be able to apply per run without editing machine state, and because it cannot be edited from inside it must be *visibly* read-only. Configuration is meant to carry only the *reference* — which name to resolve — and that name follows the non-secret ordering above.
+The launching environment wins because `HIVEFORGE_API_KEY=… dsh`, a CI secret, and a container `-e` are the one override an operator must be able to apply per run without editing machine state, and because it cannot be edited from inside it must be *visibly* read-only. Configuration is meant to carry only the *reference* — which name to resolve — and that name follows the non-secret ordering above.
 
 **The project the harness is launched in is trusted, by default and without a prompt.** A checkout may carry its own endpoint, its own ordinary variables, and its own key; the key ranks below the managed store, so a key stored through the Models page is never displaced by one a checkout happens to contain. `LaunchEnvironmentSnapshot.getFrom(name, sources)` still searches only the layers a caller names, and omitting one is a refusal rather than a demotion — the mechanism exists for the decisions where a layer must be unreachable, not because the project is one of them today.
 
@@ -60,7 +60,7 @@ The line is that these take effect with no user action, before any turn, outside
 
 ## Alternatives considered
 
-**Unify credentials into the non-secret ordering, by who authored each source.** Attempted and abandoned: it reads well, but the settings seam already fixes composition *below* the user section, so "authored by deployment" is not a tier the seam can express — and moving `.credentials.yaml` above the launching environment would take away the one override CI, containers, and a per-run `DEEPSEEK_API_KEY=…` depend on. Two orderings that each explain their precedence beat one that describes neither accurately.
+**Unify credentials into the non-secret ordering, by who authored each source.** Attempted and abandoned: it reads well, but the settings seam already fixes composition *below* the user section, so "authored by deployment" is not a tier the seam can express — and moving `.credentials.yaml` above the launching environment would take away the one override CI, containers, and a per-run `HIVEFORGE_API_KEY=…` depend on. Two orderings that each explain their precedence beat one that describes neither accurately.
 
 **Withhold routing and credentials from the invoking project until it is explicitly trusted.** Rejected as the product's stance: a checkout is trusted by default, with no prompt and no stored trust record. The residual is real and worth naming — cloning a repository that carries a `.env` naming another endpoint or key routes that session through it — and a later project-trust gate is where that gets addressed, not a rule that makes the common case require ceremony.
 

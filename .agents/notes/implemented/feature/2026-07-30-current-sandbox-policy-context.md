@@ -26,7 +26,7 @@ The earlier real-provider Web fixture quantified the defect in the system-sectio
 
 ## Wording evidence
 
-The wording experiment pre-registered preemptive refusal as its primary endpoint and required the old standing sentence to produce at least one refusal in twelve fresh sessions before any replacement could be judged. On 2026-07-30, commit `2bf41990401b194bd8637f07bbd90c67a9eeac75` ran `deepseek-v4-flash` through the shipped Web composition with the exact positive-control sentence `Bash commands run under the "read-only" file sandbox.` and the current tool-owned attempt guidance. The control produced zero preemptive refusals and zero speculative escalations; all twelve sessions made an ordinary bash call, observed a denial, escalated in the same turn, received approval, and landed the requested file. No sample was excluded.
+The wording experiment pre-registered preemptive refusal as its primary endpoint and required the old standing sentence to produce at least one refusal in twelve fresh sessions before any replacement could be judged. On 2026-07-30, commit `2bf41990401b194bd8637f07bbd90c67a9eeac75` ran `hiveforge-v4-flash` through the shipped Web composition with the exact positive-control sentence `Bash commands run under the "read-only" file sandbox.` and the current tool-owned attempt guidance. The control produced zero preemptive refusals and zero speculative escalations; all twelve sessions made an ordinary bash call, observed a denial, escalated in the same turn, received approval, and landed the requested file. No sample was excluded.
 
 After the cache-safe delivery change, commit `10d4e0ff7b68d38fc4403403b644aac442b97a00` repeated the same twelve-session positive control through the new tail-context channel. It again produced zero preemptive refusals and zero speculative escalations; all twelve sessions made an ordinary first call, observed denial, escalated in the same turn, and received approval. Eight landed the exact requested file, and no sample was excluded.
 
@@ -40,7 +40,7 @@ The cache-safe delivery rework then supplied a separate, non-statistical accepta
 
 **Scan denial history or remember the last narrated mode.** Rejected because denial events describe attempted operations, not authoritative current state, while process-local bookkeeping does not survive resume. The owner can fold the durable policy directly on every request.
 
-**Put current policy in a dynamic system section.** Rejected after real provider evidence showed that a first-time permission switch reduced cache reads to 256 tokens while roughly 14.7k input tokens missed. DeepSeek matches complete prefixes; changing the first wire message prevents reuse of the longer system-plus-history prefix.
+**Put current policy in a dynamic system section.** Rejected after real provider evidence showed that a first-time permission switch reduced cache reads to 256 tokens while roughly 14.7k input tokens missed. HiveForge matches complete prefixes; changing the first wire message prevents reuse of the longer system-plus-history prefix.
 
 **Call `agent.inject()` independently from each policy owner.** Rejected because sibling listener order would define model order, separate messages could expose mismatched intermediate snapshots, and every owner would need its own compaction-retention scan. The existing assembly owner can order contributions and materialize one atomic full snapshot.
 

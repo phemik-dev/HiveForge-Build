@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { spawn } from 'node:child_process'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import { once } from 'node:events'
 import { chmod, mkdir, mkdtemp, rm, stat, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -8,13 +8,13 @@ import { join } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { pathToFileURL } from 'node:url'
 import { DatabaseSync } from 'node:sqlite'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import Include from '@deepseek-ai/cordis-plugin-include'
-import SessionStore, { SessionId, type SessionEvent } from '@deepseek-ai/dsh-session'
+import Loader from '@hiveforge-ai/cordis-plugin-loader'
+import Include from '@hiveforge-ai/cordis-plugin-include'
+import SessionStore, { SessionId, type SessionEvent } from '@hiveforge-ai/dsh-session'
 import SessionPersistenceSqlite, {
   DEFAULT_BUSY_TIMEOUT_MS,
   SCHEMA_VERSION,
-} from '@deepseek-ai/dsh-session-persistence-sqlite'
+} from '@hiveforge-ai/dsh-session-persistence-sqlite'
 import {
   runCoordinatorContract,
   type CoordinatorFixture,
@@ -235,8 +235,8 @@ describe('SessionPersistenceSqlite physical packing', () => {
     const path = await freshDbPath('dsh-sqlite-loader-')
     const configPath = join(path, '..', 'cordis.yml')
     await writeFile(configPath, [
-      "- name: '@deepseek-ai/dsh-session'",
-      "- name: '@deepseek-ai/dsh-session-persistence-sqlite'",
+      "- name: '@hiveforge-ai/dsh-session'",
+      "- name: '@hiveforge-ai/dsh-session-persistence-sqlite'",
       '  config:',
       `    path: ${JSON.stringify(path)}`,
       '',
@@ -249,8 +249,8 @@ describe('SessionPersistenceSqlite physical packing', () => {
     ctx.loader.internal = {
       version: 'sqlite',
       async import(specifier: string) {
-        if (specifier === '@deepseek-ai/dsh-session') return SessionStore
-        if (specifier === '@deepseek-ai/dsh-session-persistence-sqlite') {
+        if (specifier === '@hiveforge-ai/dsh-session') return SessionStore
+        if (specifier === '@hiveforge-ai/dsh-session-persistence-sqlite') {
           return SessionPersistenceSqlite
         }
         throw new Error(`unexpected Loader import: ${specifier}`)

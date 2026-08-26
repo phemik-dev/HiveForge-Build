@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { AttachmentId, AttachmentStore, ImageVariantId } from '@deepseek-ai/dsh-attachment'
+import { Context } from '@hiveforge-ai/cordis'
+import { AttachmentId, AttachmentStore, ImageVariantId } from '@hiveforge-ai/dsh-attachment'
 import type {
   ImageAttachmentLimits,
   ImageAttachmentRef,
@@ -8,12 +8,12 @@ import type {
   RequestImageAttachment,
   SaveImageAttachment,
   StoredImageAttachment,
-} from '@deepseek-ai/dsh-attachment'
-import LlmRuntime, { createUserMessage, CONTEXT_WINDOW_EXCEEDED_CODE, LlmError, ReasoningEffortId, userAgent } from '@deepseek-ai/dsh-llm'
-import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
-import { PiAiAdapter } from '@deepseek-ai/dsh-llm-pi-ai'
-import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
-import { getBuiltinModels } from '@earendil-works/pi-ai/providers/all'
+} from '@hiveforge-ai/dsh-attachment'
+import LlmRuntime, { createUserMessage, CONTEXT_WINDOW_EXCEEDED_CODE, LlmError, ReasoningEffortId, userAgent } from '@hiveforge-ai/dsh-llm'
+import * as LlmPiAi from '@hiveforge-ai/dsh-llm-pi-ai'
+import { PiAiAdapter } from '@hiveforge-ai/dsh-llm-pi-ai'
+import { MAX_TIMER_DELAY_MS } from '@hiveforge-ai/dsh-timeout'
+import { catalogModels } from '../src/catalog.ts'
 import { DEFAULT_MAX_REQUEST_IMAGE_BYTES, resolveProfiles } from '../src/config.ts'
 import { memoryAuth } from './auth-double.ts'
 import { assemble } from './assemble.ts'
@@ -37,7 +37,7 @@ async function harness(baseURL: string, overrides: Record<string, unknown> = {})
   const ctx = new Context()
   await ctx.plugin(LlmRuntime)
   await ctx.plugin(LlmPiAi, {
-    providers: { deepseek: { apiKeyEnv: 'PI_TEST_KEY', baseURL, ...overrides } },
+    providers: { hiveforge: { apiKeyEnv: 'PI_TEST_KEY', baseURL, ...overrides } },
   })
   return ctx
 }
@@ -65,7 +65,7 @@ describe('PiAiAdapter provider routing', () => {
     const server = await mockServer([{ events: textEvents }])
     const ctx = await harness(server.url)
     const result = await assemble(ctx, {
-      model: 'deepseek-v4-flash',
+      model: 'hiveforge-v4-flash',
       messages: [createUserMessage({
         content: [{ type: 'text', text: 'hi' }],
         source: { kind: 'plugin', plugin: 'test' },
@@ -81,18 +81,18 @@ describe('PiAiAdapter provider routing', () => {
     const first = await mockServer([{ events: textEvents }])
     const second = await mockServer([])
     let providers: Record<string, LlmPiAi.PiAiProviderProfile> = {
-      deepseek: { apiKeyEnv: 'PI_TEST_KEY', baseURL: first.url },
+      hiveforge: { apiKeyEnv: 'PI_TEST_KEY', baseURL: first.url },
     }
     const ctx = new Context()
     await ctx.plugin(LlmRuntime)
-    ctx.llm.registerAdapter(['deepseek'], new PiAiAdapter({
+    ctx.llm.registerAdapter(['hiveforge'], new PiAiAdapter({
       profiles: () => resolveProfiles(providers),
       resolveApiKey: () => Promise.resolve('test-key'),
       auth: memoryAuth(),
     }))
 
-    const prepared = await ctx.llm.prepareCall({ provider: 'deepseek', model: 'deepseek-v4-flash' })
-    providers = { deepseek: { apiKeyEnv: 'PI_TEST_KEY', baseURL: second.url } }
+    const prepared = await ctx.llm.prepareCall({ provider: 'hiveforge', model: 'hiveforge-v4-flash' })
+    providers = { hiveforge: { apiKeyEnv: 'PI_TEST_KEY', baseURL: second.url } }
     const chunks: unknown[] = []
     for await (const chunk of prepared.stream({ ...prepared.config, messages: [] })) chunks.push(chunk)
 
@@ -106,7 +106,7 @@ describe('PiAiAdapter provider routing', () => {
     const ctx = await harness(server.url, {
       headers: { 'x-company': 'private', 'User-Agent': 'wrong' },
     })
-    await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(server.headers[0]?.['x-company']).toBe('private')
     expect(server.headers[0]?.['user-agent']).toBe(userAgent())
   })
@@ -123,14 +123,14 @@ describe('PiAiAdapter provider routing', () => {
       thinkingBudgets: { high: 2048 },
     })
     await assemble(ctx, {
-      model: 'deepseek-v4-flash',
+      model: 'hiveforge-v4-flash',
       messages: [],
       temperature: 0.2,
       maxTokens: 77,
       sessionId: 'session-for-pi' as never,
     })
     expect(server.requests[0]).toMatchObject({
-      model: 'deepseek-v4-flash',
+      model: 'hiveforge-v4-flash',
       temperature: 0.2,
       max_completion_tokens: 77,
       thinking: { type: 'enabled' },
@@ -143,14 +143,14 @@ describe('PiAiAdapter provider routing', () => {
     const ctx = await harness(server.url, { reasoning: 'max' })
 
     await assemble(ctx, {
-      model: 'deepseek-v4-flash',
+      model: 'hiveforge-v4-flash',
       reasoningEffort: ReasoningEffortId('high'),
       messages: [],
     })
     expect(server.requests[0]).toMatchObject({ reasoning_effort: 'high' })
 
     await assemble(ctx, {
-      model: 'deepseek-v4-flash',
+      model: 'hiveforge-v4-flash',
       reasoningEffort: ReasoningEffortId('off'),
       messages: [],
     })
@@ -158,7 +158,7 @@ describe('PiAiAdapter provider routing', () => {
     expect(server.requests[1]).not.toHaveProperty('reasoning_effort')
 
     const unsupported = await assemble(ctx, {
-      model: 'deepseek-v4-flash',
+      model: 'hiveforge-v4-flash',
       reasoningEffort: ReasoningEffortId('xhigh'),
       messages: [],
     })
@@ -173,11 +173,11 @@ describe('PiAiAdapter provider routing', () => {
     const server = await mockServer([{ events: textEvents }])
     const ctx = new Context()
     await ctx.plugin(LlmRuntime)
-    ctx.llm.registerAdapter(['deepseek'], adapterOf({
-      deepseek: { apiKeyEnv: 'PI_TEST_KEY', baseURL: server.url },
+    ctx.llm.registerAdapter(['hiveforge'], adapterOf({
+      hiveforge: { apiKeyEnv: 'PI_TEST_KEY', baseURL: server.url },
     }))
 
-    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const result = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
 
     expect(result.message.content).toEqual([{ type: 'text', text: 'hello' }])
   })
@@ -201,7 +201,7 @@ describe('PiAiAdapter provider routing', () => {
   it('reports unsupported stop sequences rather than silently ignoring them', async () => {
     const server = await mockServer([])
     const ctx = await harness(server.url)
-    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [], stop: ['END'] })
+    const result = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [], stop: ['END'] })
     expect(result.finish).toMatchObject({ kind: 'error', failure: { code: 'UNSUPPORTED_OPTION' } })
     expect(server.requests).toEqual([])
   })
@@ -362,14 +362,14 @@ describe('PiAiAdapter provider routing', () => {
   ] as const)('maps HTTP %s failures to %s', async (status, code) => {
     const server = await mockServer([{ status, body: JSON.stringify({ error: { message: `provider ${status}` } }) }])
     const ctx = await harness(server.url)
-    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const result = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(result.finish).toMatchObject({ kind: 'error', failure: { code } })
     expect(server.paths).toEqual(['/chat/completions'])
   })
 
   it('uses the resolved catalog context window for usage-based overflow detection', async () => {
-    const model = getBuiltinModels('deepseek').find(candidate => candidate.id === 'deepseek-v4-flash')
-    if (model === undefined) throw new Error('deepseek-v4-flash missing from pi-ai test catalog')
+    const model = catalogModels('hiveforge').get('hiveforge-v4-flash')
+    if (model === undefined) throw new Error('hiveforge-v4-flash missing from pi-ai test catalog')
     const events = [
       '{"choices":[{"delta":{"role":"assistant","content":""},"index":0,"finish_reason":null}]}',
       JSON.stringify({
@@ -396,7 +396,7 @@ describe('PiAiAdapter provider routing', () => {
     const server = await mockServer([{ events: textEvents, delayMs: 200 }])
     const ctx = await harness(server.url, { streamIdleTimeoutMs: 20 })
 
-    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const result = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(result.finish).toMatchObject({ kind: 'error', failure: { code: 'TIMEOUT' } })
     await Promise.race([
       server.responseClosed,
@@ -473,10 +473,10 @@ describe('provider profile lifecycle', () => {
     const ctx = new Context()
     await ctx.plugin(LlmRuntime)
     await ctx.plugin(LlmPiAi, {
-      providers: { deepseek: {}, openai: {} },
+      providers: { hiveforge: {}, openai: {} },
     })
 
-    await expect(ctx.llm.resolveModelInfo('deepseek', 'deepseek-v4-flash'))
+    await expect(ctx.llm.resolveModelInfo('hiveforge', 'hiveforge-v4-flash'))
       .resolves.toMatchObject({
         reasoning: {
           efforts: [
@@ -506,9 +506,9 @@ describe('provider profile lifecycle', () => {
     const supported = new Context()
     await supported.plugin(LlmRuntime)
     await supported.plugin(LlmPiAi, {
-      providers: { deepseek: { reasoning: 'max' } },
+      providers: { hiveforge: { reasoning: 'max' } },
     })
-    await expect(supported.llm.resolveModelInfo('deepseek', 'deepseek-v4-flash'))
+    await expect(supported.llm.resolveModelInfo('hiveforge', 'hiveforge-v4-flash'))
       .resolves.toMatchObject({ reasoning: { defaultEffort: ReasoningEffortId('max') } })
 
     // A profile level this model cannot take DESCRIBES as no default rather
@@ -519,13 +519,13 @@ describe('provider profile lifecycle', () => {
     const unsupported = new Context()
     await unsupported.plugin(LlmRuntime)
     await unsupported.plugin(LlmPiAi, {
-      providers: { deepseek: { reasoning: 'medium' } },
+      providers: { hiveforge: { reasoning: 'medium' } },
     })
-    const described = await unsupported.llm.resolveModelInfo('deepseek', 'deepseek-v4-flash')
+    const described = await unsupported.llm.resolveModelInfo('hiveforge', 'hiveforge-v4-flash')
     expect(described.reasoning?.defaultEffort).toBeUndefined()
     expect(described.reasoning?.efforts.length).toBeGreaterThan(0)
     await expect(assemble(unsupported, {
-      provider: 'deepseek', model: 'deepseek-v4-flash', messages: [],
+      provider: 'hiveforge', model: 'hiveforge-v4-flash', messages: [],
     })).resolves.toMatchObject({
       finish: { kind: 'error', failure: { code: 'UNSUPPORTED_REASONING_EFFORT' } },
     })
@@ -533,9 +533,9 @@ describe('provider profile lifecycle', () => {
     const disabled = new Context()
     await disabled.plugin(LlmRuntime)
     await disabled.plugin(LlmPiAi, {
-      providers: { deepseek: { reasoning: 'off' } },
+      providers: { hiveforge: { reasoning: 'off' } },
     })
-    await expect(disabled.llm.resolveModelInfo('deepseek', 'deepseek-v4-flash'))
+    await expect(disabled.llm.resolveModelInfo('hiveforge', 'hiveforge-v4-flash'))
       .resolves.toMatchObject({ reasoning: { defaultEffort: ReasoningEffortId('off') } })
   })
 
@@ -629,7 +629,7 @@ describe('provider profile lifecycle', () => {
           baseURL: `${server.url}/v1`,
           // Without the switch pi-ai guesses the dialect from the endpoint
           // URL, and a private gateway's URL says nothing.
-          compat: { thinkingFormat: 'deepseek' },
+          compat: { thinkingFormat: 'openai' },
           models: [{
             id: 'acme-think',
             contextWindow: 65_536,
@@ -759,12 +759,12 @@ describe('provider profile lifecycle', () => {
   })
 
   it('accepts absent credentials for pi-ai ambient authentication', async () => {
-    vi.stubEnv('DEEPSEEK_API_KEY', 'ambient-key')
+    vi.stubEnv('HIVEFORGE_API_KEY', 'ambient-key')
     const server = await mockServer([{ events: textEvents }])
     // A profile that names no reference at all is the one case that defers to
     // pi-ai's own provider-native discovery.
     const ctx = await harness(server.url, { apiKeyEnv: undefined })
-    await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(server.headers[0]?.authorization).toBe('Bearer ambient-key')
   })
 
@@ -772,7 +772,7 @@ describe('provider profile lifecycle', () => {
     vi.stubEnv('PI_CUSTOM_REF_KEY', 'custom-ref-key')
     const server = await mockServer([{ events: textEvents }])
     const ctx = await harness(server.url, { apiKey: undefined, apiKeyEnv: 'PI_CUSTOM_REF_KEY' })
-    await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(server.headers[0]?.authorization).toBe('Bearer custom-ref-key')
   })
 
@@ -781,15 +781,15 @@ describe('provider profile lifecycle', () => {
     // unrelated provider key sits in the environment. Deferring to pi-ai's own
     // discovery here would authenticate as another tenant.
     vi.stubEnv('PI_CUSTOM_REF_KEY', '')
-    vi.stubEnv('DEEPSEEK_API_KEY', 'ambient-key')
+    vi.stubEnv('HIVEFORGE_API_KEY', 'ambient-key')
     const server = await mockServer([{ events: textEvents }])
     const ctx = await harness(server.url, { apiKey: undefined, apiKeyEnv: 'PI_CUSTOM_REF_KEY' })
-    const first = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const first = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(first.finish).toMatchObject({ kind: 'error', failure: { code: 'MISSING_CREDENTIAL' } })
-    const second = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const second = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [] })
     expect(second.finish.kind).toBe('error')
     if (second.finish.kind !== 'error') throw new Error('expected an error finish')
-    expect(second.finish.failure.message).toMatch(/provider route "deepseek".*PI_CUSTOM_REF_KEY/s)
+    expect(second.finish.failure.message).toMatch(/provider route "hiveforge".*PI_CUSTOM_REF_KEY/s)
     expect(server.requests).toHaveLength(0)
   })
 
@@ -873,14 +873,14 @@ describe('provider profile lifecycle', () => {
   })
 
   it('rejects unsupported or unresolved image input before provider I/O', async () => {
-    const adapter = adapterOf({ openai: {}, deepseek: {} })
+    const adapter = adapterOf({ openai: {}, hiveforge: {} })
     const drain = async (options: Parameters<PiAiAdapter['stream']>[0]): Promise<void> => {
       for await (const _chunk of adapter.stream(options)) { /* drain */ }
     }
 
     await expect(drain({
-      provider: 'deepseek',
-      model: 'deepseek-v4-flash',
+      provider: 'hiveforge',
+      model: 'hiveforge-v4-flash',
       messages: [createUserMessage({
         content: [{ type: 'image', attachment: IMAGE_REF }],
         source: { kind: 'plugin', plugin: 'test' },
@@ -928,11 +928,11 @@ describe('abort wiring', () => {
     const message = Object.defineProperty({}, 'content', {
       get() { throw original },
     })
-    const adapter = adapterOf({ deepseek: {} })
+    const adapter = adapterOf({ hiveforge: {} })
     const drain = async (): Promise<void> => {
       for await (const _chunk of adapter.stream({
-        provider: 'deepseek',
-        model: 'deepseek-v4-flash',
+        provider: 'hiveforge',
+        model: 'hiveforge-v4-flash',
         messages: [message as never],
       })) { /* drain */ }
     }
@@ -949,11 +949,11 @@ describe('abort wiring', () => {
         throw original
       },
     })
-    const adapter = adapterOf({ deepseek: {} })
+    const adapter = adapterOf({ hiveforge: {} })
     const drain = async (): Promise<void> => {
       for await (const _chunk of adapter.stream({
-        provider: 'deepseek',
-        model: 'deepseek-v4-flash',
+        provider: 'hiveforge',
+        model: 'hiveforge-v4-flash',
         messages: [message as never],
         signal: controller.signal,
       })) { /* drain */ }
@@ -963,13 +963,13 @@ describe('abort wiring', () => {
   })
 
   it('resolves catalog endpoints without an override before honoring pre-abort', async () => {
-    const adapter = adapterOf({ deepseek: {} })
+    const adapter = adapterOf({ hiveforge: {} })
     const controller = new AbortController()
     controller.abort('already stopped')
     const chunks = []
     for await (const chunk of adapter.stream({
-      provider: 'deepseek',
-      model: 'deepseek-v4-flash',
+      provider: 'hiveforge',
+      model: 'hiveforge-v4-flash',
       messages: [],
       signal: controller.signal,
     })) chunks.push(chunk)
@@ -981,7 +981,7 @@ describe('abort wiring', () => {
     const ctx = await harness(server.url)
     const controller = new AbortController()
     controller.abort('already stopped')
-    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [], signal: controller.signal })
+    const result = await assemble(ctx, { model: 'hiveforge-v4-flash', messages: [], signal: controller.signal })
     expect(result.finish.kind).toBe('aborted')
   })
 
@@ -990,7 +990,7 @@ describe('abort wiring', () => {
     const ctx = await harness(server.url)
     const controller = new AbortController()
     const resultPromise = assemble(ctx, {
-      model: 'deepseek-v4-flash', messages: [], signal: controller.signal,
+      model: 'hiveforge-v4-flash', messages: [], signal: controller.signal,
     })
     setTimeout(() => { controller.abort('stopped during stream') }, 10)
     const result = await resultPromise
@@ -1000,7 +1000,7 @@ describe('abort wiring', () => {
   it('aborts upstream when a consumer stops early', async () => {
     const server = await mockServer([{ events: textEvents, delayMs: 30 }])
     const ctx = await harness(server.url)
-    for await (const chunk of ctx.llm.stream({ provider: 'deepseek', model: 'deepseek-v4-flash', messages: [] })) {
+    for await (const chunk of ctx.llm.stream({ provider: 'hiveforge', model: 'hiveforge-v4-flash', messages: [] })) {
       if (chunk.type === 'block-start') break
     }
     await new Promise(resolve => setTimeout(resolve, 20))

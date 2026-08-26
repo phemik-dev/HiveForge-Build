@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-jobs`.
- * @module @deepseek-ai/dsh-client-ui-jobs/invariant
+ * Package-owned invariant companion for `@hiveforge-ai/dsh-client-ui-jobs`.
+ * @module @hiveforge-ai/dsh-client-ui-jobs/invariant
  */
 
 /* jscpd:ignore-start */
-import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { Context } from '@hiveforge-ai/cordis'
+import type { InvariantInstaller } from '@hiveforge-ai/dsh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-jobs'
+const PACKAGE_NAME = '@hiveforge-ai/dsh-client-ui-jobs'
 
 /** Cordis companion plugin name. */
 export const name = 'client-ui-jobs-invariant'

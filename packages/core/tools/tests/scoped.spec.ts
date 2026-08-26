@@ -1,15 +1,15 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Events } from '@deepseek-ai/cordis'
-import { bindScopeParent, createScope } from '@deepseek-ai/dsh-scope'
-import type { Scope } from '@deepseek-ai/dsh-scope'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import type { PreToolDecision, ToolDefinition, ToolExecution, ToolExecutionInput, ToolExecutionToken } from '@deepseek-ai/dsh-tools'
-import type { Agent } from '@deepseek-ai/dsh-agent'
+import { Context } from '@hiveforge-ai/cordis'
+import type { Events } from '@hiveforge-ai/cordis'
+import { bindScopeParent, createScope } from '@hiveforge-ai/dsh-scope'
+import type { Scope } from '@hiveforge-ai/dsh-scope'
+import SystemPrompt from '@hiveforge-ai/dsh-system-prompt'
+import ToolRuntime from '@hiveforge-ai/dsh-tools'
+import type { PreToolDecision, ToolDefinition, ToolExecution, ToolExecutionInput, ToolExecutionToken } from '@hiveforge-ai/dsh-tools'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
 
-import { CallId } from '@deepseek-ai/dsh-llm'
-import type { SessionId } from '@deepseek-ai/dsh-session'
+import { CallId } from '@hiveforge-ai/dsh-llm'
+import type { SessionId } from '@hiveforge-ai/dsh-session'
 
 const testToolSignal = new AbortController().signal
 

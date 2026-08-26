@@ -44,7 +44,7 @@ Status: implemented
 每个会话的 `InputMachine` 状态在实时草稿旁保存仅限运行时的有序附件标识符。框架持有的 chat store 只接收草稿的纯文本持久化镜像，`ConversationController` 则持有相应的浏览器专用 `File` 与对象 URL 注册表：
 
 ```ts
-import type { Branded } from '@deepseek-ai/dsh-brand'
+import type { Branded } from '@hiveforge-ai/dsh-brand'
 
 type DraftAttachmentId = Branded<'DraftAttachmentId'>
 
@@ -78,7 +78,7 @@ interface ComposerAttachment {
 附件 seam公开不可变图片写入和经过校验的读取操作。规范元数据刻意比通用文件记录更窄：
 
 ```ts
-import type { Branded } from '@deepseek-ai/dsh-brand'
+import type { Branded } from '@hiveforge-ai/dsh-brand'
 
 type AttachmentId = Branded<'AttachmentId'>
 
@@ -124,7 +124,7 @@ Base64 只跨越一次协议边界，并在持久化后丢弃。每个入口都�
 
 宿主是权威的前置检查点。它会解析会话最新路由到的提供方和模型，并在缺失时依次回退到 agent 选项和宿主默认值；如果模型明确排除图片输入，宿主会在写入附件或事件前拒绝新的图片提示词，客户端则恢复草稿。包含图片的提示词准入与模型选择共用一条逐 agent 串行链（[顺序决策](../bug-fix/2026-07-29-atomic-web-image-admission.zh.md)），也包括不进入排队 UI 镜像的 steering。这会为提示词和并发选择提供确定顺序。图片进入持久历史后仍可选择纯文本模型；共享 LLM 运行时会在该请求中把保留的图片块替换为确定的文本占位符。`session.updateQueue` 只接受文本内容，因此队列编辑无法绕过准入注入图片。能力未知时继续进入适配器强制检查，使未收录的模型标识符仍然可用。浏览器会在分配预览 URL 前拒绝声明不支持的图片媒体类型，但不会为部署限制或模型能力保留快照。宿主会根据当前的单张字节数、图片数量、总字节数、媒体类型、尺寸、像素数和路由模型策略校验整个批次，再写入附件或事件；拒绝会通过 composer 的短时 toast 显示。
 
-Pi-AI 与直接 DeepSeek 适配器都会在请求时解析 `ctx.attachments`，递归转换每个保留的图片引用，包括嵌套在工具结果中的引用，并且仅为声明支持图片输入的模型生成提供方原生图片内容。两个适配器都从持久主版本请求同一个确定性路由版本。Pi-AI 在考虑 base64 扩张的请求预算内内联携带它。内置 DeepSeek 路由公布 `deepseek-v4-flash-vision-exp`，把每个保留的版本上传到 Files API，并通过索引复用、过期处理、有界陈旧 ID 重试、配额清理和显式删除发送 `file_id` 块。DeepSeek 纯文本模型、未声明图片能力的自定义模型和未列出的透传 ID 保持纯文本。在请求时解析服务，可避免 Cordis 加载顺序将可选附件服务的可用性固化。适配器不得展平或静默跳过保留图片；不支持的角色与模型会以类型化的 `UNSUPPORTED_CONTENT` 失败。
+Pi-AI 与直接 HiveForge 适配器都会在请求时解析 `ctx.attachments`，递归转换每个保留的图片引用，包括嵌套在工具结果中的引用，并且仅为声明支持图片输入的模型生成提供方原生图片内容。两个适配器都从持久主版本请求同一个确定性路由版本。Pi-AI 在考虑 base64 扩张的请求预算内内联携带它。内置 HiveForge 路由公布 `hiveforge-v4-flash-vision-exp`，把每个保留的版本上传到 Files API，并通过索引复用、过期处理、有界陈旧 ID 重试、配额清理和显式删除发送 `file_id` 块。HiveForge 纯文本模型、未声明图片能力的自定义模型和未列出的透传 ID 保持纯文本。在请求时解析服务，可避免 Cordis 加载顺序将可选附件服务的可用性固化。适配器不得展平或静默跳过保留图片；不支持的角色与模型会以类型化的 `UNSUPPORTED_CONTENT` 失败。
 
 核心层支持结构化助手图片块，但当前没有任何生产提供方路径通过图片输出认证。未来任何支持输出的适配器都必须在有界的大小和时间策略下获取提供方字节，通过同一个附件服务校验并持久化字节，之后才能以原子方式发布 `ImageBlock`。助手 Markdown 中的 URL 仍是文本，绝不自动下载。
 
@@ -152,7 +152,7 @@ Pi-AI 与直接 DeepSeek 适配器都会在请求时解析 `ctx.attachments`，�
 | `packages/attachment/attachment-local` | 私有内容寻址主版本、确定性请求缓存、完整光栅解码、完整性校验和配置。 |
 | `packages/llm/llm` | 角色无关的 `ImageBlock`、输入模态元数据、精确适配器代次和纯文本请求投影。 |
 | `packages/llm/llm-pi-ai` | 把持久图片解析为确定性内联请求版本。 |
-| `packages/llm/llm-deepseek` | 把官方视觉输入解析为确定性请求版本和 Files API ID。 |
+| `packages/llm/llm-hiveforge` | 把官方视觉输入解析为确定性请求版本和 Files API ID。 |
 | `packages/compaction/compaction-basic` | 在摘要输入中保留图片，并明确拒绝非文本检查点输出。 |
 | `packages/host/apiproxy` 和 `packages/bundle/base` | 范围狭窄的上传协议、共享批量准入、限制和路由模型前置检查、先持久化再追加事件的顺序、会话授权读取，以及默认 profile 组合。 |
 | `packages/client/connection` 和 `packages/client/runtime` | 有界请求缓冲、协议类型、fixture（测试前置数据）图片、提示词上传、附件读取和持久引用折叠。 |
@@ -165,7 +165,7 @@ Pi-AI 与直接 DeepSeek 适配器都会在请求时解析 `ctx.attachments`，�
 
 ### 实现
 
-已实现能力包括只准备一次的共享批量准入、与提供方无关的主版本、确定性请求版本、DeepSeek Files 复用、稳定裁剪句柄、角色无关图片块、Pi-AI 和 DeepSeek 输入转换、Web／ACP／MCP 持久化顺序、Web 上传与读取协议、条件式 ACP 图片支持、带持久图片投影的无损 MCP 结果、Code Mode 丰富结果转发、有界 Web 请求、草稿与历史图片 UI、压缩处理，以及组装后的无密钥覆盖。
+已实现能力包括只准备一次的共享批量准入、与提供方无关的主版本、确定性请求版本、HiveForge Files 复用、稳定裁剪句柄、角色无关图片块、Pi-AI 和 HiveForge 输入转换、Web／ACP／MCP 持久化顺序、Web 上传与读取协议、条件式 ACP 图片支持、带持久图片投影的无损 MCP 结果、Code Mode 丰富结果转发、有界 Web 请求、草稿与历史图片 UI、压缩处理，以及组装后的无密钥覆盖。
 
 预发布提示词协议不需要兼容包装层；引入相应切片时会同时修改所有调用点和 fixture。
 
@@ -212,9 +212,9 @@ UI 状态可能陈旧，也无法保护直接 SDK、ACP、回放或未收录模�
 - 存储测试覆盖内容寻址去重、私有权限、准入失败、对象损坏或缺失时的失败，以及收紧部署限制后读取历史数据。
 - 宿主与协议测试覆盖先持久化再追加事件的顺序、日志中不含 base64、会话作用域授权、能力拒绝、上传限制、大小受限的 HTTP 请求体、图片准入与模型选择的排序、仅文本的队列编辑，以及纯文本请求投影。
 - 客户端单元测试覆盖粘贴与拖放、混合剪贴板文本、仅图片发送、草稿恢复、顺序、草稿、会话作用域和应用层级的对象 URL 清理，以及一项在释放后才完成的延迟历史读取；keyless 的组装后构建产物通道（`apps/web/tests/image-display.snapshot.ts`，`DSH_EXAMPLE_MODE=lib pnpm run test:snapshot`）覆盖经授权附件路由渲染的历史用户与助手图片画廊、原图 lightbox，以及 composer 粘贴缩略图条。
-- 适配器与压缩测试覆盖确定性 Pi-AI 请求版本、DeepSeek Files 上传与复用、陈旧 ID 恢复、纯文本投影、递归嵌套在工具结果中的图片、共享摘要请求版本，以及明确拒绝图片输出。
+- 适配器与压缩测试覆盖确定性 Pi-AI 请求版本、HiveForge Files 上传与复用、陈旧 ID 恢复、纯文本投影、递归嵌套在工具结果中的图片、共享摘要请求版本，以及明确拒绝图片输出。
 - 附件、MCP、ACP 与 Code Mode 测试覆盖写入前校验全部成员、图文混合顺序、持久事件不含内联 base64、确切路由能力门禁、明确的不支持内容诊断、post-execute 替换／阻止优先级、准入期间取消、经过校验的助手图片交付，以及通用嵌套图片转发。组装后的无密钥 ACP 快照发送真实内联 PNG，并在会话日志中只固定其持久引用。
-- 需要凭据的实际 API 测试会覆盖配置的 Anthropic 路由和内置 `deepseek-official` Files 路径。DeepSeek 测试不使用自定义提供方条目。
+- 需要凭据的实际 API 测试会覆盖配置的 Anthropic 路由和内置 `hiveforge-official` Files 路径。HiveForge 测试不使用自定义提供方条目。
 - 当前生产适配器集合没有经过认证的图片输出路由；输出提供方认证仍不在第一版范围内。
 
 ## 后果

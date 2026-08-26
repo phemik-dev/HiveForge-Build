@@ -11,7 +11,7 @@
  *
  * ```yaml
  * - id: llm
- *   name: '@deepseek-ai/dsh-llm-pi-ai'
+ *   name: '@hiveforge-ai/dsh-llm-pi-ai'
  *   config:
  *     providers:
  *       # Catalog route: everything but the credential comes from pi-ai.
@@ -34,7 +34,7 @@
  *         baseURL: https://gateway.acme.example/v1
  *         # Reasoning dialect for a URL pi-ai cannot recognize.
  *         compat:
- *           thinkingFormat: deepseek
+ *           thinkingFormat: hiveforge
  *         models:
  *           - id: acme-large
  *             name: Acme Large
@@ -52,14 +52,14 @@
  *               max: ultra
  * ```
  *
- * @module @deepseek-ai/dsh-llm-pi-ai
+ * @module @hiveforge-ai/dsh-llm-pi-ai
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import { launchEnvironmentOf } from '@deepseek-ai/dsh-launch-environment'
-import { assertUsableApiKey, LlmError } from '@deepseek-ai/dsh-llm'
-import type { AdapterRegistrationHandle, DirectoryRegistrationHandle, LlmConfigurableProvider } from '@deepseek-ai/dsh-llm'
-import { deepEqualJson, installSettingsSection, settingsNamespace } from '@deepseek-ai/dsh-settings'
+import type { Context } from '@hiveforge-ai/cordis'
+import { launchEnvironmentOf } from '@hiveforge-ai/dsh-launch-environment'
+import { assertUsableApiKey, LlmError } from '@hiveforge-ai/dsh-llm'
+import type { AdapterRegistrationHandle, DirectoryRegistrationHandle, LlmConfigurableProvider } from '@hiveforge-ai/dsh-llm'
+import { deepEqualJson, installSettingsSection, settingsNamespace } from '@hiveforge-ai/dsh-settings'
 import { PiAiAdapter } from './adapter.ts'
 import { authContextFrom, credentialStoreFrom } from './auth.ts'
 import { catalogProviderIds } from './catalog.ts'
@@ -220,7 +220,7 @@ export function apply(ctx: Context, config: Config): void {
     const entries = directoryEntries(profiles())
     if (deepEqualJson(entries, directoryFacts)) return
     // Atomic replace, never dispose-then-register: a route another adapter
-    // family already declares (a profile keyed `deepseek-official`) would
+    // family already declares (a profile keyed `hiveforge-official`) would
     // otherwise leave this plugin's whole directory withdrawn and the Models
     // page empty. The candidate set is validated first, so a collision keeps
     // the previous entries serving and only costs a diagnostic.

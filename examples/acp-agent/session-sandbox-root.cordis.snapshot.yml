@@ -3,18 +3,18 @@
 # and the deliberately distinct sandbox fallback are applied together to the
 # live tree.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@hiveforge-ai/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:
-      - id: llm-deepseek
-        name: '@deepseek-ai/dsh-llm-deepseek'
+      - id: llm-hiveforge
+        name: '@hiveforge-ai/dsh-llm-hiveforge'
         disabled: true
       - id: acp-agent
-        name: '@deepseek-ai/dsh-acp-demo'
+        name: '@hiveforge-ai/dsh-acp-demo'
         config:
-          provider: deepseek-official
-          model: deepseek-v4-flash
+          provider: hiveforge-official
+          model: hiveforge-v4-flash
           persistenceRoot: !!js process.env.DSH_SNAPSHOT_SESSIONS_ROOT ?? './.sessions'
           persistenceCompression: none
           workspaceContext:
@@ -24,7 +24,7 @@
 
             Verify your work by running the code or tests. Keep answers brief and factual.
       - id: sandbox
-        name: '@deepseek-ai/dsh-sandbox-local'
+        name: '@hiveforge-ai/dsh-sandbox-local'
         config:
           runnerCommand:
             - bash
@@ -34,17 +34,17 @@
           runnerFailureSignatures:
             - 'passthrough-runner: profile rejected'
       - id: sandbox-policy
-        name: '@deepseek-ai/dsh-sandbox-policy'
+        name: '@hiveforge-ai/dsh-sandbox-policy'
         config:
           mode: workspace-write
           workspaceRoot: /tmp
       - insert:
           - id: llm-replay
-            name: '@deepseek-ai/dsh-llm-replay'
+            name: '@hiveforge-ai/dsh-llm-replay'
             config:
               providers:
-                - id: deepseek-official
-                  name: DeepSeek
+                - id: hiveforge-official
+                  name: HiveForge
                   models:
-                    - id: deepseek-v4-flash
-                    - id: deepseek-v4-pro
+                    - id: hiveforge-v4-flash
+                    - id: hiveforge-v4-pro

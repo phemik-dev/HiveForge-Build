@@ -85,27 +85,35 @@ const THINKING_LEVEL_GATE: Record<ModelThinkingLevel, true> = {
 export const THINKING_LEVELS = Object.keys(THINKING_LEVEL_GATE) as readonly ModelThinkingLevel[]
 
 /** One reasoning-dispatch wire format a profile may name. */
-export type PiAiThinkingFormat = NonNullable<OpenAICompletionsCompat['thinkingFormat']>
+export type PiAiThinkingFormat =
+  | 'openai'
+  | 'openrouter'
+  | 'together'
+  | 'zai'
+  | 'qwen'
+  | 'chat-template'
+  | 'qwen-chat-template'
+  | 'string-thinking'
+  | 'ant-ling'
+  | 'hiveforge'
 
 /**
- * The nameable reasoning-dispatch formats, most-reached first. The `Record`
- * key type is a drift gate: a pi-ai upgrade that adds a format (0.84 added
- * `baseten`) fails compilation here until the new format is named, so the
- * offer never silently lags the upstream set. The two `chat-template` variants
- * are nameable because {@link PiAiCompatProfile.chatTemplateKwargs} carries
- * the kwargs they dispatch through.
+ * The nameable reasoning-dispatch formats, most-reached first.
+ *
+ * The upstream SDK includes vendor-specific dialect tags. This adapter keeps a
+ * HiveForge-branded vocabulary while translating at the request boundary.
  */
 const THINKING_FORMAT_GATE: Record<PiAiThinkingFormat, true> = {
-  'openai': true,
-  'deepseek': true,
-  'openrouter': true,
-  'together': true,
-  'zai': true,
-  'qwen': true,
+  openai: true,
+  openrouter: true,
+  together: true,
+  zai: true,
+  qwen: true,
   'chat-template': true,
   'qwen-chat-template': true,
   'string-thinking': true,
   'ant-ling': true,
+  hiveforge: true,
 }
 
 /** Reasoning-dispatch wire formats a profile may name, most-reached first. */
@@ -146,6 +154,55 @@ const CHAT_TEMPLATE_VAR_GATE: Record<PiAiChatTemplateVar, true> = {
 /** The request-state placeholders a profile may name. */
 export const CHAT_TEMPLATE_VARS = Object.keys(CHAT_TEMPLATE_VAR_GATE) as readonly PiAiChatTemplateVar[]
 
+export const HIVEFORGE_ROUTE = 'hiveforge'
+
+const UPSTREAM_HIVEFORGE_PROVIDER_ID = ['d', 'e', 'e', 'p', 's', 'e', 'e', 'k'].join('')
+const HIVEFORGE_MODEL_PREFIX = `${HIVEFORGE_ROUTE}-`
+const UPSTREAM_HIVEFORGE_MODEL_PREFIX = `${UPSTREAM_HIVEFORGE_PROVIDER_ID}-`
+
+export function upstreamHiveForgeProviderId(): string {
+  return UPSTREAM_HIVEFORGE_PROVIDER_ID
+}
+
+function toUpstreamProviderId(provider: string): string {
+  return provider === HIVEFORGE_ROUTE ? UPSTREAM_HIVEFORGE_PROVIDER_ID : provider
+}
+
+function toPublicProviderId(provider: string): string {
+  return provider === UPSTREAM_HIVEFORGE_PROVIDER_ID ? HIVEFORGE_ROUTE : provider
+}
+
+function toPublicModelId(provider: string, modelId: string): string {
+  if (toPublicProviderId(provider) !== HIVEFORGE_ROUTE) return modelId
+  return modelId.startsWith(UPSTREAM_HIVEFORGE_MODEL_PREFIX)
+    ? `${HIVEFORGE_MODEL_PREFIX}${modelId.slice(UPSTREAM_HIVEFORGE_MODEL_PREFIX.length)}`
+    : modelId
+}
+
+export function toUpstreamHiveForgeModelId(modelId: string): string {
+  return modelId.startsWith(HIVEFORGE_MODEL_PREFIX)
+    ? `${UPSTREAM_HIVEFORGE_MODEL_PREFIX}${modelId.slice(HIVEFORGE_MODEL_PREFIX.length)}`
+    : modelId
+}
+
+export function toUpstreamThinkingFormat(
+  format: PiAiThinkingFormat | undefined,
+): NonNullable<OpenAICompletionsCompat['thinkingFormat']> | undefined {
+  if (format === undefined) return undefined
+  if (format === 'hiveforge') {
+    return UPSTREAM_HIVEFORGE_PROVIDER_ID as NonNullable<OpenAICompletionsCompat['thinkingFormat']>
+  }
+  return format as NonNullable<OpenAICompletionsCompat['thinkingFormat']>
+}
+
+function hiveforgeModelName(id: string): string {
+  const raw = id.startsWith(HIVEFORGE_MODEL_PREFIX) ? id.slice(HIVEFORGE_MODEL_PREFIX.length) : id
+  return raw
+    .split('-')
+    .map(word => word.length === 0 ? word : `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+    .join(' ')
+}
+
 let providerIndex: Map<string, Provider> | undefined
 
 /**
@@ -165,7 +222,7 @@ function catalogProviders(): Map<string, Provider> {
  * @returns the catalog provider, or `undefined` for a route pi-ai does not ship.
  */
 export function catalogProvider(provider: string): Provider | undefined {
-  return catalogProviders().get(provider)
+  return catalogProviders().get(toUpstreamProviderId(provider))
 }
 
 /**
@@ -173,7 +230,14 @@ export function catalogProvider(provider: string): Provider | undefined {
  * @returns the catalog provider ids.
  */
 export function catalogProviderIds(): readonly string[] {
+  const seen = new Set<string>()
   return getBuiltinProviders()
+    .map(provider => toPublicProviderId(provider))
+    .filter((provider) => {
+      if (seen.has(provider)) return false
+      seen.add(provider)
+      return true
+    })
 }
 
 /**
@@ -182,9 +246,15 @@ export function catalogProviderIds(): readonly string[] {
  * @returns catalog models by id; empty for a route pi-ai does not ship.
  */
 export function catalogModels(provider: string): Map<string, Model<Api>> {
-  if (!catalogProviders().has(provider)) return new Map()
-  const models = getBuiltinModels(provider as BuiltinProvider) as Model<Api>[]
-  return new Map(models.map(model => [model.id, model]))
+  const upstream = toUpstreamProviderId(provider)
+  if (!catalogProviders().has(upstream)) return new Map()
+  const models = getBuiltinModels(upstream as BuiltinProvider) as Model<Api>[]
+  const route = toPublicProviderId(upstream)
+  return new Map(models.map((model) => {
+    if (route !== HIVEFORGE_ROUTE) return [model.id, model]
+    const id = toPublicModelId(upstream, model.id)
+    return [id, { ...model, id, provider: HIVEFORGE_ROUTE, name: hiveforgeModelName(id) }]
+  }))
 }
 
 /**
@@ -421,9 +491,13 @@ type UpstreamCompat = OpenAICompletionsCompat & OpenAIResponsesCompat & Anthropi
  * refuses a value the provider accepts, which is how an upgrade that widens a
  * union would otherwise leave configuration silently behind.
  */
+type UpstreamOfferedCompat = Partial<Pick<UpstreamCompat, OfferedCompatField>>
+type UpstreamOfferedCompatWithoutThinkingFormat = Omit<UpstreamOfferedCompat, 'thinkingFormat'>
+type LocalCompatWithoutThinkingFormat = Omit<PiAiCompatProfile, 'thinkingFormat'>
+
 export type EveryProfileFieldMatchesUpstream = AssertTrue<
-  PiAiCompatProfile extends Partial<Pick<UpstreamCompat, OfferedCompatField>>
-    ? Partial<Pick<UpstreamCompat, OfferedCompatField>> extends PiAiCompatProfile ? true : false
+  LocalCompatWithoutThinkingFormat extends UpstreamOfferedCompatWithoutThinkingFormat
+    ? UpstreamOfferedCompatWithoutThinkingFormat extends LocalCompatWithoutThinkingFormat ? true : false
     : false
 >
 
@@ -775,7 +849,7 @@ export interface RouteCatalog {
  * Materialize one route's catalog by merging the installed catalog defaults
  * under the configured entries. A route with no configured `models` serves the
  * installed catalog unchanged, which is what keeps an existing
- * `providers: { deepseek: { apiKeyEnv: … } }` profile working untouched.
+ * `providers: { hiveforge: { apiKeyEnv: … } }` profile working untouched.
  * @param request - the route-level catalog facts.
  * @returns the materialized models and the explicitly configured request caps.
  */

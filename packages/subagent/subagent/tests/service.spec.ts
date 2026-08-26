@@ -1,9 +1,9 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { type Agent } from '@deepseek-ai/dsh-agent'
+import { Context } from '@hiveforge-ai/cordis'
+import { type Agent } from '@hiveforge-ai/dsh-agent'
 
-import { HarnessError } from '@deepseek-ai/dsh-llm'
-import { carrierKeyOf } from '@deepseek-ai/dsh-scope'
+import { HarnessError } from '@hiveforge-ai/dsh-llm'
+import { carrierKeyOf } from '@hiveforge-ai/dsh-scope'
 import SubagentRuntime, {
   foldSubagentDescriptor,
   snapshotSubagentDescriptor,
@@ -17,8 +17,8 @@ import SubagentRuntime, {
   type SubagentRun,
   type SubagentRunEndInfo,
   type SubagentStartRequest,
-} from '@deepseek-ai/dsh-subagent'
-import { SessionId, type SessionEvent } from '@deepseek-ai/dsh-session'
+} from '@hiveforge-ai/dsh-subagent'
+import { SessionId, type SessionEvent } from '@hiveforge-ai/dsh-session'
 
 function fakeParent(id = 'parent-1'): Agent {
   return { id: SessionId(id) } as unknown as Agent
@@ -346,7 +346,7 @@ describe('subagent descriptors', () => {
       mode: 'continuable' as const,
       provider: 'spawn',
       label: 'complete child',
-      agentProvider: 'deepseek',
+      agentProvider: 'hiveforge',
       agentModel: 'chat',
       persona: 'reviewer',
       toolFilter: { allow: ['read'], deny: ['bash'] },

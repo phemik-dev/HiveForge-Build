@@ -1,11 +1,11 @@
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import { createUserMessage } from '@hiveforge-ai/dsh-llm'
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { SessionId, type SessionEvent } from '@deepseek-ai/dsh-session'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import { mountAgentLoopTestDependencies } from '@deepseek-ai/dsh-agent-loop-testkit'
-import * as ToolTodo from '@deepseek-ai/dsh-tool-todo'
+import { Context } from '@hiveforge-ai/cordis'
+import { SessionId, type SessionEvent } from '@hiveforge-ai/dsh-session'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
+import AgentLoop from '@hiveforge-ai/dsh-agent-loop'
+import { mountAgentLoopTestDependencies } from '@hiveforge-ai/dsh-agent-loop-testkit'
+import * as ToolTodo from '@hiveforge-ai/dsh-tool-todo'
 import { MockAdapter, textResponse, toolCallResponse } from '../../../core/agent-loop/tests/mock-adapter.ts'
 
 /**

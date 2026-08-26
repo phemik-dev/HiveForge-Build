@@ -188,3 +188,16 @@ export function extendArchiveManifest(
   }
   return { files, added, errors }
 }
+
+/**
+ * Compute a complete archive-manifest mapping for the current artifact set.
+ * @param artifacts - every archived artifact file.
+ * @returns Mapping of archive-relative path to sha256 seal.
+ */
+export function computeArchiveManifestFiles(artifacts: ReadonlyMap<string, Buffer>): Record<string, string> {
+  const files: Record<string, string> = {}
+  for (const [path, content] of [...artifacts].sort(([left], [right]) => left.localeCompare(right))) {
+    files[path] = archiveContentHash(content)
+  }
+  return files
+}

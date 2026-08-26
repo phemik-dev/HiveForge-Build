@@ -1,24 +1,24 @@
-import { Context } from '@deepseek-ai/cordis'
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import { mountAgentLoopTestDependencies } from '@deepseek-ai/dsh-agent-loop-testkit'
-import { LocalBashExecutor } from '@deepseek-ai/dsh-bash-local'
-import * as BashEnvPlugin from '@deepseek-ai/dsh-shell-env'
-import LocalSubprocessRuntime from '@deepseek-ai/dsh-subprocess-local'
-import * as ToolBash from '@deepseek-ai/dsh-tool-bash'
-import * as ToolTodo from '@deepseek-ai/dsh-tool-todo'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
-import ToolResultPruner from '@deepseek-ai/dsh-compaction-tool-result-pruner'
-import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
-import * as SessionCheckpointPolicy from '@deepseek-ai/dsh-session-checkpoint-policy'
-import { BasicCompactionEngine } from '@deepseek-ai/dsh-compaction-basic'
-import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
+import { Context } from '@hiveforge-ai/cordis'
+import type { SessionEvent } from '@hiveforge-ai/dsh-session'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
+import AgentLoop from '@hiveforge-ai/dsh-agent-loop'
+import { mountAgentLoopTestDependencies } from '@hiveforge-ai/dsh-agent-loop-testkit'
+import { LocalBashExecutor } from '@hiveforge-ai/dsh-bash-local'
+import * as BashEnvPlugin from '@hiveforge-ai/dsh-shell-env'
+import LocalSubprocessRuntime from '@hiveforge-ai/dsh-subprocess-local'
+import * as ToolBash from '@hiveforge-ai/dsh-tool-bash'
+import * as ToolTodo from '@hiveforge-ai/dsh-tool-todo'
+import * as LlmHiveForge from '@hiveforge-ai/dsh-llm-hiveforge'
+import TokenMeter from '@hiveforge-ai/dsh-token-meter'
+import ToolResultPruner from '@hiveforge-ai/dsh-compaction-tool-result-pruner'
+import JsonlSessionPersistence from '@hiveforge-ai/dsh-session-persistence-jsonl'
+import * as SessionCheckpointPolicy from '@hiveforge-ai/dsh-session-checkpoint-policy'
+import { BasicCompactionEngine } from '@hiveforge-ai/dsh-compaction-basic'
+import type { BasicCompactionConfig } from '@hiveforge-ai/dsh-compaction-basic'
 
 /**
  * Shared harness for the headless-agent e2e suites: the full plugin stack
- * with the real DeepSeek adapter and the real bash + todo_write tools. Lives
+ * with the real HiveForge adapter and the real bash + todo_write tools. Lives
  * outside the *.e2e.ts pattern so importing it never re-registers another
  * file's tests.
  */
@@ -49,7 +49,7 @@ export interface CodingHarnessOptions {
    * compaction plugin (the default suites run without it).
    */
   compact?: BasicCompactionConfig
-  /** Test-only context capacity advertised for `deepseek-v4-flash`. */
+  /** Test-only context capacity advertised for `hiveforge-v4-flash`. */
   modelContextWindow?: number
 }
 
@@ -59,8 +59,8 @@ export async function codingHarness(workdir: string, options: CodingHarnessOptio
     systemPrompt: { persona: options.persona ?? '' },
   })
   await ctx.plugin(AgentLoop, { agents: [] })
-  await ctx.plugin(LlmDeepSeek, options.modelContextWindow === undefined ? {} : {
-    models: [{ id: 'deepseek-v4-flash', contextWindow: options.modelContextWindow }],
+  await ctx.plugin(LlmHiveForge, options.modelContextWindow === undefined ? {} : {
+    models: [{ id: 'hiveforge-v4-flash', contextWindow: options.modelContextWindow }],
   })
   await ctx.plugin(LocalSubprocessRuntime)
   await ctx.plugin(BashEnvPlugin)

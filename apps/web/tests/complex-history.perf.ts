@@ -9,22 +9,22 @@ import { performance } from 'node:perf_hooks'
 import type { Browser, CDPSession, Locator, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import type { StreamChunk } from '@deepseek-ai/dsh-llm'
+import type { StreamChunk } from '@hiveforge-ai/dsh-llm'
 import {
   CallId,
   createAssistantMessage,
   createToolResultMessage,
   createUserMessage,
-} from '@deepseek-ai/dsh-llm'
-import type { ReplayEntry, ReplayOverrideDoc } from '@deepseek-ai/dsh-llm-replay'
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
+} from '@hiveforge-ai/dsh-llm'
+import type { ReplayEntry, ReplayOverrideDoc } from '@hiveforge-ai/dsh-llm-replay'
+import type { SessionEvent } from '@hiveforge-ai/dsh-session'
 import {
   SESSION_FORMAT_VERSION,
   Session,
   SessionId,
-} from '@deepseek-ai/dsh-session'
+} from '@hiveforge-ai/dsh-session'
 // Carries the session/title event declaration into the fixture builder.
-import type {} from '@deepseek-ai/dsh-session-title'
+import type {} from '@hiveforge-ai/dsh-session-title'
 import {
   launchWebScaffold,
   seedSession,
@@ -198,7 +198,7 @@ function appendTitle(session: Session, title: string, messageSeq: number): void 
 function appendRequestHeader(session: Session, turn: number, step: number): void {
   session.append('request/header', {
     header: {
-      config: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      config: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
       system: `Synthetic performance system prompt for turn ${String(turn)}, step ${String(step)}.`,
     },
     reason: turn === 1 && step === 1 ? 'initial' : 'change',
@@ -216,7 +216,7 @@ function appendAssistant(
     step,
     message: createAssistantMessage({
       content: text(body),
-      source: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      source: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
     }),
     usage: {
       inputTokens: 4_000 + turn * 10,
@@ -258,7 +258,7 @@ function appendToolStep(
           arguments: args,
         })),
       ],
-      source: { provider: 'deepseek-official', model: 'deepseek-v4-flash' },
+      source: { provider: 'hiveforge-official', model: 'hiveforge-v4-flash' },
     }),
     usage: {
       inputTokens: 6_000 + turn * 10,

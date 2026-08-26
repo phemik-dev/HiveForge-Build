@@ -13,10 +13,10 @@ import {
   type InputScript,
   type Scenario,
   type SnapshotSuiteOptions,
-} from '@deepseek-ai/dsh-acp-snapshot'
-import { resolvePwshPath } from '@deepseek-ai/dsh-pwsh-local'
-import { parseSessionLog } from '@deepseek-ai/dsh-llm-replay'
-import { OFFLOADED_IMAGE_TEXT } from '@deepseek-ai/dsh-llm'
+} from '@hiveforge-ai/dsh-acp-snapshot'
+import { resolvePwshPath } from '@hiveforge-ai/dsh-pwsh-local'
+import { parseSessionLog } from '@hiveforge-ai/dsh-llm-replay'
+import { OFFLOADED_IMAGE_TEXT } from '@hiveforge-ai/dsh-llm'
 
 /**
  * The acp-agent example's snapshot suite: the scenario table for
@@ -702,7 +702,7 @@ defineAcpSnapshotSuite({
   hasPwsh,
 })
 
-it('pins native DeepSeek Files offload and inline fallback in assembled requests', async () => {
+it('pins native HiveForge Files offload and inline fallback in assembled requests', async () => {
   const requests: Record<string, unknown>[] = []
   const fileRequests: Array<{ method: string; path: string; bytes: number }> = []
   let rejectFiles = false

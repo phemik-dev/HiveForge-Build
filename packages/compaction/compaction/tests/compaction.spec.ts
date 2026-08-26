@@ -1,16 +1,16 @@
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import { createUserMessage } from '@hiveforge-ai/dsh-llm'
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import {
   CompactionId,
   CompactionEngine,
   compactCheckpointSource,
   isCompactCheckpointSource,
-} from '@deepseek-ai/dsh-compaction'
-import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { CompactionAgentContext } from '@deepseek-ai/dsh-compaction'
-import type { ManualCompactAgentContext } from '@deepseek-ai/dsh-compaction'
+} from '@hiveforge-ai/dsh-compaction'
+import type { CompactionResult, CompactionTrigger } from '@hiveforge-ai/dsh-compaction'
+import { Session, SessionId } from '@hiveforge-ai/dsh-session'
+import type { CompactionAgentContext } from '@hiveforge-ai/dsh-compaction'
+import type { ManualCompactAgentContext } from '@hiveforge-ai/dsh-compaction'
 
 /**
  * A trivial concrete CompactionEngine implementing the abstract contract. The

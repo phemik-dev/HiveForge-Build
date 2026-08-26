@@ -1,24 +1,24 @@
 # Keyless context-overflow composition for the assembled compaction snapshot.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@hiveforge-ai/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:
-      - id: llm-deepseek
-        name: '@deepseek-ai/dsh-llm-deepseek'
+      - id: llm-hiveforge
+        name: '@hiveforge-ai/dsh-llm-hiveforge'
         disabled: true
       - id: compaction-basic
-        name: '@deepseek-ai/dsh-compaction-basic'
+        name: '@hiveforge-ai/dsh-compaction-basic'
         config:
           thresholdRatio: 0.99
           retainTokens: 20
           maxTokens: 32
       - insert:
           - id: llm-replay
-            name: '@deepseek-ai/dsh-llm-replay'
+            name: '@hiveforge-ai/dsh-llm-replay'
             config:
               providers:
-                - id: deepseek-official
+                - id: hiveforge-official
                   models:
-                    - id: deepseek-v4-flash
+                    - id: hiveforge-v4-flash
                       contextWindow: 128000

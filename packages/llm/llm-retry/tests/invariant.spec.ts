@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import SessionStore, { SessionId, type Session } from '@deepseek-ai/dsh-session'
-import { createUserMessage, ProviderRequestId } from '@deepseek-ai/dsh-llm'
-import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
-import * as RetryInvariant from '@deepseek-ai/dsh-llm-retry/invariant'
-import { RetryId } from '@deepseek-ai/dsh-llm-retry'
+import { Context } from '@hiveforge-ai/cordis'
+import SessionStore, { SessionId, type Session } from '@hiveforge-ai/dsh-session'
+import { createUserMessage, ProviderRequestId } from '@hiveforge-ai/dsh-llm'
+import { MAX_TIMER_DELAY_MS } from '@hiveforge-ai/dsh-timeout'
+import InvariantRegistry from '@hiveforge-ai/dsh-invariants'
+import * as RetryInvariant from '@hiveforge-ai/dsh-llm-retry/invariant'
+import { RetryId } from '@hiveforge-ai/dsh-llm-retry'
 import { providerForOpenStep } from '../src/history.ts'
 
 async function setup(): Promise<Context> {

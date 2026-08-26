@@ -1,8 +1,8 @@
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@hiveforge-ai/cordis'
 import type {
   ConversationNodeDefinition, ConversationPreviousContext,
-} from '@deepseek-ai/dsh-client-runtime/client'
-import type { InboxTarget } from '@deepseek-ai/dsh-agent/types'
+} from '@hiveforge-ai/dsh-client-runtime/client'
+import type { InboxTarget } from '@hiveforge-ai/dsh-agent/types'
 
 interface InboxIdentity {
   readonly id: string

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-jobs
+# @hiveforge-ai/dsh-jobs
 
 English | [中文](README.zh.md)
 

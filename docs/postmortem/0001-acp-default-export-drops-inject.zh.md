@@ -10,7 +10,7 @@
 
 ## 概述
 
-ACP 服务器（`examples/acp-agent`、`@deepseek-ai/dsh-acp`）在真实编辑器（Zed）连接的瞬间崩溃：第一个 `session/new` 请求返回 `Internal error: cannot get property "agents" without inject`，`session/load` 对 `sessionPersistence` 返回同样的错误。尽管有 178 个绿色单元测试和 100% 行覆盖率，bridge 在生产环境中完全无法工作。两个独立的 bug 隐藏在同一个错误字符串背后，测试套件之所以两个都没捕获，原因也相同：所有测试都通过一条不会触及插件真实加载方式和服务真实解析方式的路径来挂载插件。
+ACP 服务器（`examples/acp-agent`、`@hiveforge-ai/dsh-acp`）在真实编辑器（Zed）连接的瞬间崩溃：第一个 `session/new` 请求返回 `Internal error: cannot get property "agents" without inject`，`session/load` 对 `sessionPersistence` 返回同样的错误。尽管有 178 个绿色单元测试和 100% 行覆盖率，bridge 在生产环境中完全无法工作。两个独立的 bug 隐藏在同一个错误字符串背后，测试套件之所以两个都没捕获，原因也相同：所有测试都通过一条不会触及插件真实加载方式和服务真实解析方式的路径来挂载插件。
 
 ## 影响
 
@@ -26,7 +26,7 @@ ACP 服务器无法创建或加载任何一个会话——而这正是编辑器�
 
 ## 根因 #1——`export default apply` 丢弃了插件的 `inject`（导致 `session/new` 崩溃）
 
-`packages/acp/acp/src/index.ts` 是一个*命名空间插件*：它将 `name`、`inject`、`Config` 和 `apply` 作为独立的命名导出，仓库中其他所有插件（`invariants`、`llm-deepseek`、`tool-bash`、`tui` 等）也是如此。但它*还*多了一行其他插件都没有的代码：
+`packages/acp/acp/src/index.ts` 是一个*命名空间插件*：它将 `name`、`inject`、`Config` 和 `apply` 作为独立的命名导出，仓库中其他所有插件（`invariants`、`llm-hiveforge`、`tool-bash`、`tui` 等）也是如此。但它*还*多了一行其他插件都没有的代码：
 
 ```ts ignore-check
 export const name = 'acp'

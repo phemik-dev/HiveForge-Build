@@ -1,17 +1,17 @@
 /**
  * Durable, lifecycle-bound feedback for finalized assistant messages.
- * @module @deepseek-ai/dsh-message-feedback
+ * @module @hiveforge-ai/dsh-message-feedback
  */
 
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import { Context, Service } from '@deepseek-ai/cordis'
-import s from '@deepseek-ai/schemastery'
-import { deriveEventMessage, isAppendSurfaceEvent } from '@deepseek-ai/dsh-session/surface'
-import type { SessionHeader, SessionId } from '@deepseek-ai/dsh-session/types'
-import type { SessionInspection } from '@deepseek-ai/dsh-session-persistence'
-import type { KvTable } from '@deepseek-ai/dsh-storage-domain'
-import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol'
+import { Context, Service } from '@hiveforge-ai/cordis'
+import s from '@hiveforge-ai/schemastery'
+import { deriveEventMessage, isAppendSurfaceEvent } from '@hiveforge-ai/dsh-session/surface'
+import type { SessionHeader, SessionId } from '@hiveforge-ai/dsh-session/types'
+import type { SessionInspection } from '@hiveforge-ai/dsh-session-persistence'
+import type { KvTable } from '@hiveforge-ai/dsh-storage-domain'
+import { TypertRemoteService, Remote } from '@hiveforge-ai/dsh-typert-protocol'
 import { messageFeedbackDomainSpec } from './spec.ts'
 import type { MessageFeedbackRow, MessageFeedbackSessionIdentity } from './spec.ts'
 import type {
@@ -51,7 +51,7 @@ export interface Config {
   readonly maxNoteBytes: number
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@hiveforge-ai/cordis' {
   interface Context {
     messageFeedback: MessageFeedbackService
   }

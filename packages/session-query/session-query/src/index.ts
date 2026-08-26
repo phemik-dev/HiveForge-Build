@@ -1,13 +1,13 @@
 /**
  * Service Definition for combined session-history reads, traces, filters, and full-text search.
  *
- * @module @deepseek-ai/dsh-session-query
+ * @module @hiveforge-ai/dsh-session-query
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import { Session, snapshotSessionEvent, type SessionId } from '@deepseek-ai/dsh-session'
-import { foldSessionTitle } from '@deepseek-ai/dsh-session-title'
-import type { SessionTitleSnapshot } from '@deepseek-ai/dsh-session-title'
+import { Context, Service } from '@hiveforge-ai/cordis'
+import { Session, snapshotSessionEvent, type SessionId } from '@hiveforge-ai/dsh-session'
+import { foldSessionTitle } from '@hiveforge-ai/dsh-session-title'
+import type { SessionTitleSnapshot } from '@hiveforge-ai/dsh-session-title'
 import type {
   SessionEventResultFilter,
   SessionEventSearchPage,
@@ -65,7 +65,7 @@ export {
 } from './filters.ts'
 export { assertSessionHeadersCompatible } from './sources.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@hiveforge-ai/cordis' {
   interface Context {
     sessionQuery: SessionQueryEngine
   }

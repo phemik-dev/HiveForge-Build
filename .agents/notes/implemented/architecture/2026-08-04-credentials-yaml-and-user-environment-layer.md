@@ -6,7 +6,7 @@ English | [中文](2026-08-04-credentials-yaml-and-user-environment-layer.zh.md)
 
 ## Problem
 
-`$DSH_HOME/.env` carried two incompatible jobs. It was the writable secret store of [`credentials-local`](../../../../packages/credentials/credentials-local/README.md), so no surface could hoist it into `process.env` — hoisting would make every stored key read as a read-only launch override and block rotation from the Models page. But its name and dotenv format promise an environment file, so users put non-secrets in it and those values reached nothing: a `DEEPSEEK_BASE_URL` beside a working `DEEPSEEK_API_KEY` in the same file was silently ignored, because only the credential provider read the document and it addresses credential references alone.
+`$DSH_HOME/.env` carried two incompatible jobs. It was the writable secret store of [`credentials-local`](../../../../packages/credentials/credentials-local/README.md), so no surface could hoist it into `process.env` — hoisting would make every stored key read as a read-only launch override and block rotation from the Models page. But its name and dotenv format promise an environment file, so users put non-secrets in it and those values reached nothing: a `HIVEFORGE_BASE_URL` beside a working `HIVEFORGE_API_KEY` in the same file was silently ignored, because only the credential provider read the document and it addresses credential references alone.
 
 One file cannot be both a store the Harness owns and isolates and a layer that propagates by ordinary environment rules. The [request-level credential decision](2026-07-29-request-level-llm-config-credentials.md) chose dotenv to match peer products' home `.env`, and the conflation was not visible until a non-secret needed the same file.
 
@@ -17,7 +17,7 @@ The two jobs become two files under the Harness home.
 **`.credentials.yaml` is the provider-managed store.** A strict YAML mapping of `CredentialRef` to non-empty string, with no `version` field and no wrapper level:
 
 ```yaml
-DEEPSEEK_API_KEY: sk-…
+HIVEFORGE_API_KEY: sk-…
 OPENAI_API_KEY: sk-…
 ```
 

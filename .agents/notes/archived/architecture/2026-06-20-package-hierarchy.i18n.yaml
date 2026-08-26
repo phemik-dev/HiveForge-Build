@@ -1,6 +1,6 @@
 # Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
-#   pnpm run verify-translation-pairing --write
-2026-06-20-package-hierarchy.md: 43435279cdf4eec544638a5b36c53b4833b4cbbd
-2026-06-20-package-hierarchy.zh.md: a44304d071d165cfe8f112e987160dd37626a58a
+#   pnpm run verify-translation-pairing --write .agents/notes/archived/architecture/2026-06-20-package-hierarchy.md
+2026-06-20-package-hierarchy.md: 2fb2793b1f64d9da6b9461228bacf71fc0ea57c9
+2026-06-20-package-hierarchy.zh.md: f716e9e3ff73b77d52d558b7e37e3b133df82848

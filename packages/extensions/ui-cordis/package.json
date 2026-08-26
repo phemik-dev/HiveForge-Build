@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-client-ui-cordis",
+  "name": "@hiveforge-ai/dsh-client-ui-cordis",
   "description": "Cordis dynamic-plugin definition card: the keyed cordis_define tool row with its run/stop switch",
   "version": "0.1.1-rc.2",
   "publishConfig": {
@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "url": "git+https://github.com/hiveforge-ai/hiveforge-harness.git",
     "directory": "packages/extensions/ui-cordis"
   },
   "type": "module",
@@ -32,14 +32,14 @@
   "dsh": {
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-client-runtime",
-        "@deepseek-ai/dsh-client-connection",
-        "@deepseek-ai/dsh-cordis-client-runner",
-        "@deepseek-ai/dsh-api-remotes",
-        "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-ui-input-trigger",
-        "@deepseek-ai/dsh-client-ui-tool",
-        "@deepseek-ai/dsh-client-ui-sidebar"
+        "@hiveforge-ai/dsh-client-runtime",
+        "@hiveforge-ai/dsh-client-connection",
+        "@hiveforge-ai/dsh-cordis-client-runner",
+        "@hiveforge-ai/dsh-api-remotes",
+        "@hiveforge-ai/dsh-client-locale",
+        "@hiveforge-ai/dsh-client-ui-input-trigger",
+        "@hiveforge-ai/dsh-client-ui-tool",
+        "@hiveforge-ai/dsh-client-ui-sidebar"
       ],
       "platform": "web"
     }
@@ -50,31 +50,31 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-api-remotes": "workspace:^",
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-cordis-client-runner": "workspace:^",
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-sidebar": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-input-trigger": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-tool": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@hiveforge-ai/dsh-api-remotes": "workspace:^",
+    "@hiveforge-ai/dsh-client-connection": "workspace:^",
+    "@hiveforge-ai/dsh-cordis-client-runner": "workspace:^",
+    "@hiveforge-ai/dsh-client-locale": "workspace:^",
+    "@hiveforge-ai/dsh-client-runtime": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-sidebar": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-input-trigger": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-tool": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-api-remotes": "workspace:^",
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-cordis-client-runner": "workspace:^",
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-primitives": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-sidebar": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-input-trigger": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-tool": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@hiveforge-ai/dsh-api-remotes": "workspace:^",
+    "@hiveforge-ai/dsh-client-connection": "workspace:^",
+    "@hiveforge-ai/dsh-cordis-client-runner": "workspace:^",
+    "@hiveforge-ai/dsh-client-locale": "workspace:^",
+    "@hiveforge-ai/dsh-client-runtime": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-primitives": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-sidebar": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-input-trigger": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-slots": "workspace:^",
+    "@hiveforge-ai/dsh-client-ui-tool": "workspace:^",
+    "@hiveforge-ai/dsh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@hiveforge-ai/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "files": [

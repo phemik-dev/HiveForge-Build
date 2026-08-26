@@ -2,17 +2,18 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import LlmRuntime, { createUserMessage, ReasoningEffortId } from '@deepseek-ai/dsh-llm'
-import type { StreamChunk } from '@deepseek-ai/dsh-llm'
-import FileSettingsProvider from '@deepseek-ai/dsh-settings-file'
-import { settingsNamespace } from '@deepseek-ai/dsh-settings'
-import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
-import { PiAiAdapter } from '@deepseek-ai/dsh-llm-pi-ai'
+import { Context } from '@hiveforge-ai/cordis'
+import LlmRuntime, { createUserMessage, ReasoningEffortId } from '@hiveforge-ai/dsh-llm'
+import type { StreamChunk } from '@hiveforge-ai/dsh-llm'
+import FileSettingsProvider from '@hiveforge-ai/dsh-settings-file'
+import { settingsNamespace } from '@hiveforge-ai/dsh-settings'
+import * as LlmPiAi from '@hiveforge-ai/dsh-llm-pi-ai'
+import { PiAiAdapter } from '@hiveforge-ai/dsh-llm-pi-ai'
 import { getBuiltinModels } from '@earendil-works/pi-ai/providers/all'
 import { createModels, getSupportedThinkingLevels } from '@earendil-works/pi-ai'
 import type { Api, Model, OpenAICompletionsCompat, Provider } from '@earendil-works/pi-ai'
 import { resolveProfiles } from '../src/config.ts'
+import { catalogModels } from '../src/catalog.ts'
 import { buildProvider, supportedProtocols } from '../src/provider.ts'
 import { assemble } from './assemble.ts'
 import { memoryAuth } from './auth-double.ts'
@@ -75,6 +76,10 @@ async function harness(config: LlmPiAi.Config): Promise<Context> {
   return ctx
 }
 
+function hiveforgeCatalog(): readonly Model<Api>[] {
+  return [...catalogModels('hiveforge').values()]
+}
+
 describe('hand-declared providers', () => {
   it('serves a route pi-ai has never heard of from its own declaration', async () => {
     const server = await mockServer([{ events: textEvents }])
@@ -126,10 +131,10 @@ describe('hand-declared providers', () => {
 
     // A catalog route is unaffected: its models carry the metadata that makes
     // `off` actually disable thinking.
-    const withCatalog = await harness({ providers: { deepseek: { baseURL: server.url } } })
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
-    expect((await withCatalog.llm.resolveModelInfo('deepseek', catalogModel.id)).reasoning?.efforts.map(e => e.id))
+    const withCatalog = await harness({ providers: { hiveforge: { baseURL: server.url } } })
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
+    expect((await withCatalog.llm.resolveModelInfo('hiveforge', catalogModel.id)).reasoning?.efforts.map(e => e.id))
       .toContain('off')
   })
 
@@ -151,7 +156,7 @@ describe('hand-declared providers', () => {
     // provider carries a stored profile the moment anyone corrects it.
     expect(directory.filter(entry => entry.declared).map(entry => entry.provider))
       .toEqual(['acme-gateway'])
-    expect(directory.find(entry => entry.provider === 'deepseek')?.declared).toBe(false)
+    expect(directory.find(entry => entry.provider === 'hiveforge')?.declared).toBe(false)
   })
 
   it('sizes a model the catalog cannot describe from the route\u2019s own fallbacks', () => {
@@ -264,10 +269,10 @@ describe('hand-declared providers', () => {
     // materializes `[]` for an absent array, so an entry naming a catalog
     // model without declaring modalities must keep the catalog's rather than
     // describe a model that accepts nothing.
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
     const resolved = resolveProfiles({
-      'deepseek': { baseURL: 'https://catalog.test', models: [{ id: catalogModel.id, input: [] }] },
+      'hiveforge': { baseURL: 'https://catalog.test', models: [{ id: catalogModel.id, input: [] }] },
       'acme-gateway': {
         api: 'openai-completions',
         baseURL: 'https://acme.test',
@@ -275,7 +280,7 @@ describe('hand-declared providers', () => {
       },
     })
     expect(resolved.get('acme-gateway')?.piProvider.getModels()[0]?.input).toEqual(['text'])
-    expect(resolved.get('deepseek')?.piProvider.getModels()[0]?.input).toEqual(catalogModel.input)
+    expect(resolved.get('hiveforge')?.piProvider.getModels()[0]?.input).toEqual(catalogModel.input)
 
     // Nothing sits below the route value, so its empty list states no answer
     // anything could take, and is refused where it is written.
@@ -402,27 +407,27 @@ describe('hand-declared providers', () => {
 describe('catalog routes with per-model configuration', () => {
   it('serves the installed catalog untouched when the profile lists no models', async () => {
     const server = await mockServer([])
-    const ctx = await harness({ providers: { deepseek: { baseURL: server.url } } })
+    const ctx = await harness({ providers: { hiveforge: { baseURL: server.url } } })
 
-    const listed = await ctx.llm.listModels('deepseek')
+    const listed = await ctx.llm.listModels('hiveforge')
     expect(listed.map(model => model.id).sort())
-      .toEqual(getBuiltinModels('deepseek').map(model => model.id).sort())
+      .toEqual(hiveforgeCatalog().map(model => model.id).sort())
   })
 
   it('overrides one catalog model field and defaults the rest from the catalog', async () => {
     const server = await mockServer([])
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
     const ctx = await harness({
       providers: {
-        deepseek: {
+        hiveforge: {
           baseURL: server.url,
           models: [{ id: catalogModel.id, contextWindow: 4096 }],
         },
       },
     })
 
-    const info = await ctx.llm.resolveModelInfo('deepseek', catalogModel.id)
+    const info = await ctx.llm.resolveModelInfo('hiveforge', catalogModel.id)
     // The configured field wins and the name still comes from the catalog. The
     // catalog's own output cap is the model's capability, not a cap anyone
     // chose, so it must not arrive as the request default.
@@ -430,16 +435,16 @@ describe('catalog routes with per-model configuration', () => {
     expect(info.name).toBe(catalogModel.name)
     expect(info.defaultMaxTokens).toBeUndefined()
     // An explicit list replaces the catalog rather than adding to it.
-    expect((await ctx.llm.listModels('deepseek')).map(model => model.id)).toEqual([catalogModel.id])
+    expect((await ctx.llm.listModels('hiveforge')).map(model => model.id)).toEqual([catalogModel.id])
   })
 
   it('materializes a request default only from a configured output cap', async () => {
     const server = await mockServer([])
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
     const ctx = await harness({
       providers: {
-        deepseek: {
+        hiveforge: {
           baseURL: server.url,
           models: [{ id: catalogModel.id, maxTokens: 4096 }],
         },
@@ -448,22 +453,22 @@ describe('catalog routes with per-model configuration', () => {
 
     // Configuring the cap is the deployment choosing one, so it becomes the
     // default the seam materializes into requests that name none.
-    expect((await ctx.llm.resolveModelInfo('deepseek', catalogModel.id)).defaultMaxTokens).toBe(4096)
+    expect((await ctx.llm.resolveModelInfo('hiveforge', catalogModel.id)).defaultMaxTokens).toBe(4096)
   })
 
   it('adds a model the installed catalog does not describe to a catalog route', async () => {
     const server = await mockServer([{ events: textEvents }])
     const ctx = await harness({
       providers: {
-        deepseek: {
+        hiveforge: {
           apiKeyEnv: KEY_ENV,
           baseURL: `${server.url}/v1`,
-          models: [{ id: 'deepseek-preview', contextWindow: 200_000, maxTokens: 8192 }],
+          models: [{ id: 'hiveforge-preview', contextWindow: 200_000, maxTokens: 8192 }],
         },
       },
     })
 
-    const result = await assemble(ctx, { provider: 'deepseek', model: 'deepseek-preview', messages: [] })
+    const result = await assemble(ctx, { provider: 'hiveforge', model: 'hiveforge-preview', messages: [] })
     expect(result.finish).toEqual({ kind: 'stop' })
     // The catalog route keeps its catalog protocol, so the new model reaches
     // the same endpoint shape the shipped models use.
@@ -474,11 +479,11 @@ describe('catalog routes with per-model configuration', () => {
     const server = await mockServer([])
     const ctx = await harness({
       providers: {
-        deepseek: { baseURL: server.url, models: [{ id: 'deepseek-preview', contextWindow: 1, maxTokens: 1 }] },
+        hiveforge: { baseURL: server.url, models: [{ id: 'hiveforge-preview', contextWindow: 1, maxTokens: 1 }] },
       },
     })
 
-    const result = await assemble(ctx, { provider: 'deepseek', model: 'not-configured', messages: [] })
+    const result = await assemble(ctx, { provider: 'hiveforge', model: 'not-configured', messages: [] })
 
     expect(result.finish).toMatchObject({ kind: 'error', failure: { code: 'UNKNOWN_MODEL' } })
     expect(server.requests).toHaveLength(0)
@@ -502,11 +507,11 @@ describe('catalog routes with per-model configuration', () => {
 
   it('delegates both stream methods back to the reused catalog provider', async () => {
     const server = await mockServer([{ events: textEvents }, { events: textEvents }])
-    const resolved = resolveProfiles({ deepseek: { baseURL: `${server.url}/v1` } })
-    const built = resolved.get('deepseek')?.piProvider
-    if (built === undefined) throw new Error('the deepseek route built no provider')
+    const resolved = resolveProfiles({ hiveforge: { baseURL: `${server.url}/v1` } })
+    const built = resolved.get('hiveforge')?.piProvider
+    if (built === undefined) throw new Error('the hiveforge route built no provider')
     const [model] = built.getModels()
-    if (model === undefined) throw new Error('the deepseek route resolved no models')
+    if (model === undefined) throw new Error('the hiveforge route resolved no models')
     const context = { messages: [{ role: 'user' as const, content: 'hi', timestamp: 0 }] }
 
     // `stream` is interface-required and unused by the harness adapter, which
@@ -635,13 +640,13 @@ describe('per-model reasoning efforts', () => {
   })
 
   it('narrows a catalog model’s levels in place', () => {
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
     expect(getSupportedThinkingLevels(catalogModel as Model<Api>)).toEqual(['off', 'high', 'max'])
 
     const model = modelOf({
-      deepseek: { models: [{ id: catalogModel.id, reasoningEfforts: { off: null, high: 'high' } }] },
-    }, 'deepseek')
+      hiveforge: { models: [{ id: catalogModel.id, reasoningEfforts: { off: null, high: 'high' } }] },
+    }, 'hiveforge')
 
     expect(getSupportedThinkingLevels(model)).toEqual(['off', 'high'])
     // Only the reasoning fields change; identity and capacities stay catalog.
@@ -650,21 +655,21 @@ describe('per-model reasoning efforts', () => {
   })
 
   it('strips reasoning from a catalog model with false', () => {
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
     expect(catalogModel.reasoning).toBe(true)
 
-    const model = modelOf({ deepseek: { models: [{ id: catalogModel.id, reasoningEfforts: false }] } }, 'deepseek')
+    const model = modelOf({ hiveforge: { models: [{ id: catalogModel.id, reasoningEfforts: false }] } }, 'hiveforge')
 
     expect(model.reasoning).toBe(false)
     expect(getSupportedThinkingLevels(model)).toEqual(['off'])
   })
 
   it('inherits the catalog capability when the field is absent', () => {
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
 
-    const model = modelOf({ deepseek: { models: [{ id: catalogModel.id }] } }, 'deepseek')
+    const model = modelOf({ hiveforge: { models: [{ id: catalogModel.id }] } }, 'hiveforge')
 
     expect(model.reasoning).toBe(catalogModel.reasoning)
     expect(model.thinkingLevelMap).toEqual(catalogModel.thinkingLevelMap)
@@ -686,46 +691,46 @@ describe('per-model reasoning efforts', () => {
 })
 
 describe('modelOverrides', () => {
-  const deepseekModel = (): Model<Api> => {
-    const [model] = getBuiltinModels('deepseek')
-    if (model === undefined) throw new Error('the installed catalog ships no deepseek model')
+  const hiveforgeModel = (): Model<Api> => {
+    const [model] = hiveforgeCatalog()
+    if (model === undefined) throw new Error('the installed catalog ships no hiveforge model')
     return model
   }
 
   it('reshapes one catalog model while the rest of the catalog keeps serving', () => {
-    const catalogSize = getBuiltinModels('deepseek').length
-    const target = deepseekModel()
+    const catalogSize = hiveforgeCatalog().length
+    const target = hiveforgeModel()
     const resolved = resolveProfiles({
-      deepseek: {
+      hiveforge: {
         modelOverrides: {
           [target.id]: {
-            name: 'DeepSeek (proxied)',
+            name: 'HiveForge (proxied)',
             maxTokens: 4096,
             reasoningEfforts: { off: null, high: 'high' },
           },
         },
       },
     })
-    const models = resolved.get('deepseek')?.piProvider.getModels() ?? []
+    const models = resolved.get('hiveforge')?.piProvider.getModels() ?? []
     const reshaped = models.find(model => model.id === target.id)
     if (reshaped === undefined) throw new Error('the overridden model vanished from the route')
 
     // The whole catalog still serves — that is the difference from `models`,
     // which replaces it.
     expect(models).toHaveLength(catalogSize)
-    expect(reshaped.name).toBe('DeepSeek (proxied)')
+    expect(reshaped.name).toBe('HiveForge (proxied)')
     expect(getSupportedThinkingLevels(reshaped)).toEqual(['off', 'high'])
     // An override's cap is explicit configuration, so it becomes the request
     // default exactly as a models entry's would.
-    expect(resolved.get('deepseek')?.configuredMaxTokens.get(target.id)).toBe(4096)
+    expect(resolved.get('hiveforge')?.configuredMaxTokens.get(target.id)).toBe(4096)
     // A sibling the overrides do not name is byte-identical to the catalog.
     const sibling = models.find(model => model.id !== target.id)
-    expect(sibling?.maxTokens).toBe(getBuiltinModels('deepseek').find(model => model.id === sibling?.id)?.maxTokens)
+    expect(sibling?.maxTokens).toBe(hiveforgeCatalog().find(model => model.id === sibling?.id)?.maxTokens)
   })
 
   it('refuses every override that lands nowhere instead of skipping it', () => {
     expect(() => resolveProfiles({
-      deepseek: { modelOverrides: { 'no-such-model': { name: 'ghost' } } },
+      hiveforge: { modelOverrides: { 'no-such-model': { name: 'ghost' } } },
     })).toThrow(/which the installed catalog does not describe/)
     expect(() => resolveProfiles({
       'acme-gateway': {
@@ -735,15 +740,15 @@ describe('modelOverrides', () => {
         modelOverrides: { m: { name: 'renamed' } },
       },
     })).toThrow(/a declared route spells every model out/)
-    const declaredOnly = deepseekModel()
+    const declaredOnly = hiveforgeModel()
     expect(() => resolveProfiles({
-      deepseek: {
+      hiveforge: {
         models: [{ id: declaredOnly.id }],
         modelOverrides: { [declaredOnly.id]: { name: 'renamed' } },
       },
     })).toThrow(/models already replaces the served catalog/)
     expect(() => resolveProfiles({
-      deepseek: { modelOverrides: { '': { name: 'nameless' } } },
+      hiveforge: { modelOverrides: { '': { name: 'nameless' } } },
     })).toThrow(/empty model id/)
     // The dict key is the id; a value smuggling its own would quietly rename
     // the model it meant to customize. The schema passes unknown keys
@@ -751,7 +756,7 @@ describe('modelOverrides', () => {
     // indirection mirrors that boundary by sidestepping the literal check.
     const smuggled = { name: 'x', id: 'other' }
     expect(() => resolveProfiles({
-      deepseek: { modelOverrides: { [deepseekModel().id]: smuggled } },
+      hiveforge: { modelOverrides: { [hiveforgeModel().id]: smuggled } },
     })).toThrow(/sets "id", which is the dict key/)
   })
 })
@@ -768,7 +773,7 @@ describe('compat switches', () => {
       'acme-gateway': {
         api: 'openai-completions',
         baseURL: 'https://acme.test',
-        compat: { thinkingFormat: 'deepseek' },
+        compat: { thinkingFormat: 'hiveforge' },
         models: [
           { id: 'dialect-default', reasoningEfforts: { off: null, high: 'high' } },
           { id: 'dialect-odd', compat: { thinkingFormat: 'openai', supportsReasoningEffort: false } },
@@ -776,19 +781,19 @@ describe('compat switches', () => {
       },
     }, 'acme-gateway')
 
-    expect(models.get('dialect-default')?.compat).toEqual({ thinkingFormat: 'deepseek' })
+    expect(models.get('dialect-default')?.compat).toEqual({ thinkingFormat: 'hiveforge' })
     expect(models.get('dialect-odd')?.compat).toEqual({ thinkingFormat: 'openai', supportsReasoningEffort: false })
   })
 
   it('merges the switches over the catalog entry’s own compat instead of replacing it', () => {
-    const [catalogModel] = getBuiltinModels('deepseek')
-    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const [catalogModel] = hiveforgeCatalog()
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no hiveforge model')
     const inherited = catalogModel.compat as OpenAICompletionsCompat
     expect(inherited.requiresReasoningContentOnAssistantMessages).toBe(true)
 
     const models = modelsOf({
-      deepseek: { models: [{ id: catalogModel.id, compat: { thinkingFormat: 'openai' } }] },
-    }, 'deepseek')
+      hiveforge: { models: [{ id: catalogModel.id, compat: { thinkingFormat: 'openai' } }] },
+    }, 'hiveforge')
 
     // The one switched field changes; the catalog's other quirks survive,
     // because configuration has no way to restate them.
@@ -1009,10 +1014,10 @@ describe('compat switches', () => {
 
   it('refuses a valueless compat key on a model entry too', () => {
     expect(() => resolveProfiles({
-      deepseek: {
-        modelOverrides: { 'deepseek-v4-flash': { compat: { requiresReasoningContentOnAssistantMessages: null } } as never },
+      hiveforge: {
+        modelOverrides: { 'hiveforge-v4-flash': { compat: { requiresReasoningContentOnAssistantMessages: null } } as never },
       },
-    })).toThrow(/model "deepseek-v4-flash" sets compat "requiresReasoningContentOnAssistantMessages" with no value/)
+    })).toThrow(/model "hiveforge-v4-flash" sets compat "requiresReasoningContentOnAssistantMessages" with no value/)
   })
 
   it('serves the Responses compat type on every protocol pi-ai gives it to', () => {
@@ -1058,7 +1063,7 @@ describe('compat switches', () => {
 describe('resolution snapshots', () => {
   it('finishes an in-flight request under the configuration it started with', async () => {
     const server = await mockServer([{ events: textEvents }])
-    let current = resolveProfiles({ deepseek: { baseURL: `${server.url}/v1` } })
+    let current = resolveProfiles({ hiveforge: { baseURL: `${server.url}/v1` } })
     let release: () => void = () => {}
     const held = new Promise<void>((resolve) => { release = resolve })
     const adapter = new PiAiAdapter({
@@ -1072,8 +1077,8 @@ describe('resolution snapshots', () => {
     const chunks: StreamChunk[] = []
     const inFlight = (async () => {
       for await (const chunk of adapter.stream({
-        provider: 'deepseek',
-        model: 'deepseek-v4-flash',
+        provider: 'hiveforge',
+        model: 'hiveforge-v4-flash',
         messages: [],
       })) chunks.push(chunk)
     })()
@@ -1094,7 +1099,7 @@ describe('resolution snapshots', () => {
   it('serves the next request from the new configuration', async () => {
     const first = await mockServer([{ events: textEvents }])
     const second = await mockServer([{ events: textEvents }])
-    let current = resolveProfiles({ deepseek: { baseURL: `${first.url}/v1` } })
+    let current = resolveProfiles({ hiveforge: { baseURL: `${first.url}/v1` } })
     const adapter = new PiAiAdapter({
       profiles: () => current,
       resolveApiKey: () => Promise.resolve('k'),
@@ -1102,12 +1107,12 @@ describe('resolution snapshots', () => {
     })
     const drain = async (): Promise<void> => {
       for await (const _chunk of adapter.stream({
-        provider: 'deepseek', model: 'deepseek-v4-flash', messages: [],
+        provider: 'hiveforge', model: 'hiveforge-v4-flash', messages: [],
       })) { /* drain */ }
     }
 
     await drain()
-    current = resolveProfiles({ deepseek: { baseURL: `${second.url}/v1` } })
+    current = resolveProfiles({ hiveforge: { baseURL: `${second.url}/v1` } })
     await drain()
 
     expect(first.paths).toHaveLength(1)
@@ -1119,16 +1124,16 @@ describe('configurable-provider directory', () => {
   it('keeps the previous directory when a route collides with another adapter family', async () => {
     const dir = await home()
     const ctx = await bootWithSettings(dir, {})
-    // Another adapter family owns this route id, exactly as llm-deepseek does.
+    // Another adapter family owns this route id, exactly as llm-hiveforge does.
     ctx.llm.registerConfigurableProviders([
-      { provider: 'deepseek-official', displayName: 'DeepSeek', settingsNs: 'llm-deepseek', settingsPath: [] },
+      { provider: 'hiveforge-official', displayName: 'HiveForge', settingsNs: 'llm-hiveforge', settingsPath: [] },
     ])
     const before = ctx.llm.listConfigurableProviders().length
     expect(before).toBeGreaterThan(30)
 
     await ctx.settings.update(settingsNamespace('llm-pi-ai'), {
       providers: {
-        'deepseek-official': {
+        'hiveforge-official': {
           api: 'openai-completions',
           baseURL: 'https://acme.test/v1',
           models: [{ id: 'm', contextWindow: 1, maxTokens: 1 }],
@@ -1139,8 +1144,8 @@ describe('configurable-provider directory', () => {
     // The refused swap costs a diagnostic, not the directory: every entry the
     // page needs is still declared.
     expect(ctx.llm.listConfigurableProviders()).toHaveLength(before)
-    expect(ctx.llm.listConfigurableProviders().find(entry => entry.provider === 'deepseek-official')?.settingsNs)
-      .toBe('llm-deepseek')
+    expect(ctx.llm.listConfigurableProviders().find(entry => entry.provider === 'hiveforge-official')?.settingsNs)
+      .toBe('llm-hiveforge')
   })
 
   it('replaces its entries atomically as declared routes come and go', async () => {

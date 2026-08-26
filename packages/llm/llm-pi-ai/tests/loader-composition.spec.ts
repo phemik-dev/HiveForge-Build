@@ -13,13 +13,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import Include from '@deepseek-ai/cordis-plugin-include'
-import LlmRuntime, { createMessage, createUserMessage } from '@deepseek-ai/dsh-llm'
-import LocalCredentialProvider from '@deepseek-ai/dsh-credentials-local'
-import FileSettingsProvider from '@deepseek-ai/dsh-settings-file'
-import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
+import { Context } from '@hiveforge-ai/cordis'
+import Loader from '@hiveforge-ai/cordis-plugin-loader'
+import Include from '@hiveforge-ai/cordis-plugin-include'
+import LlmRuntime, { createMessage, createUserMessage } from '@hiveforge-ai/dsh-llm'
+import LocalCredentialProvider from '@hiveforge-ai/dsh-credentials-local'
+import FileSettingsProvider from '@hiveforge-ai/dsh-settings-file'
+import * as LlmPiAi from '@hiveforge-ai/dsh-llm-pi-ai'
 import { assemble } from './assemble.ts'
 import { closeMockServers, mockServer, textEvents } from './mock-server.ts'
 
@@ -56,17 +56,17 @@ async function loadComposition(): Promise<{ ctx: Context; settingsPath: string }
     '- id: llm',
     "  name: 'test-llm-service'",
     '- id: settings',
-    "  name: '@deepseek-ai/dsh-settings-file'",
+    "  name: '@hiveforge-ai/dsh-settings-file'",
     '  config:',
     `    path: ${JSON.stringify(settingsPath)}`,
     '    debounceMs: 10',
     '- id: credentials',
-    "  name: '@deepseek-ai/dsh-credentials-local'",
+    "  name: '@hiveforge-ai/dsh-credentials-local'",
     '  config:',
     `    path: ${JSON.stringify(join(root, '.credentials.yaml'))}`,
     '    debounceMs: 10',
     '- id: llm-pi-ai',
-    "  name: '@deepseek-ai/dsh-llm-pi-ai'",
+    "  name: '@hiveforge-ai/dsh-llm-pi-ai'",
     '',
   ].join('\n'))
 
@@ -77,9 +77,9 @@ async function loadComposition(): Promise<{ ctx: Context; settingsPath: string }
   ctx.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
     ['test-llm-service', LlmRuntime],
-    ['@deepseek-ai/dsh-settings-file', FileSettingsProvider],
-    ['@deepseek-ai/dsh-credentials-local', LocalCredentialProvider],
-    ['@deepseek-ai/dsh-llm-pi-ai', LlmPiAi],
+    ['@hiveforge-ai/dsh-settings-file', FileSettingsProvider],
+    ['@hiveforge-ai/dsh-credentials-local', LocalCredentialProvider],
+    ['@hiveforge-ai/dsh-llm-pi-ai', LlmPiAi],
   ])
   ctx.loader.internal = {
     version: 'v2',
@@ -109,16 +109,16 @@ describe('llm-pi-ai real dormant composition', () => {
     await writeFile(settingsPath, [
       'llm-pi-ai:',
       '  providers:',
-      '    deepseek:',
+      '    hiveforge:',
       '      apiKeyEnv: PI_COMPOSITION_KEY',
       `      baseURL: ${server.url}`,
       '',
     ].join('\n'))
     await vi.waitFor(() => {
-      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['deepseek'])
+      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['hiveforge'])
     }, { timeout: 5000 })
 
-    const result = await assemble(ctx, { provider: 'deepseek', model: 'deepseek-v4-flash', messages: [] })
+    const result = await assemble(ctx, { provider: 'hiveforge', model: 'hiveforge-v4-flash', messages: [] })
     expect(result.message.content).toEqual([{ type: 'text', text: 'hello' }])
     expect(server.headers[0]?.authorization).toBe('Bearer key-from-store')
   })
@@ -133,33 +133,33 @@ describe('llm-pi-ai real dormant composition', () => {
     await writeFile(settingsPath, [
       'llm-pi-ai:',
       '  providers:',
-      '    deepseek:',
+      '    hiveforge:',
       '      apiKeyEnv: PI_COMPOSITION_KEY',
       `      baseURL: ${server.url}`,
       '',
     ].join('\n'))
     await vi.waitFor(() => {
-      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['deepseek'])
+      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['hiveforge'])
     }, { timeout: 5000 })
 
     const truncated = await assemble(ctx, {
-      provider: 'deepseek',
-      model: 'deepseek-v4-flash',
+      provider: 'hiveforge',
+      model: 'hiveforge-v4-flash',
       messages: [],
     })
     expect(truncated.finish).toEqual({ kind: 'max-tokens' })
     expect(truncated.message.content).toEqual([{ type: 'text', text: 'partial' }])
     expect(truncated.message.source).toEqual({
       kind: 'model',
-      provider: 'deepseek',
-      model: 'deepseek-v4-flash',
+      provider: 'hiveforge',
+      model: 'hiveforge-v4-flash',
       replayState: {
         response: {
           kind: 'pi-ai',
           version: 2,
           api: 'openai-completions',
-          provider: 'deepseek',
-          model: 'deepseek-v4-flash',
+          provider: 'hiveforge',
+          model: 'hiveforge-v4-flash',
           stopReason: 'length',
         },
         blocks: [{ type: 'text' }],
@@ -167,8 +167,8 @@ describe('llm-pi-ai real dormant composition', () => {
     })
 
     const continued = await assemble(ctx, {
-      provider: 'deepseek',
-      model: 'deepseek-v4-flash',
+      provider: 'hiveforge',
+      model: 'hiveforge-v4-flash',
       messages: [
         truncated.message,
         createUserMessage({ content: [{ type: 'text', text: 'continue' }], source: { kind: 'user' } }),
@@ -193,13 +193,13 @@ describe('llm-pi-ai real dormant composition', () => {
     await writeFile(settingsPath, [
       'llm-pi-ai:',
       '  providers:',
-      '    deepseek:',
+      '    hiveforge:',
       '      apiKeyEnv: PI_COMPOSITION_KEY',
       `      baseURL: ${server.url}`,
       '',
     ].join('\n'))
     await vi.waitFor(() => {
-      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['deepseek'])
+      expect(ctx.llm.listProviders().map(provider => provider.id)).toEqual(['hiveforge'])
     }, { timeout: 5000 })
 
     // A pre-envelope session log entry: max-token assembly dropped the tool
@@ -210,14 +210,14 @@ describe('llm-pi-ai real dormant composition', () => {
       source: {
         kind: 'model',
         ...{
-          provider: 'deepseek',
-          model: 'deepseek-v4-flash',
+          provider: 'hiveforge',
+          model: 'hiveforge-v4-flash',
           replayState: {
             kind: 'pi-ai',
             version: 1,
             api: 'openai-completions',
-            provider: 'deepseek',
-            model: 'deepseek-v4-flash',
+            provider: 'hiveforge',
+            model: 'hiveforge-v4-flash',
             stopReason: 'length',
             blocks: [{ type: 'text' }, { type: 'tool-call' }],
           },
@@ -225,8 +225,8 @@ describe('llm-pi-ai real dormant composition', () => {
       },
     })
     const continued = await assemble(ctx, {
-      provider: 'deepseek',
-      model: 'deepseek-v4-flash',
+      provider: 'hiveforge',
+      model: 'hiveforge-v4-flash',
       messages: [
         poisoned,
         createUserMessage({ content: [{ type: 'text', text: 'continue' }], source: { kind: 'user' } }),

@@ -1,12 +1,12 @@
 /** Models section registration: slot declaration injection, the locale-following label thunk, and HMR recovery. */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@hiveforge-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { resolveSlotLabel } from '@deepseek-ai/dsh-client-ui-slots'
-import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
-import { TestRemote } from '@deepseek-ai/dsh-client-test-runtime'
-import { apply as settingsApply, inject as settingsInject } from '@deepseek-ai/dsh-client-ui-settings/client'
-import { apply, inject, refreshIfLoaded } from '@deepseek-ai/dsh-client-ui-settings-models/client'
+import { resolveSlotLabel } from '@hiveforge-ai/dsh-client-ui-slots'
+import { SlotRegistry } from '@hiveforge-ai/dsh-client-runtime/client'
+import { LocaleRuntime } from '@hiveforge-ai/dsh-client-locale/client'
+import { TestRemote } from '@hiveforge-ai/dsh-client-test-runtime'
+import { apply as settingsApply, inject as settingsInject } from '@hiveforge-ai/dsh-client-ui-settings/client'
+import { apply, inject, refreshIfLoaded } from '@hiveforge-ai/dsh-client-ui-settings-models/client'
 import {
   WELCOME_NOTICE_ACK_FIELD, WELCOME_NOTICE_SETTINGS_NAMESPACE, WELCOME_NOTICE_VERSION,
 } from '../src/onboarding-copy.ts'
@@ -211,7 +211,7 @@ describe('pushed invalidations', () => {
     )()
     injected.controller.store.update((state) => { state.status = 'ready' })
     const load = vi.spyOn(injected.controller, 'load').mockResolvedValue()
-    b.ctx.remote.$dispatch('credentials/reference-updated', ['DEEPSEEK_API_KEY'])
+    b.ctx.remote.$dispatch('credentials/reference-updated', ['HIVEFORGE_API_KEY'])
     expect(load).toHaveBeenCalledTimes(1)
   })
 

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-settings-file
+# @hiveforge-ai/dsh-settings-file
 
 [English](README.md) | 中文
 

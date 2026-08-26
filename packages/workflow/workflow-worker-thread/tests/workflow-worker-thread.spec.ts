@@ -2,17 +2,17 @@ import { describe, expect, it, vi } from 'vitest'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import type { Worker } from 'node:worker_threads'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import SubagentRuntime from '@deepseek-ai/dsh-subagent'
-import type { SubagentCapabilities, SubagentProvider, SubagentResult, SubagentRun, SubagentStartRequest } from '@deepseek-ai/dsh-subagent'
-import type { WorkflowMeta, WorkflowResult, WorkflowResultInfo, WorkflowRun, WorkflowRunInfo } from '@deepseek-ai/dsh-workflow'
+import { Context } from '@hiveforge-ai/cordis'
+import Loader from '@hiveforge-ai/cordis-plugin-loader'
+import type { Agent } from '@hiveforge-ai/dsh-agent'
+import SubagentRuntime from '@hiveforge-ai/dsh-subagent'
+import type { SubagentCapabilities, SubagentProvider, SubagentResult, SubagentRun, SubagentStartRequest } from '@hiveforge-ai/dsh-subagent'
+import type { WorkflowMeta, WorkflowResult, WorkflowResultInfo, WorkflowRun, WorkflowRunInfo } from '@hiveforge-ai/dsh-workflow'
 import * as workerEngineModule from '../src/index.ts'
 import WorkerThreadWorkflowEngine, { type Config } from '../src/index.ts'
 import { workerSpawnEnv } from '../src/host.ts'
 import { HostToWorkerType, WorkerToHostType } from '../src/protocol.ts'
-import { SessionId } from '@deepseek-ai/dsh-session'
+import { SessionId } from '@hiveforge-ai/dsh-session'
 
 /** A minimal parent stand-in: the engine only threads it through to the provider. */
 function fakeParent(): Agent {
@@ -213,7 +213,7 @@ describe('dsh-workflow-worker-thread', () => {
         reply: () => ({ output: [], structured: { files: ['x.ts', 'y.ts'] }, stopReason: 'completed' }),
       })
       const result = await run(ctx, parent, scripted(`
-        const found = await agent('list files', { model: 'deepseek-v4-pro', schema: { type: 'object', properties: { files: { type: 'array', items: { type: 'string' } } }, required: ['files'] } })
+        const found = await agent('list files', { model: 'hiveforge-v4-pro', schema: { type: 'object', properties: { files: { type: 'array', items: { type: 'string' } } }, required: ['files'] } })
         return { first: found.files[0], count: found.files.length }
       `))
       expect(result.value).toEqual({ first: 'x.ts', count: 2 })
@@ -222,7 +222,7 @@ describe('dsh-workflow-worker-thread', () => {
         properties: { files: { type: 'array', items: { type: 'string' } } },
         required: ['files'],
       })
-      expect(provider.runs[0]!.request.agentOptions).toEqual({ model: 'deepseek-v4-pro' })
+      expect(provider.runs[0]!.request.agentOptions).toEqual({ model: 'hiveforge-v4-pro' })
       expect(provider.runs[0]!.request.parent).toBeDefined()
     })
 
@@ -564,7 +564,7 @@ describe('dsh-workflow-worker-thread', () => {
     it('the worker spawns with a scrubbed environment: an escaped script finds no ambient credentials', async () => {
       const { ctx, parent } = await setup()
       // A canary in the HARNESS process's env: with an inherited environment
-      // the escape below would read it back (exactly how DEEPSEEK_API_KEY
+      // the escape below would read it back (exactly how HIVEFORGE_API_KEY
       // would leak); the worker env keeps every ambient variable out. Windows
       // additionally receives the host temp path (TMP/TEMP) so `os.tmpdir()`
       // inside the worker resolves instead of degrading to a cwd-relative

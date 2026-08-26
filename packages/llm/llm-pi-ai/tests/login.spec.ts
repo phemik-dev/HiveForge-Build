@@ -2,11 +2,11 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import AuthorizationService from '@deepseek-ai/dsh-authorization'
-import type { AuthorizationInteraction, AuthorizationNotice, AuthorizationPrompt } from '@deepseek-ai/dsh-authorization'
-import LocalCredentialProvider from '@deepseek-ai/dsh-credentials-local'
-import type { CredentialKey } from '@deepseek-ai/dsh-credentials'
+import { Context } from '@hiveforge-ai/cordis'
+import AuthorizationService from '@hiveforge-ai/dsh-authorization'
+import type { AuthorizationInteraction, AuthorizationNotice, AuthorizationPrompt } from '@hiveforge-ai/dsh-authorization'
+import LocalCredentialProvider from '@hiveforge-ai/dsh-credentials-local'
+import type { CredentialKey } from '@hiveforge-ai/dsh-credentials'
 import type { AuthEvent, AuthInteraction, AuthPrompt, AuthType, Credential } from '@earendil-works/pi-ai'
 
 const login = vi.hoisted(() => vi.fn())
@@ -94,7 +94,7 @@ describe('pi-ai login flows', () => {
       .toEqual(['oauth', 'api-key'])
     // A key-only provider still gets a flow, because pi-ai collects the key
     // through its own prompt rather than leaving it to the settings form.
-    expect(offered.find(entry => entry.key === recordKeyFor('deepseek'))?.methods.map(one => one.id))
+    expect(offered.find(entry => entry.key === recordKeyFor('hiveforge'))?.methods.map(one => one.id))
       .toEqual(['api-key'])
   })
 

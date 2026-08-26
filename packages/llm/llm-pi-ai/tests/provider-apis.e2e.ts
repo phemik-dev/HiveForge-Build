@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import { AttachmentId, AttachmentStore, ImageVariantId } from '@deepseek-ai/dsh-attachment'
+import { Context } from '@hiveforge-ai/cordis'
+import { AttachmentId, AttachmentStore, ImageVariantId } from '@hiveforge-ai/dsh-attachment'
 import type {
   ImageAttachmentLimits,
   ImageAttachmentRef,
@@ -9,10 +9,10 @@ import type {
   RequestImageAttachment,
   SaveImageAttachment,
   StoredImageAttachment,
-} from '@deepseek-ai/dsh-attachment'
-import LlmRuntime, { createUserMessage, CallId } from '@deepseek-ai/dsh-llm'
-import type { Message, ToolSchema } from '@deepseek-ai/dsh-llm'
-import * as LlmPiAi from '@deepseek-ai/dsh-llm-pi-ai'
+} from '@hiveforge-ai/dsh-attachment'
+import LlmRuntime, { createUserMessage, CallId } from '@hiveforge-ai/dsh-llm'
+import type { Message, ToolSchema } from '@hiveforge-ai/dsh-llm'
+import * as LlmPiAi from '@hiveforge-ai/dsh-llm-pi-ai'
 import type { PiAiReplayResponse } from '../src/replay.ts'
 import { assemble, type AssembledResult } from './assemble.ts'
 
@@ -27,8 +27,8 @@ interface ProviderCase {
 
 const openAIBaseURL = process.env.DSH_PI_AI_OPENAI_BASE_URL
 const azureOpenAIKey = process.env.AZURE_OPENAI_API_KEY
-// Strictly ANTHROPIC_*: the DeepSeek endpoint does not serve the anthropic-messages
-// protocol, so falling back to DEEPSEEK_API_KEY turns the keyless skip into a 404.
+// Strictly ANTHROPIC_*: the HiveForge endpoint does not serve the anthropic-messages
+// protocol, so falling back to HIVEFORGE_API_KEY turns the keyless skip into a 404.
 const anthropicApiKey = process.env.ANTHROPIC_API_KEY
 const anthropicBaseURL = process.env.DSH_PI_AI_ANTHROPIC_BASE_URL
 

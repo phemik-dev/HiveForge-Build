@@ -5,9 +5,9 @@
  * one-shot convenience method.
  */
 
-import { BlockAssembler } from '@deepseek-ai/dsh-llm'
-import type { Context } from '@deepseek-ai/cordis'
-import type { FinishReason, GenerateOptions, Message, TokenUsage } from '@deepseek-ai/dsh-llm'
+import { BlockAssembler } from '@hiveforge-ai/dsh-llm'
+import type { Context } from '@hiveforge-ai/cordis'
+import type { FinishReason, GenerateOptions, Message, TokenUsage } from '@hiveforge-ai/dsh-llm'
 
 export interface AssembledResult {
   message: Message
@@ -17,7 +17,7 @@ export interface AssembledResult {
 
 export async function assemble(ctx: Context, options: Omit<GenerateOptions, 'provider'> & { provider?: string }): Promise<AssembledResult> {
   const assembler = new BlockAssembler()
-  const request = { provider: 'deepseek', ...options }
+  const request = { provider: 'hiveforge', ...options }
   for await (const chunk of ctx.llm.stream(request)) assembler.push(chunk)
   return {
     message: assembler.message({
