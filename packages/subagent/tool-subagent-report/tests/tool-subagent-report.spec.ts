@@ -224,7 +224,7 @@ describe('dsh-tool-subagent-report', () => {
     expect(renderedText(result)).toContain(messageId)
     expect(reports(parent)).toEqual([{
       id: messageId,
-      text: `Background subagent ${started.childId} reported:\nCHILD_FINDING`,
+      text: `Supporting agent ${started.childId} reported:\nCHILD_FINDING`,
       sender: started.childId,
     }])
     expect(enqueues).toEqual(['steering'])
@@ -287,7 +287,7 @@ describe('dsh-tool-subagent-report', () => {
       expect(ctx.agents.get(started.childId) === undefined).toBe(true)
     }, { timeout: 5_000 })
     expect(reports(parent).map(report => report.text)).toEqual([
-      `Background subagent ${started.childId} reported:\nDURABLE_SELECTION`,
+      `Supporting agent ${started.childId} reported:\nDURABLE_SELECTION`,
     ])
   })
 

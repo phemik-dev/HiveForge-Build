@@ -11,6 +11,7 @@ import type { Fiber } from '@hiveforge-ai/cordis'
 import LocalSubprocessRuntime from '@hiveforge-ai/dsh-subprocess-local'
 import type { SubprocessHandle, SubprocessSpawnSpec } from '@hiveforge-ai/dsh-subprocess'
 import { readClientBuildRecord } from '../../../scripts/client-build-environment.ts'
+import { pnpmInvocation } from '../../../scripts/pnpm-invocation.ts'
 import { REPO_ROOT } from './support.ts'
 
 function spawnSpec(argv: readonly string[], cwd: string, env?: Record<string, string>): SubprocessSpawnSpec {
@@ -78,8 +79,8 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
     .map(path => join(REPO_ROOT, path))
   const originalClientBundles = await Promise.all(clientBundlePaths.map(async path => [path, await readFile(path)] as const))
   const originalSource = await readFile(sourcePath)
-  const oldText = 'Into the Unknown'
-  const sourceNeedle = "'hero.headline': 'Into the Unknown'"
+  const oldText = 'What shall we forge?'
+  const sourceNeedle = "'hero.headline': 'What shall we forge?'"
   const newText = `HMR UPDATED ${'x'.repeat(80)}`
   const updatedSource = originalSource.toString().replace(sourceNeedle, `'hero.headline': '${newText}'`)
   if (updatedSource === originalSource.toString()) throw new Error(`HMR source lacks ${JSON.stringify(sourceNeedle)}`)
@@ -92,8 +93,9 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
   const failures: unknown[] = []
   try {
     subprocessFiber = await subprocessCtx.plugin(LocalSubprocessRuntime)
+    const invocation = pnpmInvocation(['run', 'dev:web'])
     watcher = subprocessCtx.subprocess.spawn(spawnSpec(
-      ['pnpm', 'run', 'dev:web'],
+      [invocation.command, ...invocation.args],
       REPO_ROOT,
       { ...clientBuildEnvironment },
     ))
@@ -106,7 +108,7 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
         DSH_HOME: join(world, '.dsh'),
       },
     ))
-    const baseUrl = await waitForOutput(host, /dsh web: (http:\/\/[^\s]+)/, 'built dsh web')
+    const baseUrl = await waitForOutput(host, /HiveForge: (http:\/\/[^\s]+)/, 'built HiveForge web')
     browser = await chromium.launch()
     const page = await browser.newPage()
     const pageErrors: string[] = []

@@ -6,7 +6,7 @@
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: m1 7/25 {{clock}}
 - button "Copy":
   - img

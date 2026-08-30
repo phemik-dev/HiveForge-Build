@@ -9,7 +9,7 @@ import { defineStore, type EngineStoreHandle } from '@hiveforge-ai/dsh-client-ru
 export interface LanguageOptionRow {
   /** Locale id (the setLocale argument). */
   id: string
-  /** Display name in its own language (中文 / English). */
+  /** Display name in its own language (Chinese / English). */
   label: string
 }
 

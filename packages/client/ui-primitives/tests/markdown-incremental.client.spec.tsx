@@ -57,8 +57,9 @@ const STREAM_DOC = [
 ].join('\n')
 
 describe('incremental streaming rendering', () => {
+  const prefixEquivalenceTimeoutMs = process.platform === 'win32' ? 60_000 : 20_000
   for (const chunkSize of [1, 3, 7, 16]) {
-    it(`matches a fresh render at every prefix (chunk=${chunkSize})`, { timeout: 20_000 }, () => {
+    it(`matches a fresh render at every prefix (chunk=${chunkSize})`, { timeout: prefixEquivalenceTimeoutMs }, () => {
       const live = render(<MarkdownText text="" streaming />)
       for (let end = chunkSize; end < STREAM_DOC.length + chunkSize; end += chunkSize) {
         const prefix = STREAM_DOC.slice(0, Math.min(end, STREAM_DOC.length))

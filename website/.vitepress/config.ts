@@ -57,10 +57,10 @@ interface GuideModules {
  * one home shared by the navigation bar and the guide sidebar.
  */
 const guideModules = {
-  root: {
-    guide: localeCollections.root[0],
-    develop: { label: '开发', collection: localeCollections.root[1] },
-    reference: { label: '参考', collection: localeCollections.root[2] },
+  zh: {
+    guide: localeCollections.zh[0],
+    develop: { label: '开发', collection: localeCollections.zh[1] },
+    reference: { label: '参考', collection: localeCollections.zh[2] },
   },
   en: {
     guide: localeCollections.en[0],
@@ -95,7 +95,7 @@ function guideSidebar(locale: DocsLocale): DefaultTheme.SidebarItem[] {
  */
 function moduleNav(locale: DocsLocale): DefaultTheme.NavItem[] {
   const { develop, reference } = guideModules[locale]
-  const routePrefix = locale === 'root' ? '' : '/en'
+  const routePrefix = locale === 'en' ? '' : '/zh'
   return [
     { text: develop.label, link: landingLink(locale, develop.collection), activeMatch: `^${routePrefix}/develop/` },
     { text: reference.label, link: landingLink(locale, reference.collection), activeMatch: `^${routePrefix}/reference/` },
@@ -160,7 +160,7 @@ const sharedTheme: Pick<DefaultTheme.Config, 'search' | 'socialLinks' | 'editLin
     provider: 'local',
     options: {
       locales: {
-        root: {
+        zh: {
           translations: {
             button: {
               buttonText: '搜索文档',
@@ -196,7 +196,7 @@ const sharedTheme: Pick<DefaultTheme.Config, 'search' | 'socialLinks' | 'editLin
       if (typeof editSource !== 'string') throw new Error('Projected documentation page has no editSource frontmatter.')
       return `https://github.com/hiveforge-ai/hiveforge-harness/edit/master/${editSource}`
     },
-    text: '在 GitHub 上编辑此页',
+    text: 'Edit this page on GitHub',
   },
 }
 
@@ -206,7 +206,7 @@ const base = process.env.DOCS_BASE ?? '/'
 /** Site identity shared by the VitePress configuration and the llms.txt index. */
 const siteIdentity = {
   title: 'HiveForge Harness',
-  description: '用于构建 Agent Harness 的插件化 SDK',
+  description: 'A plugin-based SDK for building agent harnesses',
 }
 
 /**
@@ -313,44 +313,18 @@ export default withMermaid({
   outDir: '.dist',
   locales: {
     root: {
-      label: '简体中文',
-      lang: 'zh-CN',
-      themeConfig: {
-        siteTitle: siteTitle('技术预览'),
-        nav: [
-          { text: '入门', link: landingLink('root', guideModules.root.guide), activeMatch: '^/guide/' },
-          ...moduleNav('root'),
-        ],
-        sidebar: {
-          '/guide/': guideSidebar('root'),
-          '/develop/': sidebar('root', 'zh-develop'),
-          '/reference/': sidebar('root', 'zh-reference'),
-        },
-        outline: { label: '本页目录' },
-        docFooter: { prev: '上一篇', next: '下一篇' },
-        darkModeSwitchLabel: '外观',
-        lightModeSwitchTitle: '切换到浅色主题',
-        darkModeSwitchTitle: '切换到深色主题',
-        sidebarMenuLabel: '菜单',
-        returnToTopLabel: '返回顶部',
-        langMenuLabel: '切换语言',
-        skipToContentLabel: '跳至内容',
-      },
-    },
-    en: {
       label: 'English',
       lang: 'en-US',
-      link: '/en/',
       themeConfig: {
         siteTitle: siteTitle('Preview'),
         nav: [
-          { text: 'Guide', link: landingLink('en', guideModules.en.guide), activeMatch: '^/en/guide/' },
+          { text: 'Guide', link: landingLink('en', guideModules.en.guide), activeMatch: '^/guide/' },
           ...moduleNav('en'),
         ],
         sidebar: {
-          '/en/guide/': guideSidebar('en'),
-          '/en/develop/': sidebar('en', 'en-develop'),
-          '/en/reference/': sidebar('en', 'en-reference'),
+          '/guide/': guideSidebar('en'),
+          '/develop/': sidebar('en', 'en-develop'),
+          '/reference/': sidebar('en', 'en-reference'),
         },
         editLink: {
           pattern: ({ frontmatter }: PageData) => {
@@ -363,6 +337,42 @@ export default withMermaid({
         },
         outline: { label: 'On this page' },
         docFooter: { prev: 'Previous', next: 'Next' },
+        langMenuLabel: 'Language',
+      },
+    },
+    zh: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      link: '/zh/',
+      themeConfig: {
+        siteTitle: siteTitle('技术预览'),
+        nav: [
+          { text: '入门', link: landingLink('zh', guideModules.zh.guide), activeMatch: '^/zh/guide/' },
+          ...moduleNav('zh'),
+        ],
+        sidebar: {
+          '/zh/guide/': guideSidebar('zh'),
+          '/zh/develop/': sidebar('zh', 'zh-develop'),
+          '/zh/reference/': sidebar('zh', 'zh-reference'),
+        },
+        editLink: {
+          pattern: ({ frontmatter }: PageData) => {
+            const data: unknown = frontmatter
+            const editSource: unknown = typeof data === 'object' && data !== null ? Reflect.get(data, 'editSource') : undefined
+            if (typeof editSource !== 'string') throw new Error('Projected documentation page has no editSource frontmatter.')
+            return `https://github.com/hiveforge-ai/hiveforge-harness/edit/master/${editSource}`
+          },
+          text: '在 GitHub 上编辑此页',
+        },
+        outline: { label: '本页目录' },
+        docFooter: { prev: '上一篇', next: '下一篇' },
+        darkModeSwitchLabel: '外观',
+        lightModeSwitchTitle: '切换到浅色主题',
+        darkModeSwitchTitle: '切换到深色主题',
+        sidebarMenuLabel: '菜单',
+        returnToTopLabel: '返回顶部',
+        langMenuLabel: '切换语言',
+        skipToContentLabel: '跳至内容',
       },
     },
   },

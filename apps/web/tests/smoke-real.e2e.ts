@@ -35,7 +35,7 @@ function waitForReadyLine(child: ChildProcess): Promise<string> {
     const timer = setTimeout(() => { reject(new Error(`dsh web not ready in 90s; output:\n${out}`)) }, 90_000)
     const onData = (chunk: Buffer): void => {
       out += chunk.toString()
-      const match = /dsh web: (http:\/\/[^\s]+)/.exec(out)
+      const match = /HiveForge: (http:\/\/[^\s]+)/.exec(out)
       if (match?.[1] !== undefined) {
         clearTimeout(timer)
         resolveReady(match[1])
@@ -579,11 +579,11 @@ describe.skipIf(!process.env.HIVEFORGE_API_KEY || notReady.length > 0)('web smok
     await screen(page, '04-round-complete')
   }, 150_000)
 
-  it('view tabs: Chat and Trajectory switch', async () => {
+  it('view tabs: Chat and Work Trace switch', async () => {
     onTestFailed(() => saveFailureShot(page, 'w5-tabs'))
-    await page.locator('button', { hasText: /Trajectory/i }).first().click()
+    await page.locator('button', { hasText: /Work Trace/i }).first().click()
     await screen(page, '05-trajectory-tab')
-    await page.getByLabel('Trajectory timeline').waitFor()
+    await page.getByLabel('Work Trace timeline').waitFor()
     await expect.poll(() => page.getByRole('tab', { name: 'Waterfall' }).count()).toBe(0)
     await page.locator('button', { hasText: /^Chat$/i }).first().click()
     await screen(page, '07-back-to-chat')

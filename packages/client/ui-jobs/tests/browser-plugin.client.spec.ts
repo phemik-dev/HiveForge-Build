@@ -72,8 +72,8 @@ describe('ui-job browser half', () => {
     expect(translate('list.aria')).not.toBe(en['list.aria'])
   })
 
-  it('keeps the English dictionary key-identical to the Chinese source of truth', () => {
-    expect(Object.keys(en).sort()).toEqual(Object.keys(zh).sort())
+  it('keeps the Chinese dictionary key-identical to the English source of truth', () => {
+    expect(Object.keys(zh).sort()).toEqual(Object.keys(en).sort())
   })
 })
 

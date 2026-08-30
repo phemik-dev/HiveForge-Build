@@ -2,20 +2,20 @@
   - navigation "Session hierarchy":
     - button "Use the ask_user_question tool to" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Use the ask_user_question tool to ask me exactly one question with id "checkpoint", question "Ready to continue?", header "Checkpoint", and options labeled "Yes" and "No". After I answer, reply with one short sentence acknowledging my answer and stop. {{clock}}
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - button "Think The user wants me to ask them a checkpoint question first, then continue with whatever they interject. Let me do exactly that.":
   - img
   - img

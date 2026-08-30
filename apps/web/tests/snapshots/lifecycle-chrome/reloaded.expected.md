@@ -2,20 +2,20 @@
   - navigation "Session hierarchy":
     - button "Reply with the single word" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Reply with the single word LIGHTHOUSE and stop. {{clock}}
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - button "Think The user wants me to reply with a single word. Let me comply.":
   - img
   - img

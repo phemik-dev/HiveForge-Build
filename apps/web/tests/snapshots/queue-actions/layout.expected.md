@@ -2,32 +2,32 @@
   - navigation "Session hierarchy":
     - button "workspace" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - group "Command input": /goal Keep the composer context panels aligned
 - 'button "goal Goal created Status: active Objective: Keep the composer context panels aligned Rounds: 0/256 Activation: armed Commands: /goal edit <objective>, /goal pause, /goal clear"':
   - img
   - img
   - text: "goal Goal created Status: active Objective: Keep the composer context panels aligned Rounds: 0/256 Activation: armed Commands: /goal edit <objective>, /goal pause, /goal clear"
-- button "Context injection goal":
+- button "Context added goal":
   - img
   - img
-  - text: Context injection goal
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+  - text: Context added goal
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - paragraph: partial
 - status: Deep diving...
-- region "To-dos":
-  - button "To-dos 1 completed · 1 in progress"
+- region "Tasks":
+  - button "Tasks 1 completed · 1 in progress"
 - img
-- text: Ongoing Goal Keep the composer context panels aligned
+- text: Active objective Keep the composer context panels aligned
 - button "Pause goal":
   - img
 - button "Edit goal":

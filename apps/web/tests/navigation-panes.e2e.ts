@@ -1,4 +1,4 @@
-// Web e2e scenarios: navigation & panes — the Trajectory view and timing
+// Web e2e scenarios: navigation & panes — the Work Trace view and timing
 // overview, its local details inspector, and sidebar search, all over ONE rich
 // two-turn seeded fixture rendered purely from the log (the seeded-history
 // pattern: zero model calls in replay, so every surface here is the client
@@ -226,7 +226,7 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
   it.skipIf(MODE === 'record')('renders the trajectory ledger and opens its local record inspector', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-navigation-trajectory'))
     await ensureSeedOpen(page)
-    await page.getByRole('tab', { name: 'Trajectory' }).click()
+    await page.getByRole('tab', { name: 'Work Trace' }).click()
     await page.waitForTimeout(100)
     const overlayLayout = await page.getByRole('table').evaluate((table) => {
       const host = table.closest('[data-conversation-scroll]')
@@ -380,7 +380,7 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
   it.skipIf(MODE === 'record')('focuses the ledger by dragging an overview interval', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-navigation-timeline'))
     await ensureSeedOpen(page)
-    await page.getByRole('tab', { name: 'Trajectory' }).click()
+    await page.getByRole('tab', { name: 'Work Trace' }).click()
     const plot = page.getByLabel('Timeline overview; drag horizontally to focus events')
     await plot.waitFor({ timeout: 15_000 })
     const before = await page.locator('tr[data-kind]').count()

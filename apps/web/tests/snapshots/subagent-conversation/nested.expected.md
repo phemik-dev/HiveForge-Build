@@ -1,19 +1,19 @@
 - banner:
   - navigation "Session hierarchy":
-    - button "Ask a research subagent to"
+    - button "Ask a research supporting agent to"
     - text: /
-    - 'button "Switch subagent: event-sourcing researcher"': event-sourcing researcher
+    - 'button "Switch supporting agent: event-sourcing researcher"': event-sourcing researcher
     - text: /
-    - 'button "Switch subagent: example editor"': example editor
+    - 'button "Switch supporting agent: example editor"': example editor
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Give one concrete event sourcing example. {{clock}}
 - button "Copy":
   - img
 - status:
-  - strong: This subagent is read-only for now
+  - strong: This supporting agent is read-only for now
   - text: The parent session is offline; reopen it to continue sending messages.

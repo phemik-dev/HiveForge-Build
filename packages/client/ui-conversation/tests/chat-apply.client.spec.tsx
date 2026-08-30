@@ -61,8 +61,8 @@ describe('apply wiring', () => {
     const b = await bench()
     const entries = b.slots.entries('conversation.view')
     expect(entries.map(e => e.options.id)).toEqual(['chat'])
-    // Label is a locale thunk resolving through the zh dictionary.
-    expect(resolveSlotLabel(entries[0]?.options.label)).toBe('对话')
+    // Label is a locale thunk resolving through the English default dictionary.
+    expect(resolveSlotLabel(entries[0]?.options.label)).toBe('Chat')
     expect(entries[0]?.options.order).toBe(0)
     // Declaring is claiming: the chat entry's registration put the hole on
     // the ledger with the contract's kind/scope.

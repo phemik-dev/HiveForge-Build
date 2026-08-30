@@ -53,10 +53,10 @@ export const zh = {
   'body.output': '结果',
   'body.copy': '复制',
   'body.copied': '已复制',
-} satisfies Record<string, string>
+} satisfies Record<CordisKey, string>
 
 /** Translation keys owned by the Cordis UI namespace. */
-export type CordisKey = keyof typeof zh
+export type CordisKey = keyof typeof en
 
 declare module '@hiveforge-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
@@ -116,4 +116,4 @@ export const en = {
   'body.output': 'Result',
   'body.copy': 'Copy',
   'body.copied': 'Copied',
-} satisfies Record<CordisKey, string>
+} satisfies Record<string, string>

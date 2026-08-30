@@ -1,13 +1,13 @@
-# Input card position across the Chat and Trajectory tabs
+# Input card position across the Chat and Work Trace tabs
 
 ## Wide viewport (1680px, card at its cap)
 
 - Chat: scrollbar-gutter stable, overflow hidden/auto
 - Chat scroller scrolls: true
 - Chat reserved band: 8px
-- Trajectory: scrollbar-gutter auto, overflow hidden/auto
-- Trajectory scroller scrolls: false
-- Trajectory reserved band: 0px
+- Work Trace: scrollbar-gutter auto, overflow hidden/auto
+- Work Trace scroller scrolls: false
+- Work Trace reserved band: 0px
 - input card left edge moves between tabs: 0px
 - input card right edge moves between tabs: 0px
 - input card width changes between tabs: 0px
@@ -17,9 +17,9 @@
 - Chat: scrollbar-gutter stable, overflow hidden/auto
 - Chat scroller scrolls: true
 - Chat reserved band: 8px
-- Trajectory: scrollbar-gutter auto, overflow hidden/auto
-- Trajectory scroller scrolls: false
-- Trajectory reserved band: 0px
+- Work Trace: scrollbar-gutter auto, overflow hidden/auto
+- Work Trace scroller scrolls: false
+- Work Trace reserved band: 0px
 - input card left edge moves between tabs: 0px
 - input card right edge moves between tabs: 0px
 - input card width changes between tabs: 0px
@@ -29,9 +29,9 @@
 - Chat: scrollbar-gutter stable, overflow hidden/auto
 - Chat scroller scrolls: true
 - Chat reserved band: 8px
-- Trajectory: scrollbar-gutter auto, overflow hidden/auto
-- Trajectory scroller scrolls: false
-- Trajectory reserved band: 0px
+- Work Trace: scrollbar-gutter auto, overflow hidden/auto
+- Work Trace scroller scrolls: false
+- Work Trace reserved band: 0px
 - input card left edge moves between tabs: 4px
 - input card right edge moves between tabs: 4px
 - input card width changes between tabs: 0px

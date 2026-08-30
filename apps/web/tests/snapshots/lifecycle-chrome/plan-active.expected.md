@@ -20,14 +20,14 @@
 - button "Settings":
   - img
   - text: Settings
-- text: Into the Unknown Preview
+- text: What shall we forge? HiveForge Preview
 - button "Choose workspace":
   - img
   - text: workspace
   - img
-- button "Standard mode":
+- button "Standard Mode":
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - img
 - textbox "Describe what you want to build"
 - button "Commands":

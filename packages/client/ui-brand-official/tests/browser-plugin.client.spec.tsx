@@ -67,17 +67,18 @@ describe('official browser-brand plugin', () => {
 
   it('renders the official name independently from both requested mark sizes', () => {
     const name = render(<OfficialBrandName />)
-    expect(name.container.textContent).toContain('HiveForge')
+    expect(name.getByText('HiveForge')).toBeTruthy()
+    expect(name.getByText('Provisional')).toBeTruthy()
+    expect(name.container.querySelector('svg')).toBeNull()
     name.unmount()
 
     const mark = render(<OfficialBrandMark size={34} className="hero-mark" />)
-    const markNode = mark.container.querySelector('[aria-label="HiveForge"]') as HTMLElement | null
-    expect(markNode).not.toBeNull()
-    expect(markNode?.className).toBe('hero-mark')
-    expect(markNode?.style.width).toBe('34px')
-    expect(markNode?.style.height).toBe('34px')
+    const markSvg = mark.container.querySelector('svg')
+    expect(markSvg?.getAttribute('width')).toBe('34')
+    expect(markSvg?.getAttribute('height')).toBe('34')
+    expect(markSvg?.classList.contains('hero-mark')).toBe(true)
     mark.rerender(<OfficialBrandMark size={24} />)
-    const next = mark.container.querySelector('[aria-label="HiveForge"]') as HTMLElement | null
-    expect(next?.style.width).toBe('24px')
+    const next = mark.container.querySelector('svg')
+    expect(next?.getAttribute('width')).toBe('24')
   })
 })

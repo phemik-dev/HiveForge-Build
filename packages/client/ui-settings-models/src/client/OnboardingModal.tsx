@@ -1,6 +1,6 @@
 /** Shared modal chrome for every step registered by this onboarding plugin. */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { Modal } from '@hiveforge-ai/dsh-client-ui-primitives'
 import css from './OnboardingModal.module.css'
@@ -23,7 +23,7 @@ export function OnboardingModal({
 }): ReactNode {
   const titleRef = useRef<HTMLHeadingElement | null>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const appRoot = document.getElementById('root')
     if (appRoot === null) return
     const previous = appRoot.inert

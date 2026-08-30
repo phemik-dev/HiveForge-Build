@@ -82,6 +82,8 @@ interface Dictionary {
   name: string
   /** Declared keys, sorted. */
   keys: string[]
+  /** Literal text values visible to the static scan. */
+  texts: string[]
 }
 
 /**
@@ -125,7 +127,7 @@ function dictionariesIn(file: string): Dictionary[] {
       const literal = unwrap(decl.initializer)
       if (literal === undefined || !ts.isObjectLiteralExpression(literal)) continue
       if (localeOf(decl.name.text) === undefined) continue
-      found.push({ file: rel, name: decl.name.text, keys: keysOf(literal) })
+      found.push({ file: rel, name: decl.name.text, keys: keysOf(literal), texts: textsOf(literal) })
     }
   }
 
@@ -171,7 +173,12 @@ function dictionariesIn(file: string): Dictionary[] {
         // The namespace expression's source text identifies the pair, so the
         // zh and en calls for one namespace meet and calls for different
         // namespaces stay apart.
-        found.push({ file: rel, name: `${tag.text}@register:${ns.getText(source)}`, keys: keysOf(dictionary) })
+        found.push({
+          file: rel,
+          name: `${tag.text}@register:${ns.getText(source)}`,
+          keys: keysOf(dictionary),
+          texts: textsOf(dictionary),
+        })
       }
     }
     if (ts.isArrayLiteralExpression(node) && node.elements.length === 2) {
@@ -183,7 +190,7 @@ function dictionariesIn(file: string): Dictionary[] {
         if (tag === undefined || !ts.isStringLiteral(tag)) continue
         if (literal === undefined || !ts.isObjectLiteralExpression(literal)) continue
         if (tag.text !== 'zh' && tag.text !== 'en') continue
-        found.push({ file: rel, name: `${tag.text}@inline:${site}`, keys: keysOf(literal) })
+        found.push({ file: rel, name: `${tag.text}@inline:${site}`, keys: keysOf(literal), texts: textsOf(literal) })
       }
     }
     ts.forEachChild(node, visit)
@@ -200,6 +207,23 @@ function keysOf(literal: ts.ObjectLiteralExpression): string[] {
     if (ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name)) keys.push(prop.name.text)
   }
   return keys.sort()
+}
+
+/** Literal text values nested inside a dictionary object. */
+function textsOf(literal: ts.ObjectLiteralExpression): string[] {
+  const texts: string[] = []
+  const visit = (node: ts.Node): void => {
+    if (ts.isPropertyAssignment(node)) {
+      const value = unwrap(node.initializer)
+      if (value !== undefined && (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value))) {
+        texts.push(value.text)
+        return
+      }
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(literal)
+  return texts
 }
 
 /** Look through `satisfies`/`as`/parenthesized wrappers to the literal. */
@@ -303,6 +327,19 @@ describe('shipped locale dictionaries', () => {
     // The shipped dictionary count only grows; a collapse means discovery or
     // pairing broke, which would hide real asymmetry.
     expect(comparedPairs).toBeGreaterThan(25)
+    expect(problems).toEqual([])
+  })
+
+  it('keeps literal English dictionary text free of Han characters', () => {
+    const problems: string[] = []
+    for (const file of sourceFiles()) {
+      for (const dict of dictionariesIn(file)) {
+        if (localeOf(dict.name)?.locale !== 'en') continue
+        for (const text of dict.texts) {
+          if (/\p{Script=Han}/u.test(text)) problems.push(`${dict.file} ${dict.name}: ${text}`)
+        }
+      }
+    }
     expect(problems).toEqual([])
   })
 })

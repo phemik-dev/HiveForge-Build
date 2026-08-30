@@ -16,7 +16,7 @@ export type LocaleId = typeof LOCALE_IDS[number]
 
 /** Durable locale section shared by the Host schema and the browser scope. */
 export interface LocaleSettings {
-  /** Explicit locale selection; absence delegates to the browser. */
+  /** Explicit locale selection; absence uses the English product default. */
   preference?: LocaleId
 }
 

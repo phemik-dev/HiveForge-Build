@@ -1,5 +1,7 @@
+import type { CommonKey } from './en.ts'
+
 /** zh base dictionary for the common namespace: cross-feature standard words. */
-export const zh = {
+export const zh: Record<CommonKey, string> = {
   'ok': '确定',
   'cancel': '取消',
   'close': '关闭',
@@ -24,7 +26,4 @@ export const zh = {
   'unknown': '未知',
   'none': '无',
   'truncated': '已截断',
-} satisfies Record<string, string>
-
-/** The common vocabulary key union (zh is the key-set source of truth). */
-export type CommonKey = keyof typeof zh
+}

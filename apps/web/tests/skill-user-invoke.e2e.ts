@@ -122,7 +122,7 @@ describe.skipIf(MODE === 'record')('web e2e: user-explicit skill invocation thro
     // The rendered body arrives as a context-injection row named after the
     // skill; expanding it reveals the canonical <skill_content> block, and
     // the user's text is NOT folded into it.
-    const injectionRow = page.getByRole('button', { name: `Context injection ${SKILL_NAME}` })
+    const injectionRow = page.getByRole('button', { name: `Context added ${SKILL_NAME}` })
     await injectionRow.waitFor({ timeout: 15_000 })
     await injectionRow.click()
     const injectionBody = page

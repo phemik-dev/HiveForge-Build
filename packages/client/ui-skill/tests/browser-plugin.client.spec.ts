@@ -132,7 +132,7 @@ describe('apply', () => {
           'menu.userOnly': '仅用户',
         },
         en: {
-          'row.running': 'Loading skill',
+          'row.running': 'Loading skill…',
           'row.failed': 'Skill load failed',
           'row.stopped': 'Skill load stopped',
           'row.instructions': 'Instructions',

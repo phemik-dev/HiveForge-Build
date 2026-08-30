@@ -6,7 +6,7 @@
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: "Use the read tool twice in one assistant message: read a.txt and b.txt. Then reply with the single word DONE and stop. 7/25 {{clock}}"
 - button "Copy":
   - img
@@ -38,11 +38,11 @@
 - button "Branch into a new conversation":
   - img
 - text: 7/25 {{clock}} Ran for {{duration}} TTFT {{duration}} {{throughput}} tok/s
-- button "compact Compacted 5 history items (~{{tokens}} tokens)"
-- button "Context injection AGENTS.md":
+- button "compact Condensed 5 history items (~241 tokens)"
+- button "Context added AGENTS.md":
   - img
   - img
-  - text: Context injection AGENTS.md
+  - text: Context added AGENTS.md
 - img
 - text: permission preset read-only
 - 'button "feedback Feedback recorded for session {{seededId}} Anonymous user: {{uuid}}. Session sharing is not configured." [expanded]':

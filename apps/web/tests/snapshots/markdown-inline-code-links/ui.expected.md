@@ -6,7 +6,7 @@
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Show the local preview URL. {{clock}}
 - button "Copy":
   - img

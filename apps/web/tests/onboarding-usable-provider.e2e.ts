@@ -28,9 +28,9 @@ describe.skipIf(MODE === 'record')('web e2e: another usable provider ends first-
   let tripwire: ReturnType<typeof watchConsole>
 
   beforeAll(async () => {
-    scaffold = await launchWebScaffold({ hiveForgeMissingCredential: true })
+    scaffold = await launchWebScaffold({ hiveForgeMissingCredential: true, seedLocalePreference: 'zh' })
     browser = await chromium.launch()
-    // The scenario asserts the shipped Chinese copy, so the browser asks for it.
+    // The scenario asserts the shipped Chinese copy, so the scaffold seeds zh and the browser asks for it.
     page = await browser.newPage({ viewport: { width: 1440, height: 960 }, locale: ZH_BROWSER_LOCALE })
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })

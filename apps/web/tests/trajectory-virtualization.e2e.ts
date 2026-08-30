@@ -1,4 +1,4 @@
-// Browser contract for the tail-paged, virtualized Trajectory ledger. The
+// Browser contract for the tail-paged, virtualized Work Trace ledger. The
 // scenario proves that semantic row identity survives an older-page prepend,
 // DOM mounting stays bounded, and every scroll range remains reachable.
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
@@ -74,14 +74,14 @@ async function openSeed(page: Page): Promise<void> {
   const result = page.getByRole('tree', { name: 'Search results' }).getByRole('treeitem')
   await expect.poll(() => result.count(), { timeout: 60_000 }).toBe(1)
   await result.click()
-  await page.getByRole('tab', { name: 'Trajectory', exact: true }).waitFor({ timeout: 30_000 })
+  await page.getByRole('tab', { name: 'Work Trace', exact: true }).waitFor({ timeout: 30_000 })
   await page.getByText(FIXTURE.markers.assistant(FIXTURE.turns), { exact: false })
     .last()
     .waitFor({ timeout: 30_000 })
 }
 
 async function openTrajectory(page: Page): Promise<void> {
-  await page.getByRole('tab', { name: 'Trajectory', exact: true }).click()
+  await page.getByRole('tab', { name: 'Work Trace', exact: true }).click()
   const pane = page.locator('[data-trajectory-scroll]')
   await pane.waitFor({ timeout: 30_000 })
   await page.locator('[data-trajectory-scroll] table[data-scroll-ready="true"]')
@@ -171,7 +171,7 @@ async function loadToFirstTurn(page: Page): Promise<void> {
   throw new Error('trajectory did not reach the first turn after twelve older-page requests')
 }
 
-describe('web e2e: Trajectory virtualization over tail-paged history', () => {
+describe('web e2e: Work Trace virtualization over tail-paged history', () => {
   let scaffold: WebScaffold
   let browser: Browser
   let page: Page
@@ -322,7 +322,7 @@ describe('web e2e: Trajectory virtualization over tail-paged history', () => {
       })
       const settled = scaffold.whenTurnSettled()
       const input = page.locator('textarea').first()
-      await input.fill('Stream one deterministic response while Trajectory remains visible.')
+      await input.fill('Stream one deterministic response while Work Trace remains visible.')
       await input.press('Enter')
       await settled
       await page.getByText('stream fragment 01', { exact: false }).waitFor({ timeout: 30_000 })

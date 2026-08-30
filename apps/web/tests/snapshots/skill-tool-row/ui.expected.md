@@ -6,18 +6,18 @@
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Load the editing-cordis-compositions skill with the skill tool, then reply DONE. {{date}} {{clock}}
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
-- button "Context injection skill-catalog":
+  - text: Context added @hiveforge-ai/dsh-system-prompt
+- button "Context added skill-catalog":
   - img
   - img
-  - text: Context injection skill-catalog
+  - text: Context added skill-catalog
 - button "Think Load the requested skill.":
   - img
   - img

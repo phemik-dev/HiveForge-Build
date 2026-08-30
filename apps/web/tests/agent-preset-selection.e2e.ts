@@ -202,12 +202,12 @@ describe('web e2e: agent-preset selection', () => {
     await compareOrRefreshGolden(HERO_EXPECTED, snapshot, MODE)
     // The chip opens on the deployment default, by the name that preset
     // publishes rather than its directory name.
-    expect(snapshot).toContain('Standard mode')
+    expect(snapshot).toContain('Standard Mode')
   })
 
   it('names every preset and what it is for', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-agent-preset-menu'))
-    await page.getByRole('button', { name: 'Standard mode' }).click()
+    await page.getByRole('button', { name: 'Standard Mode' }).click()
     const menu = page.getByRole('menu')
     await menu.waitFor({ timeout: 10_000 })
 
@@ -216,15 +216,15 @@ describe('web e2e: agent-preset selection', () => {
     await compareOrRefreshGolden(MENU_EXPECTED, snapshot, MODE)
     // Every shipped preset, each with the sentence saying what it composes —
     // the id alone never said what a preset does.
-    expect(snapshot).toContain('Minimal mode')
-    expect(snapshot).toContain('Creator mode')
+    expect(snapshot).toContain('Essentials')
+    expect(snapshot).toContain('Creator Mode')
     await page.keyboard.press('Escape')
   })
 
   it('applies the staged pick to the blank session, and the host honors it', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-agent-preset-stage'))
-    await page.getByRole('button', { name: 'Standard mode' }).click()
-    await page.getByRole('menuitem', { name: /Minimal mode/ }).click()
+    await page.getByRole('button', { name: 'Standard Mode' }).click()
+    await page.getByRole('menuitem', { name: /Essentials/ }).click()
 
     // The chip stages; the blank session the workspace connect produced is
     // what the stage lands on. The host's own answer is what comes back.
@@ -256,8 +256,8 @@ describe('web e2e: agent-preset selection', () => {
     // against its list row, so a row that never reprojected the first switch
     // answers "already standard" and sends nothing — and restores the catalog
     // instead of leaving the session reading the narrower composition.
-    await page.getByRole('button', { name: 'Minimal mode' }).click()
-    await page.getByRole('menuitem', { name: /^Standard mode/ }).first().click()
+    await page.getByRole('button', { name: 'Essentials' }).click()
+    await page.getByRole('menuitem', { name: /^Standard Mode/ }).first().click()
     await expect.poll(() => livePreset(scaffold.baseUrl), { timeout: 15_000 }).toBe('standard')
 
     await composer.fill('/')
@@ -280,13 +280,13 @@ describe('web e2e: agent-preset selection', () => {
     const snapshot = await captureStableAria(page, '[class*="titleRow"]', scaffold.workspaceCwd)
 
     await compareOrRefreshGolden(HEADER_EXPECTED, snapshot, MODE)
-    expect(snapshot).toContain('Minimal mode')
-    expect(snapshot).toContain('button "1 subagent"')
-    expect(snapshot.indexOf('button "1 subagent"')).toBeLessThan(snapshot.indexOf('Minimal mode'))
-    expect(snapshot.indexOf('Minimal mode')).toBeLessThan(snapshot.indexOf('button "Session log"'))
+    expect(snapshot).toContain('Essentials')
+    expect(snapshot).toContain('button "1 supporting agent"')
+    expect(snapshot.indexOf('button "1 supporting agent"')).toBeLessThan(snapshot.indexOf('Essentials'))
+    expect(snapshot.indexOf('Essentials')).toBeLessThan(snapshot.indexOf('button "Session log"'))
     // Static chrome, not a control: the header can only report a composition
     // the host would refuse to change.
-    expect(snapshot).not.toContain('button "Minimal mode"')
+    expect(snapshot).not.toContain('button "Essentials"')
   })
 
   it('drove every surface without a page error or a stream warning', () => {

@@ -77,14 +77,25 @@ import { REPO_ROOT, requireDist } from './support.ts'
 // } from '@hiveforge-ai/dsh-client-ui-settings-models'
 export const WELCOME_NOTICE_SETTINGS_NAMESPACE = 'ui-onboarding'
 export const WELCOME_NOTICE_ACK_FIELD = 'welcomeNoticeVersion'
-export const WELCOME_NOTICE_VERSION = '2026-08-13.1'
+export const WELCOME_NOTICE_VERSION = '2026-08-27.1'
 export const WELCOME_NOTICE_COPY = {
   zh: {
     title: '内测声明',
-    body: 'HiveForge Harness 目前的 0.1 版本仍处在面向 Harness 开发者进行测试的阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者的反馈建议。预计 HiveForge Harness 的核心插件以及基础 API 都会在接下来的一段时间内快速迭代、持续演化。\n\n我们期待与全球开发者一起，在开源、开放、可复用、可组合的基础设施之上，共同探索智能上限。欢迎全球 Harness 开发者加入 DSH 插件生态。',
+    body: 'HiveForge 目前仍处在面向开发者进行测试的阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者的反馈建议。HiveForge 的核心插件以及基础 API 会在接下来的一段时间内快速迭代、持续演化。\n\n我们期待与全球开发者一起，在开源、开放、可复用、可组合的基础设施之上，共同探索智能上限。欢迎加入 HiveForge 插件生态。',
     continueLabel: '继续',
   },
+  en: {
+    title: 'HiveForge Preview',
+    body: "HiveForge remains in testing for developers. Many areas need further improvement, and we welcome feedback from the developer community. HiveForge's core plugins and foundational APIs will continue to evolve rapidly over the coming months.\n\nWe look forward to exploring the limits of intelligence with developers around the world, building on open-source, open, reusable, and composable infrastructure. We welcome developers everywhere to join the HiveForge plugin ecosystem.",
+    continueLabel: 'Continue',
+  },
 } as const
+
+// Locale settings are Host-backed under the `locale` namespace. Web e2e
+// scenarios must keep language coverage intentional: a Chinese browser is not
+// guaranteed to boot a Chinese UI, and an explicit stored preference must win.
+const LOCALE_SETTINGS_NAMESPACE = 'locale'
+const LOCALE_PREFERENCE_FIELD = 'preference'
 
 /** Snapshot mode for the lane, from $DSH_SNAPSHOT (same vocabulary as the other snapshot suites). */
 export type WebSnapshotMode = 'replay' | 'record' | 'refresh'
@@ -260,6 +271,12 @@ export interface LaunchOptions {
   hiveForgeMissingCredential?: boolean
   /** Leave the current welcome notice pending; ordinary scenarios pre-acknowledge it before browser boot. */
   welcomeNoticePending?: boolean
+  /**
+   * Seed an explicit locale preference in the Host settings document before any
+   * browser loads. Use this for multilingual lanes so their UI language is
+   * intentional rather than an accident of browser defaults.
+   */
+  seedLocalePreference?: 'zh' | 'en'
   /**
    * Patch the shipped HiveForge search row to a deterministic endpoint and
    * credential reference. Browser search scenarios keep the real provider and
@@ -558,6 +575,11 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     })
     await ctx.loader.await()
     assertEntriesLoaded(ctx, 'web e2e scaffold')
+    if (options.seedLocalePreference !== undefined) {
+      await ctx.settings.mutate(settingsNamespace(LOCALE_SETTINGS_NAMESPACE), [{
+        op: 'set', path: [LOCALE_PREFERENCE_FIELD], value: options.seedLocalePreference,
+      }])
+    }
     if (options.welcomeNoticePending !== true) {
       await ctx.settings.mutate(settingsNamespace(WELCOME_NOTICE_SETTINGS_NAMESPACE), [{
         op: 'set', path: [WELCOME_NOTICE_ACK_FIELD], value: WELCOME_NOTICE_VERSION,
@@ -766,13 +788,40 @@ export function fixtureUserPrompts(fixtureText: string): string[] {
  * @returns the realized fixture text.
  */
 export function realizeSeedFixture(scaffold: WebScaffold, fixtureText: string, id: string): string {
-  const realized = fixtureText
-    .split('{{sessionId}}').join(id)
-    .split('{{cwd}}').join(scaffold.workspaceCwd)
-  const fixtureCwd = (JSON.parse(realized.split('\n', 1)[0]!) as { cwd?: string }).cwd
-  return fixtureCwd === undefined
-    ? realized
-    : realized.split(fixtureCwd).join(scaffold.workspaceCwd)
+  const lines = fixtureText.split(/\r?\n/)
+  const headerIndex = lines.findIndex(line => line.trim().length > 0)
+  if (headerIndex === -1) return fixtureText
+
+  const headerRaw = JSON.parse(lines[headerIndex]!) as Record<string, unknown>
+
+  const replacePlaceholders = (value: string): string =>
+    value.split('{{sessionId}}').join(id).split('{{cwd}}').join(scaffold.workspaceCwd)
+
+  const mapStrings = (value: unknown, mapper: (value: string) => string): unknown => {
+    if (typeof value === 'string') return mapper(value)
+    if (Array.isArray(value)) return value.map(entry => mapStrings(entry, mapper))
+    if (typeof value === 'object' && value !== null) {
+      return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, mapStrings(entry, mapper)]))
+    }
+    return value
+  }
+
+  const headerWithPlaceholders = mapStrings(headerRaw, replacePlaceholders) as Record<string, unknown>
+  const fixtureCwd = typeof headerWithPlaceholders.cwd === 'string' ? headerWithPlaceholders.cwd : undefined
+
+  const replaceCwd = (value: string): string =>
+    fixtureCwd === undefined ? value : value.split(fixtureCwd).join(scaffold.workspaceCwd)
+
+  const replaceAll = (value: string): string => replaceCwd(replacePlaceholders(value))
+
+  const realizedHeader = { ...(mapStrings(headerWithPlaceholders, replaceCwd) as Record<string, unknown>), cwd: scaffold.workspaceCwd }
+  const realizedLines = lines.map((line, index) => {
+    if (line.trim().length === 0) return line
+    const parsed = JSON.parse(line) as unknown
+    const realized = index === headerIndex ? realizedHeader : mapStrings(parsed, replaceAll)
+    return JSON.stringify(realized)
+  })
+  return realizedLines.join('\n')
 }
 
 /**

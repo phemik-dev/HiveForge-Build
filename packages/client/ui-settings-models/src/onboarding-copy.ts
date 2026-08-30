@@ -8,7 +8,7 @@ export const WELCOME_NOTICE_ACK_FIELD = 'welcomeNoticeVersion'
  * Bump only when the notice changes materially and every user should see it
  * again. The acknowledgement is compared for exact equality.
  */
-export const WELCOME_NOTICE_VERSION = '2026-08-13.1'
+export const WELCOME_NOTICE_VERSION = '2026-08-27.1'
 
 /** The complete editable internal-testing notice in both supported GUI locales. */
 export const WELCOME_NOTICE_COPY = {
@@ -18,7 +18,7 @@ export const WELCOME_NOTICE_COPY = {
     continueLabel: '继续',
   },
   en: {
-    title: 'Internal Testing Notice',
+    title: 'HiveForge Preview',
     body: "HiveForge remains in testing for developers. Many areas need further improvement, and we welcome feedback from the developer community. HiveForge's core plugins and foundational APIs will continue to evolve rapidly over the coming months.\n\nWe look forward to exploring the limits of intelligence with developers around the world, building on open-source, open, reusable, and composable infrastructure. We welcome developers everywhere to join the HiveForge plugin ecosystem.",
     continueLabel: 'Continue',
   },

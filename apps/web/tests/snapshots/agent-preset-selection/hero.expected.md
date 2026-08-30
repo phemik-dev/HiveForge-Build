@@ -2,7 +2,7 @@
   - img
   - text: workspace
   - img
-- button "Standard mode":
+- button "Standard Mode":
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - img

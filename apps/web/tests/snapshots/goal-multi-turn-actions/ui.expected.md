@@ -2,26 +2,26 @@
   - navigation "Session hierarchy":
     - button "workspace" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - group "Command input": /goal 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的
 - 'button "goal Goal created Status: active Objective: 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的 Rounds: 0/256 Activation: armed Commands: /goal edit <objective>, /goal pause, /goal clear"':
   - img
   - img
   - text: "goal Goal created Status: active Objective: 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的 Rounds: 0/256 Activation: armed Commands: /goal edit <objective>, /goal pause, /goal clear"
-- button "Context injection goal":
+- button "Context added goal":
   - img
   - img
-  - text: Context injection goal
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+  - text: Context added goal
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - 'button "Think The user''s goal is: \"做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的\" — which translates to: \"Do two turns, each turn output the file structure of a random package. Note that after you finish one turn, directly output the content and stop; our system will help you open another turn, and you just do something similar.\""':
   - img
   - img
@@ -88,10 +88,10 @@
 - button "Branch into a new conversation":
   - img
 - text: {{clock}} Ran for {{duration}} TTFT {{duration}} {{throughput}} tok/s
-- button "Context injection goal":
+- button "Context added goal":
   - img
   - img
-  - text: Context injection goal
+  - text: Context added goal
 - 'button "Think This is turn 2 of 2. I need to randomly pick another package and output its file structure. In the first turn I picked `packages/context/session-reference`. Let me pick a different one randomly this time."':
   - img
   - img
@@ -140,10 +140,10 @@
   - img
   - img
   - text: Tool call update_goal · goal-{{uuid}}
-- 'button "Context injection tool-goal complete: 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的"':
+- 'button "Context added tool-goal complete: 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的"':
   - img
   - img
-  - text: "Context injection tool-goal complete: 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的"
+  - text: "Context added tool-goal complete: 做两个turn，每个turn输出随机一个包的文件结构。注意你做完一个turn之后，直接输出内容，停止，我们的系统会帮你再开一个turn，你看着做一个类似的"
 - paragraph: 两个 turn 都完成了 ✅
 - paragraph:
   - strong: 总结：

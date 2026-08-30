@@ -10,16 +10,16 @@
     - button "Plugins":
       - img
       - text: Plugins
-    - button "Agent presets":
+    - button "Agent setups":
       - img
-      - text: Agent presets
+      - text: Agent setups
   - button "Open configuration file"
   - button "Close":
     - img
     - text: Close
-  - text: Agent preset Applies to sessions you start from now on. Running sessions keep the preset they began with.
-  - button "Standard mode":
-    - text: Standard mode
+  - text: Agent setup Applies to sessions you start from now on. Running sessions keep the preset they began with.
+  - button "Standard Mode":
+    - text: Standard Mode
     - img
   - text: Permission Choose the default permission mode for new sessions
   - button "Workspace Write":

@@ -2,20 +2,20 @@
   - navigation "Session hierarchy":
     - button "Use web_search once with queries" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Use web_search once with queries ["HiveForge Harness snapshot search","HiveForge Harness multi-query search"]. Then reply exactly SEARCH_DONE and stop. {{clock}}
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - button "Search HiveForge Harness snapshot search, HiveForge Harness multi-query search":
   - img
   - img

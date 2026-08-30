@@ -2,24 +2,24 @@
   - navigation "Session hierarchy":
     - button "/user-invoke-demo and confirm the fixtur" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: /user-invoke-demo and confirm the fixture wiring {{clock}}
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
-- button "Context injection user-invoke-demo":
+  - text: Context added @hiveforge-ai/dsh-system-prompt
+- button "Context added user-invoke-demo":
   - img
   - img
-  - text: Context injection user-invoke-demo
+  - text: Context added user-invoke-demo
 - paragraph: USER_INVOKE_REPLY acknowledged; following the injected skill.
 - button "Copy":
   - img

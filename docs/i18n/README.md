@@ -2,11 +2,13 @@
 
 English | [中文](README.zh.md)
 
+<!-- Translation provenance: English copy standardized by the glossary v0.3 cleanup was translated from original Chinese first-party text. -->
+
 This repo's documentation is read by people and agents both inside and outside the company, so every document in scope is maintained in English and Simplified Chinese. This page defines the pairing contract, checks, scope, and exclusions; [translation-rules.md](translation-rules.md) defines how to translate; [terminology.md](terminology.md) is the terminology source of truth. Routine agent work follows the lightweight path in [docs/AGENTS.md](../AGENTS.md); the extended [.agents/skills/dsh-translate-docs](../../.agents/skills/dsh-translate-docs/SKILL.md) workflow is available only through explicit user invocation.
 
 ## The pairing contract
 
-- **Both languages carry equal authority.** A document may be authored and reviewed in either language first — a Chinese-first Agent Note is as legitimate as an English-first one — and the counterpart is translated from it. Neither file outranks the other; what binds them is that they must say the same thing.
+- **English is the canonical maintained copy.** The unsuffixed English file is the default reference and maintenance source. A Chinese (`.zh.md`) file remains an optional reviewed counterpart, and the pair must say the same thing.
 - **A pair is three sibling files.** The English `foo.md`, the Chinese `foo.zh.md`, and a consistency record `foo.i18n.yaml`, all in the same directory. No locale directories, no separate translation repo, no interleaved bilingual files. Pairs merge whole: a PR never lands one language without the other two files.
 - **The consistency record.** `foo.i18n.yaml` holds the full git blob hash of each side as of the last time the two were confirmed to say the same thing:
 

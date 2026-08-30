@@ -83,7 +83,7 @@ describe('client build environment', () => {
     expect(resolveClientBuildEnvironment(parent)).toEqual({
       DSH_CLIENT_BUILD_PROFILE: 'official',
       DSH_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      DSH_CLIENT_TITLE: 'HiveForge Harness',
+      DSH_CLIENT_TITLE: 'HiveForge',
     })
     expect(() => {
       resolveClientBuildEnvironment({ DSH_BUILD_CLIENT_PROFILE: 'official' })

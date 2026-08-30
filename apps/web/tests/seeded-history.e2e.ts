@@ -279,10 +279,10 @@ describe('web e2e: seeded history renders through cold resume', () => {
     // Settled barrier for history: the recorded final assistant text renders.
     await expect.poll(() => page.getByText('DONE', { exact: true }).count(), { timeout: 15_000 }).toBe(1)
     await expect.poll(() => page.getByText('compact', { exact: true }).count(), { timeout: 10_000 }).toBe(1)
-    await expect.poll(() => page.getByText(/^Compacted \d+ history items \(~\d+ tokens\)$/).count(), {
+    await expect.poll(() => page.getByText(/^Condensed \d+ history items \(~\d+ tokens\)$/).count(), {
       timeout: 10_000,
     }).toBe(1)
-    expect(await page.getByText('Context compacted', { exact: true }).count()).toBe(0)
+    expect(await page.getByText('Context condensed', { exact: true }).count()).toBe(0)
     // Tool cards render from logged tool/call + tool/result alone (views are
     // host-recomputed per page; the generic card is the documented default).
     const toolRows = page.locator('[data-variant], [data-sample]')
@@ -317,7 +317,7 @@ describe('web e2e: seeded history renders through cold resume', () => {
     }), { surfaceOp: 'append' })
     // The header names the producer the durable source records, so the
     // reconciled instruction file is readable without expanding the row.
-    await page.getByRole('button', { name: 'Context injection AGENTS.md', exact: true })
+    await page.getByRole('button', { name: 'Context added AGENTS.md', exact: true })
       .waitFor({ timeout: 10_000 })
   }, 60_000)
 
@@ -335,7 +335,7 @@ describe('web e2e: seeded history renders through cold resume', () => {
 
   it.skipIf(MODE === 'record')('matches the Figma context disclosure geometry', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-context-injection'))
-    const disclosure = page.getByRole('button', { name: 'Context injection AGENTS.md', exact: true })
+    const disclosure = page.getByRole('button', { name: 'Context added AGENTS.md', exact: true })
     expect(await disclosure.getAttribute('aria-expanded')).toBe('false')
     const collapsedIcon = disclosure.locator('svg').first()
     const collapsedIconBox = await collapsedIcon.boundingBox()
@@ -451,7 +451,7 @@ describe('web e2e: seeded history renders through cold resume', () => {
 
   it.skipIf(MODE === 'record')('expands the cold-resumed compact summary', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-seeded-compaction'))
-    const marker = page.getByRole('button', { name: /compact Compacted \d+ history items/ })
+    const marker = page.getByRole('button', { name: /compact Condensed \d+ history items/ })
     await marker.waitFor({ timeout: 10_000 })
     expect(await marker.getAttribute('aria-expanded')).toBe('false')
     await marker.click()
@@ -533,7 +533,7 @@ describe('web e2e: seeded history renders through cold resume', () => {
       source: { kind: 'plugin', plugin: 'fixture' },
     }), { surfaceOp: 'append' })
 
-    const disclosure = page.getByRole('button', { name: 'Context injection fixture', exact: true })
+    const disclosure = page.getByRole('button', { name: 'Context added fixture', exact: true })
     await disclosure.waitFor({ timeout: 10_000 })
     await disclosure.click()
     await expect.poll(() => disclosure.getAttribute('aria-expanded')).toBe('true')

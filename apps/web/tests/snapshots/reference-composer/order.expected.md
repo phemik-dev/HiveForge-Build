@@ -6,13 +6,13 @@
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Research notes what changed? Referenced session · Research notes {{clock}}
 - button "Copy":
   - img
-- button "Session recall Research notes":
+- button "Recalled context Research notes":
   - img
-  - text: Session recall Research notes
+  - text: Recalled context Research notes
 - textbox "Message the agent"
 - button "Commands":
   - img

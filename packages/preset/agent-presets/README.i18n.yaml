@@ -1,6 +1,6 @@
 # Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
-# side as of the last confirmed-consistent state. Both languages carry equal authority;
-# after editing either side, bring the other along and re-record with:
+# side as of the last confirmed-consistent state. English is the canonical maintained copy;
+# keep the reviewed Chinese counterpart aligned and re-record with:
 #   pnpm run verify-translation-pairing --write packages/preset/agent-presets/README.md
-README.md: 2438d751f000297cc4ede7b2a34736a62cc39dda
-README.zh.md: a786afbc3790595edbd64ec16686717ef3d8140f
+README.md: 90fe3b6e4c08ae06b4cebbf06231d6f250a8e5df
+README.zh.md: 3e75d4b025f36f562f61fdcdb20eb9c18e4ac883

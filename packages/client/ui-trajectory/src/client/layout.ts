@@ -309,11 +309,11 @@ export function deriveTrajectoryLayout(input: TrajectoryLayoutInput): readonly T
         index: ++index,
         kind: 'compacted',
         text: request.status === 'running'
-          ? 'Compacting context…'
+          ? 'Condensing context…'
           : request.status === 'error'
             ? request.error ?? 'Compaction failed'
             : request.summary === undefined
-              ? 'Context compacted'
+              ? 'Context condensed'
               : '',
         ...(request.status === 'complete' && request.summary !== undefined
           ? previewContentProperty(request.summary)

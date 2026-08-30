@@ -59,6 +59,7 @@ describe('web e2e: agent-preset authoring is a host-side copy', () => {
     userRoot = await realpath(await mkdtemp(join(tmpdir(), 'dsh-web-e2e-presets-')))
     scaffold = await launchWebScaffold({
       extraOverlayPath: OVERLAY,
+      seedLocalePreference: 'zh',
       agentPresets: {
         roots: [
           { path: SHIPPED_PRESETS, trust: 'system' },
@@ -68,7 +69,7 @@ describe('web e2e: agent-preset authoring is a host-side copy', () => {
       },
     })
     browser = await chromium.launch()
-    // The scenario asserts the shipped Chinese copy, so the browser asks for it.
+    // The scenario asserts the shipped Chinese copy, so the scaffold seeds zh and the browser asks for it.
     page = await browser.newPage({ viewport: { width: 1680, height: 1000 }, locale: ZH_BROWSER_LOCALE })
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
@@ -114,7 +115,7 @@ describe('web e2e: agent-preset authoring is a host-side copy', () => {
     const shipped = await readFile(join(SHIPPED_PRESETS, 'standard', 'agent.cordis.yml'), 'utf8')
     expect(await viewer.locator('pre').textContent()).toBe(shipped)
     expect(await viewer.getByRole('textbox').count()).toBe(0)
-    // The header X and the footer button share the 关闭 name; the footer one
+    // The header X and footer button share the localized Close name; the footer one
     // is last in the dialog.
     await viewer.getByRole('button', { name: '关闭' }).last().click()
     await viewer.waitFor({ state: 'detached', timeout: 10_000 })
@@ -161,7 +162,7 @@ describe('web e2e: agent-preset authoring is a host-side copy', () => {
     expect(composition).toBe(await readFile(join(SHIPPED_PRESETS, 'minimal', 'agent.cordis.yml'), 'utf8'))
     const metadata = await readFile(join(userRoot, 'my-agent', 'preset.yml'), 'utf8')
     expect(metadata).toContain('name: 我的模式')
-    expect(metadata).toContain('description: 仅提供持久 bash 与 str_replace_editor 的双工具编码 Agent。')
+    expect(metadata).toContain('description: A focused coding agent with persistent bash and str_replace_editor.')
     expect(metadata).not.toContain('order:')
   }, 60_000)
 

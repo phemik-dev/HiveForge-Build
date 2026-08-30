@@ -89,8 +89,8 @@ export function renderTranslationPairingRecord(
 ): string {
   return [
     '# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each',
-    '# side as of the last confirmed-consistent state. Both languages carry equal authority;',
-    '# after editing either side, bring the other along and re-record with:',
+    '# side as of the last confirmed-consistent state. English is the canonical maintained copy;',
+    '# keep the reviewed Chinese counterpart aligned and re-record with:',
     `#   pnpm run verify-translation-pairing --write ${paths.source}`,
     `${basename(paths.source)}: ${record.sourceHash}`,
     `${basename(paths.zh)}: ${record.zhHash}`,

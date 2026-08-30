@@ -4,7 +4,7 @@
  * messages (wire error strings) pass through untranslated by policy.
  */
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
+/** Simplified Chinese dictionary, checked complete against the English key set. */
 export const zh = {
   'group.ungrouped': '未分组',
   'session.new': '新会话',
@@ -68,12 +68,12 @@ export const zh = {
   'time.months': '{n}个月',
   'time.years': '{n}年',
   'time.ago': '{t}前',
-} satisfies Record<string, string>
+} satisfies Record<WorkspaceKey, string>
 
-/** The workspace namespace key union. */
-export type WorkspaceKey = keyof typeof zh
+/** The workspace namespace key union, defined by the English dictionary. */
+export type WorkspaceKey = keyof typeof en
 
-/** English dictionary, checked complete against the zh key set. */
+/** English dictionary (the key-set source of truth). */
 export const en = {
   'group.ungrouped': 'Ungrouped',
   'session.new': 'New Session',
@@ -120,8 +120,8 @@ export const en = {
   'actions.session.aria': 'Session actions for {name}',
   'actions.newSession.aria': 'New session in {name}',
   'status.running': 'Running',
-  'status.subagentsRunning.one': '{n} subagent running',
-  'status.subagentsRunning.other': '{n} subagents running',
+  'status.subagentsRunning.one': '{n} supporting agent running',
+  'status.subagentsRunning.other': '{n} supporting agents running',
   'status.idle': 'Idle',
   'status.waitingApproval': 'Waiting for approval',
   'status.planReview': 'Plan awaiting review',
@@ -137,4 +137,4 @@ export const en = {
   'time.months': '{n}mo',
   'time.years': '{n}y',
   'time.ago': '{t} ago',
-} satisfies Record<WorkspaceKey, string>
+} satisfies Record<string, string>

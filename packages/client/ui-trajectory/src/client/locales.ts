@@ -27,7 +27,7 @@ declare module '@hiveforge-ai/dsh-client-ui-slots' {
   }
 }
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
+/** Simplified Chinese dictionary. */
 export const zh: Record<TrajectoryKey, string> = {
   'view.trajectory': '轨迹',
   'toolbar.aria': '轨迹工具栏',
@@ -47,8 +47,8 @@ export const zh: Record<TrajectoryKey, string> = {
 
 /** English dictionary. */
 export const en: Record<TrajectoryKey, string> = {
-  'view.trajectory': 'Trajectory',
-  'toolbar.aria': 'Trajectory toolbar',
+  'view.trajectory': 'Work Trace',
+  'toolbar.aria': 'Work Trace toolbar',
   'toolbar.duration': 'Duration',
   'toolbar.useActualDuration': 'Use actual duration',
   'toolbar.useEqualWidth': 'Use equal-width operations',
@@ -59,6 +59,6 @@ export const en: Record<TrajectoryKey, string> = {
   'toolbar.calls': 'Calls',
   'toolbar.expandCalls': 'Expand calls',
   'toolbar.collapseCalls': 'Collapse calls',
-  'toolbar.search': 'Search trajectory',
+  'toolbar.search': 'Search Work Trace',
   'toolbar.searchPlaceholder': 'Search',
 }

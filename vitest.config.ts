@@ -50,6 +50,10 @@ const windowsUnsupportedCoveragePackages = process.platform === 'win32'
   ? [...windowsUnsupportedPackages, 'packages/subprocess/*']
   : []
 
+const windowsTimeouts = process.platform === 'win32'
+  ? { testTimeout: 20_000, hookTimeout: 20_000 }
+  : {}
+
 // Windows-only packages: their sources execute exclusively on win32 (koffi
 // loads Win32 libraries), so the Linux coverage lane can never cover them.
 // The Windows dev/CI lane exercises them through the probe/runner suites; the
@@ -132,6 +136,7 @@ export default defineConfig({
     // .tsx: client component specs (jsdom via per-file @vitest-environment pragma).
     include: testIncludes,
     exclude: windowsUnsupportedTests,
+    ...windowsTimeouts,
     // One coverage invocation aggregates both projects. Every suite forks for
     // Node stability; process-bound suites stay separate for inventory control.
     projects: [
@@ -140,6 +145,7 @@ export default defineConfig({
         test: {
           name: 'thread-safe',
           execArgv: vitestExecArgv,
+          ...windowsTimeouts,
           // Node 24 has aborted in its CJS lexer (v8::ToLocalChecked Empty
           // MaybeLocal in cjs_lexer::Parse) from worker threads on macOS,
           // Linux, and Windows. Forked workers avoid that shared thread path.
@@ -158,6 +164,7 @@ export default defineConfig({
         test: {
           name: 'process-bound',
           execArgv: vitestExecArgv,
+          ...windowsTimeouts,
           pool: 'forks',
           setupFiles: ['./scripts/test-invariants.ts'],
           include: processBoundTests,

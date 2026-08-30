@@ -1,7 +1,25 @@
 /** `goal` namespace dictionaries. */
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
-export const zh = {
+/** English dictionary (the key-set source of truth). */
+export const en = {
+  'phase.active': 'Active objective',
+  'phase.paused': 'Paused objective',
+  'phase.blocked': 'Blocked objective',
+  'objective.aria': 'Goal objective',
+  'commandInput.aria': 'Command input',
+  'action.save': 'Save goal',
+  'action.cancel': 'Cancel edit',
+  'action.pause': 'Pause goal',
+  'action.resume': 'Resume goal',
+  'action.edit': 'Edit goal',
+  'action.clear': 'Clear goal',
+} satisfies Record<string, string>
+
+/** The goal namespace key union. */
+export type GoalKey = keyof typeof en
+
+/** Simplified Chinese dictionary, checked complete against the en key set. */
+export const zh: Record<GoalKey, string> = {
   'phase.active': '进行中的目标',
   'phase.paused': '已暂停的目标',
   'phase.blocked': '受阻的目标',
@@ -13,22 +31,4 @@ export const zh = {
   'action.resume': '恢复目标',
   'action.edit': '编辑目标',
   'action.clear': '清除目标',
-} satisfies Record<string, string>
-
-/** The goal namespace key union. */
-export type GoalKey = keyof typeof zh
-
-/** English dictionary, checked complete against the zh key set. */
-export const en = {
-  'phase.active': 'Ongoing Goal',
-  'phase.paused': 'Paused Goal',
-  'phase.blocked': 'Blocked Goal',
-  'objective.aria': 'Goal objective',
-  'commandInput.aria': 'Command input',
-  'action.save': 'Save goal',
-  'action.cancel': 'Cancel edit',
-  'action.pause': 'Pause goal',
-  'action.resume': 'Resume goal',
-  'action.edit': 'Edit goal',
-  'action.clear': 'Clear goal',
-} satisfies Record<GoalKey, string>
+}

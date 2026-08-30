@@ -2,5 +2,5 @@
   - treeitem "workspace" [expanded]:
     - img
     - text: workspace
-  - treeitem "1 subagent running Delegate a background job. now"
+  - treeitem "1 supporting agent running Delegate a background task. now"
   - treeitem "New Session" [selected]

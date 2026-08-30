@@ -32,9 +32,9 @@ describe.skipIf(MODE === 'record')('web e2e: first-run HiveForge credential setu
   const browserConsole: string[] = []
 
   beforeAll(async () => {
-    scaffold = await launchWebScaffold({ hiveForgeMissingCredential: true, welcomeNoticePending: true })
+    scaffold = await launchWebScaffold({ hiveForgeMissingCredential: true, welcomeNoticePending: true, seedLocalePreference: 'zh' })
     browser = await chromium.launch()
-    // The scenario asserts the shipped Chinese copy, so the browser asks for it.
+    // The scenario asserts the shipped Chinese copy, so the scaffold seeds zh and the browser asks for it.
     page = await browser.newPage({ viewport: { width: 1440, height: 960 }, locale: ZH_BROWSER_LOCALE })
     tripwire = watchConsole(page)
     page.on('console', message => browserConsole.push(message.text()))

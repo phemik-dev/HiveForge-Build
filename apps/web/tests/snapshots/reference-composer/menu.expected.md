@@ -2,5 +2,5 @@
   - text: Files & folders
   - option "File · reference.txt reference.txt" [selected]
   - text: Session conversations
-  - option "Session · Reference order target reference-order-target-session · {{cwd}} · {{timestamp}}"
-  - option "Session · Research notes reference-source-session · {{cwd}} · {{timestamp}}"
+  - option "Session · Reference order target reference-order-target-session · C:\\Users\\hello\\AppData\\Local\\Temp\\dsh-web-e2e-ws-RtuI56 · {{timestamp}}"
+  - option "Session · Research notes reference-source-session · C:\\Users\\hello\\AppData\\Local\\Temp\\dsh-web-e2e-ws-RtuI56 · {{timestamp}}"

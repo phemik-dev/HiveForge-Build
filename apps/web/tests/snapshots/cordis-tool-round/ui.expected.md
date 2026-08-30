@@ -2,20 +2,20 @@
   - navigation "Session hierarchy":
     - button "Use only Cordis tools. First" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: "Use only Cordis tools. First call cordis_inspect_self with no arguments. Then call cordis_define with plugin kind \"new\", idPrefix \"snap\", name \"snapshot noop\", purpose \"does nothing, for the snapshot\", code.host exactly \"return { name: \\\"snapshot-noop\\\", apply(ctx) {} }\" and code.client exactly \"return { inject: [\\\"slots\\\"], apply(ctx) { ctx.slots.register({ name: \\\"shell.overlay\\\", id: \\\"snapshot-probe\\\" }, () => React.createElement(\\\"div\\\", { \\\"data-snapshot-probe\\\": \\\"loaded\\\" })) } }\". Read its returned pluginId and packageId, then call cordis_run with those exact IDs and mode \"run\". After the run request returns, reply exactly CORDIS_UI_READY and stop. {{clock}}"
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - button "Think I will inspect the current Session's dynamic Cordis Plugins before defining the snapshot Package.":
   - img
   - img
@@ -62,10 +62,10 @@
 - button "Branch into a new conversation":
   - img
 - text: {{clock}} Ran for {{duration}}
-- button "Context injection cordis-host-runner":
+- button "Context added cordis-host-runner":
   - img
   - img
-  - text: Context injection cordis-host-runner
+  - text: Context added cordis-host-runner
 - paragraph: The Cordis Plugin is running.
 - button "Copy":
   - img

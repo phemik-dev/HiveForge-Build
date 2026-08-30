@@ -20,32 +20,32 @@ export type AgentPresetSettingsKey =
 
 /** English copy. */
 export const en: Record<AgentPresetSettingsKey, string> = {
-  title: 'Agent preset',
+  title: 'Agent setup',
   description: 'Applies to sessions you start from now on. Running sessions keep the preset they began with.',
   loading: 'Loading presets…',
   error: 'Could not load agent presets.',
   userTrust: 'Custom',
-  seatHint: 'Agent preset for the session you are about to start',
-  headerHint: 'The agent preset this session runs, fixed when it started',
-  nav: 'Agent presets',
+  seatHint: 'Agent setup for the session you are about to start',
+  headerHint: 'The agent setup this session runs, fixed when it started',
+  nav: 'Agent setups',
   sectionIntro:
-    'A preset is the plugin composition one session\'s agent runs — its tools, prompt, and capabilities. '
-    + 'Duplicate an existing one and make it yours, or let the agent draft one for you in Creator mode.',
+    'An agent setup is the plugin composition one session\'s agent runs — its tools, prompt, and capabilities. '
+    + 'Duplicate an existing one and make it yours, or let the agent draft one for you in Creator Mode.',
   builtIn: 'Built-in',
   setDefault: 'Set as default',
   view: 'View',
-  presetStandardName: 'Standard mode',
+  presetStandardName: 'Standard Mode',
   presetStandardDescription:
-    'Full coding agent with file editing, shell, file and web search, skills, planning, goals, subagents, and workflows.',
-  presetCodeName: 'PTC mode',
+    'Full coding agent with file editing, shell, file and web search, skills, planning, objectives, supporting agents, and workflows.',
+  presetCodeName: 'Compose',
   presetCodeDescription:
-    'All Standard mode capabilities, with tools exposed through the Code Mode SDK so the model can combine multi-step operations in one TypeScript program.',
-  presetMinimalName: 'Minimal mode',
+    'All Standard Mode capabilities, with tools exposed through the Code Mode SDK so the model can combine multi-step operations in one TypeScript program.',
+  presetMinimalName: 'Essentials',
   presetMinimalDescription:
-    'Two-tool coding agent with persistent bash and str_replace_editor.',
-  presetCordisName: 'Creator mode',
+    'A focused coding agent with persistent bash and str_replace_editor.',
+  presetCordisName: 'Creator Mode',
   presetCordisDescription:
-    'Built for creating custom agent presets, with all Standard mode capabilities plus runtime inspection, plugin experiments, and preset-authoring guidance.',
+    'Built for creating custom agent setups, with all Standard Mode capabilities plus runtime inspection, plugin experiments, and setup-authoring guidance.',
   duplicate: 'Duplicate',
   duplicateUnavailable: 'This deployment has no writable preset directory',
   delete: 'Delete',
@@ -70,7 +70,7 @@ export const en: Record<AgentPresetSettingsKey, string> = {
     + 'be changed later; everything else is edited in the preset\'s own files.',
   create: 'Create',
   creating: 'Creating…',
-  creatorDraft: 'Draft a custom preset with Creator mode',
+  creatorDraft: 'Draft a custom agent setup with Creator Mode',
   openLocation: 'Open folder',
   showLocation: 'Show location',
   revealedPathLabel: 'Preset files:',

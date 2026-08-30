@@ -1221,14 +1221,14 @@ describe('manual web performance: complex workspace and history', () => {
       })
       const opened = await measure(cdp, async () => {
         await contentSearch.value.click()
-        await page.getByRole('tab', { name: 'Trajectory', exact: true }).waitFor({ timeout: 30_000 })
+        await page.getByRole('tab', { name: 'Work Trace', exact: true }).waitFor({ timeout: 30_000 })
         return conversationTurns(page)
       })
       expect(opened.value).toBe(DEFAULT_HISTORY_TURNS)
 
       const trajectoryRows = page.getByRole('row')
       const coldTrajectory = await measure(cdp, async () => {
-        await page.getByRole('tab', { name: 'Trajectory', exact: true }).click()
+        await page.getByRole('tab', { name: 'Work Trace', exact: true }).click()
         return stableCount(trajectoryRows, count => count === EXPECTED_TRAJECTORY_ROWS)
       })
       expect(coldTrajectory.value).toBe(EXPECTED_TRAJECTORY_ROWS)
@@ -1239,7 +1239,7 @@ describe('manual web performance: complex workspace and history', () => {
       })
       expect(collapseTurns.value).toBeLessThan(EXPECTED_TRAJECTORY_ROWS)
       const trajectorySearch = await measure(cdp, async () => {
-        await page.getByRole('searchbox', { name: 'Search trajectory', exact: true }).fill('turn 499')
+        await page.getByRole('searchbox', { name: 'Search Work Trace', exact: true }).fill('turn 499')
         return stableCount(trajectoryRows, count => count > 0 && count < 20)
       })
       expect(trajectorySearch.value).toBeLessThan(20)
@@ -1260,7 +1260,7 @@ describe('manual web performance: complex workspace and history', () => {
       }
 
       const warmTrajectory = await measure(cdp, async () => {
-        await page.getByRole('tab', { name: 'Trajectory', exact: true }).click()
+        await page.getByRole('tab', { name: 'Work Trace', exact: true }).click()
         return stableCount(trajectoryRows, count => count === EXPECTED_TRAJECTORY_ROWS)
       })
       expect(warmTrajectory.value).toBe(EXPECTED_TRAJECTORY_ROWS)

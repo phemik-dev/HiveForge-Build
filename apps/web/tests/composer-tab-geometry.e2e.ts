@@ -1,5 +1,5 @@
 // Web e2e scenario: the input card holds one horizontal position across the
-// Chat and Trajectory tabs.
+// Chat and Work Trace tabs.
 //
 // The composer seat is the same node in both tabs, but it measures itself
 // against a different edge in each (see
@@ -7,7 +7,7 @@
 // In Chat it is a sticky CHILD of the column's scroller, so it rides that
 // scroller's content box — the box a space-consuming scrollbar shortens. A view
 // that opts into a composer overlay (`data-conversation-composer-overlay`, which
-// Trajectory declares and which moves the column's own scrolling into the view)
+// Work Trace declares and which moves the column's own scrolling into the view)
 // gets an absolutely positioned seat instead, laid out against the padding box,
 // which the scrollbar never reduces.
 //
@@ -189,9 +189,9 @@ function measureTab(page: Page): Promise<TabMetrics> {
  * @param page - the page under test.
  * @param tab - the tab to show.
  */
-async function showTab(page: Page, tab: 'Chat' | 'Trajectory'): Promise<void> {
+async function showTab(page: Page, tab: 'Chat' | 'Work Trace'): Promise<void> {
   await page.getByRole('tab', { name: tab, exact: true }).click()
-  if (tab === 'Trajectory') await page.getByLabel('Trajectory timeline').waitFor({ timeout: 30_000 })
+  if (tab === 'Work Trace') await page.getByLabel('Work Trace timeline').waitFor({ timeout: 30_000 })
   else await page.locator('[data-conversation-scroll] [data-chat-anchor-key]').first().waitFor({ timeout: 30_000 })
   // Both measurements are taken after a paint, so a rectangle read mid-transition
   // cannot be reported as a shift the cascade did not cause.
@@ -208,7 +208,7 @@ async function showTab(page: Page, tab: 'Chat' | 'Trajectory'): Promise<void> {
 async function compareTabs(page: Page): Promise<TabComparison> {
   await showTab(page, 'Chat')
   const chat = await measureTab(page)
-  await showTab(page, 'Trajectory')
+  await showTab(page, 'Work Trace')
   const trajectory = await measureTab(page)
   await showTab(page, 'Chat')
   return {
@@ -280,16 +280,16 @@ function renderGeometry(wide: TabComparison, narrow: TabComparison, control: Tab
     `- Chat: scrollbar-gutter ${comparison.chat.gutter}, overflow ${comparison.chat.overflowX}/${comparison.chat.overflowY}`,
     `- Chat scroller scrolls: ${String(comparison.chat.scrolls)}`,
     `- Chat reserved band: ${String(comparison.chat.band)}px`,
-    `- Trajectory: scrollbar-gutter ${comparison.trajectory.gutter}, overflow ${comparison.trajectory.overflowX}/${comparison.trajectory.overflowY}`,
-    `- Trajectory scroller scrolls: ${String(comparison.trajectory.scrolls)}`,
-    `- Trajectory reserved band: ${String(comparison.trajectory.band)}px`,
+    `- Work Trace: scrollbar-gutter ${comparison.trajectory.gutter}, overflow ${comparison.trajectory.overflowX}/${comparison.trajectory.overflowY}`,
+    `- Work Trace scroller scrolls: ${String(comparison.trajectory.scrolls)}`,
+    `- Work Trace reserved band: ${String(comparison.trajectory.band)}px`,
     `- input card left edge moves between tabs: ${String(comparison.leftShift)}px`,
     `- input card right edge moves between tabs: ${String(comparison.rightShift)}px`,
     `- input card width changes between tabs: ${String(comparison.widthShift)}px`,
     '',
   ]
   return [
-    '# Input card position across the Chat and Trajectory tabs',
+    '# Input card position across the Chat and Work Trace tabs',
     '',
     ...section(`Wide viewport (${String(WIDE_VIEWPORT.width)}px, card at its cap)`, wide),
     ...section(`Narrow viewport (${String(NARROW_VIEWPORT.width)}px, card shrinking with the column)`, narrow),
@@ -324,7 +324,7 @@ describe('web e2e: input card position across view tabs', () => {
     await scaffold?.close()
   })
 
-  it('reserves the gutter in Chat and lets Trajectory own its width', async () => {
+  it('reserves the gutter in Chat and lets Work Trace own its width', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-composer-tab-geometry-band'))
     await setMeasuredViewport(page, WIDE_VIEWPORT, false)
     // Vacuity guard. The scenario must be able to fail: on an engine that
@@ -350,7 +350,7 @@ describe('web e2e: input card position across view tabs', () => {
     // horizontal axis computes to `auto` beside a scrolling one.
     expect(comparison.trajectory.overflowY).toBe('auto')
     expect(comparison.trajectory.overflowX).toBe('hidden')
-    // Only Chat scrolls this box; the Trajectory view owns its own scrollers.
+    // Only Chat scrolls this box; the Work Trace view owns its own scrollers.
     expect(comparison.trajectory.scrolls).toBe(false)
     expect(tripwire.pageErrors).toEqual([])
   }, 60_000)

@@ -2,20 +2,20 @@
   - navigation "Session hierarchy":
     - button "Reply with a one-sentence description" [disabled]
   - img
-  - text: Standard mode
+  - text: Standard Mode
   - button "Session log":
     - text: Session log
     - img
   - tablist:
     - tab "Chat" [selected]
-    - tab "Trajectory"
+    - tab "Work Trace"
 - text: Reply with a one-sentence description of event sourcing, then stop. {{clock}}
 - button "Copy":
   - img
-- button "Context injection @hiveforge-ai/dsh-system-prompt":
+- button "Context added @hiveforge-ai/dsh-system-prompt":
   - img
   - img
-  - text: Context injection @hiveforge-ai/dsh-system-prompt
+  - text: Context added @hiveforge-ai/dsh-system-prompt
 - paragraph: partial
 - text: Stopped
 - button "Copy":
@@ -36,7 +36,7 @@
     - tooltip "Edit queued message"
     - button "Remove queued message":
       - img
-    - button "Steer queued message" [disabled]:
+    - button "Guide current run" [disabled]:
       - img
   - listitem:
     - text: Queue item preserved after stop
@@ -44,7 +44,7 @@
       - img
     - button "Remove queued message":
       - img
-    - button "Steer queued message" [disabled]:
+    - button "Guide current run" [disabled]:
       - img
 - textbox "Message the agent"
 - button "Commands":

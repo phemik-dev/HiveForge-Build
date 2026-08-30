@@ -6,9 +6,12 @@ export const NS = 'conversation'
 // The claimed /plan hint and the plan-mode textarea placeholder share one
 // string: both describe the same next action.
 const PLAN_NEXT_ACTION_ZH = '描述你的任务以生成计划'
-const PLAN_NEXT_ACTION_EN = 'describe your task to generate plan'
+const PLAN_NEXT_ACTION_EN = 'Describe your task to generate a plan'
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
+/** The conversation namespace key union, defined by the English dictionary. */
+export type ConversationKey = keyof typeof en
+
+/** Simplified Chinese dictionary, checked complete against the English key set. */
 export const zh = {
   'view.chat': '对话',
   'hint.plan': PLAN_NEXT_ACTION_ZH,
@@ -71,7 +74,7 @@ export const zh = {
   'access.confirm.acknowledge': '我已了解风险，并愿意继续',
   'access.confirm.cancel': '取消',
   'access.confirm.enable': '启用 Full access',
-  'hero.headline': '探索未至之境',
+  'hero.headline': '我们要锻造什么？',
   'hero.preview': '预览版',
   'hero.chooseWorkspace': '选择工作区',
   'session.hierarchy': '会话层级',
@@ -82,6 +85,7 @@ export const zh = {
   'details.input': '输入',
   'details.output': '输出',
   'details.running': '运行中…',
+  'reasoning.title': 'Think',
   'todo.title': '任务',
   'todo.progress.done': '{done} 已完成',
   'todo.progress.active': '{active} 进行中',
@@ -180,12 +184,9 @@ export const zh = {
   'json.truncated': '… 已截断，共 {total} 字符',
   'clock.md': '{m}月{d}日',
   'clock.ymd': '{y}年{m}月{d}日',
-} satisfies Record<string, string>
+} satisfies Record<ConversationKey, string>
 
-/** The conversation namespace key union. */
-export type ConversationKey = keyof typeof zh
-
-/** English dictionary, checked complete against the zh key set. */
+/** English dictionary (the key-set source of truth). */
 export const en = {
   'view.chat': 'Chat',
   'hint.plan': PLAN_NEXT_ACTION_EN,
@@ -225,7 +226,7 @@ export const en = {
   'image.tooManyPixels': 'Image resolution is too high; compress it and try again',
   'image.dimensionTooLarge': 'Image sides must be at most {size}px; downscale it and try again',
   'image.modelUnsupported': 'The current model does not support images; switch to a model that does',
-  'image.subagentUnsupported': 'Subagent sessions do not support images yet',
+  'image.subagentUnsupported': 'Supporting agent sessions do not support images yet',
   'image.sendFailed': 'Sending images failed ({reason}); re-add them and try again',
   'context.aria': '{percent} of context used',
   'context.used': 'of context used',
@@ -248,8 +249,8 @@ export const en = {
   'access.confirm.acknowledge': 'I understand the risks and want to continue',
   'access.confirm.cancel': 'Cancel',
   'access.confirm.enable': 'Enable Full access',
-  'hero.headline': 'Into the Unknown',
-  'hero.preview': 'Preview',
+  'hero.headline': 'What shall we forge?',
+  'hero.preview': 'HiveForge Preview',
   'hero.chooseWorkspace': 'Choose workspace',
   'session.hierarchy': 'Session hierarchy',
   'details.title': 'Details',
@@ -259,7 +260,8 @@ export const en = {
   'details.input': 'Input',
   'details.output': 'Output',
   'details.running': 'Running…',
-  'todo.title': 'To-dos',
+  'reasoning.title': 'Think',
+  'todo.title': 'Tasks',
   'todo.progress.done': '{done} completed',
   'todo.progress.active': '{active} in progress',
   'todo.progress.pending': '{pending} pending',
@@ -274,8 +276,8 @@ export const en = {
   'fileOpen.folderTitle': 'Couldn’t open folder',
   'fileOpen.folderUnknown': 'Couldn’t open this folder',
   'message.extraBlock': 'Extra content block',
-  'message.contextInjection': 'Context injection',
-  'message.contextRecall': 'Session recall',
+  'message.contextInjection': 'Context added',
+  'message.contextRecall': 'Recalled context',
   'message.referenceSummary': 'Referenced session · {labels}',
   'message.referenceSeparator': ', ',
   'message.context.instructions.loaded': 'loaded',
@@ -288,9 +290,9 @@ export const en = {
   'message.context.relay.from': 'From session {session}',
   'message.context.recall.counts': '{retained} kept · {omitted} omitted',
   'message.context.recall.truncated': 'truncated',
-  'message.compaction': 'Context compacted',
-  'message.compaction.running': 'Compacting context…',
-  'message.compaction.completed': 'Compacted {items} history items (~{tokens} tokens)',
+  'message.compaction': 'Context condensed',
+  'message.compaction.running': 'Condensing context…',
+  'message.compaction.completed': 'Condensed {items} history items (~{tokens} tokens)',
   'message.compaction.expand': 'View compaction summary',
   'message.compaction.unavailable': 'Compaction summary unavailable',
   'message.unknownSurface': 'Unknown surface event: {type}',
@@ -340,7 +342,7 @@ export const en = {
   'queue.save': 'Save queued message',
   'queue.cancelEdit': 'Cancel editing',
   'queue.remove': 'Remove queued message',
-  'queue.steer': 'Steer queued message',
+  'queue.steer': 'Guide current run',
   'queue.steer.unavailable': 'Steering is available only while the agent is running',
   'queue.editFailed': 'Edit failed: this message may have already started sending.',
   'queue.removeFailed': 'Removal failed: this message may have already started sending.',
@@ -357,4 +359,4 @@ export const en = {
   'json.truncated': '… truncated, {total} characters total',
   'clock.md': '{m}/{d}',
   'clock.ymd': '{y}-{m}-{d}',
-} satisfies Record<ConversationKey, string>
+} satisfies Record<string, string>

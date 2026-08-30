@@ -108,7 +108,7 @@ describe('web e2e: mid-turn steering lands durably and visibly', () => {
     await input.press('Enter')
     const queuedRow = page.getByRole('listitem').filter({ hasText: STEER })
     await queuedRow.waitFor({ timeout: 10_000 })
-    const steerButton = queuedRow.getByRole('button', { name: 'Steer queued message' })
+    const steerButton = queuedRow.getByRole('button', { name: 'Guide current run' })
     await expect.poll(() => steerButton.isEnabled(), { timeout: 10_000 }).toBe(true)
     await steerButton.click({ timeout: 10_000 })
     const pendingSteering = page.locator('[data-pending-steering]').filter({ hasText: STEER })
@@ -313,7 +313,7 @@ describe('web e2e: empty-draft Cmd+Enter steers the whole queue', () => {
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
     await connectFreshWorkspace(page, scaffold.workspaceCwd)
-    await page.getByText('Standard mode', { exact: true }).waitFor({ timeout: 10_000 })
+    await page.getByText('Standard Mode', { exact: true }).waitFor({ timeout: 10_000 })
   }, 120_000)
 
   afterAll(async () => {

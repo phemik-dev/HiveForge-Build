@@ -295,7 +295,7 @@ function disposalOf(activation: Activation): Promise<void> | undefined {
  * @returns the model-facing opening line of the settlement notice.
  */
 function settlementSummary(childId: SessionId, stopReason: SubagentResult['stopReason']): string {
-  const subject = `Background subagent ${childId}`
+  const subject = `Supporting agent ${childId}`
   switch (stopReason) {
     case 'completed':
       return `${subject} finished and will do no further work unless you send it more.`
@@ -661,7 +661,7 @@ export class SubagentContinuationManager {
   ): MessageId {
     const message = createUserMessage({
       content: [
-        { type: 'text' as const, text: `Background subagent ${activation.childId} reported:` },
+        { type: 'text' as const, text: `Supporting agent ${activation.childId} reported:` },
         ...content,
       ],
       source: {

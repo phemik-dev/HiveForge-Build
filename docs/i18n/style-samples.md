@@ -1,8 +1,13 @@
-# 翻译语体样例（style samples）
+# Translation style samples
 
-本文件是翻译语体的校准锚点：每组样例是一段英文原文与一段人工定稿的中文译文，覆盖本仓库文档的主要文体。**译文的语体以这些样例为准**——文体样例的效力高于对语气的文字描述，但术语表、忠实性与结构规则仍然优先。翻译或评审时对照最接近的文体样例。本文件中英对照、自成双语，不参与配对（见 [README.md](README.md) 排除清单）。
 
-维护方式：人工评审校准出新的金标段落后追加到对应文体；发现语义、结构或术语错误时直接修正。新增或修正样例都需经过 PR 评审。
+This file is a calibration anchor for translation style. Each sample is an English source paragraph paired with a human-reviewed Simplified Chinese translation, covering the major prose styles used in this repository’s documentation.
+
+**Treat the style in these samples as authoritative**: style-sample guidance overrides any general tone descriptions, but the terminology list, faithfulness requirements, and structural preservation rules still take priority. When translating or reviewing, compare against the closest matching style sample.
+
+This file is intentionally bilingual-by-construction and is excluded from pairing (see the exclusions list in [docs/i18n/README.md](README.md)).
+
+Maintenance: after reviewers calibrate a new gold-standard paragraph pair, append it under the appropriate style. When a sample contains a semantic, structural, or terminology error, fix it in place. Every addition or correction is reviewed in a PR.
 
 ## ① 架构叙述
 

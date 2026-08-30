@@ -2,13 +2,15 @@
 
 [English](README.md) | 中文
 
+<!-- 翻译溯源：词汇表 v0.3 清理中规范化的英文文案译自原有中文第一方文案。 -->
+
 本仓库的文档会被公司内外的人和 agent（智能体）阅读，因此范围内的每篇文档都以英文和简体中文维护。本页定义配对约定、检查、范围与排除规则；[translation-rules.md](translation-rules.zh.md) 定义如何翻译；[terminology.md](terminology.md) 是术语真源。agent 的日常工作遵循 [docs/AGENTS.md](../AGENTS.md) 中的轻量路径；扩展版 [.agents/skills/dsh-translate-docs](../../.agents/skills/dsh-translate-docs/SKILL.md) 工作流仅在用户显式调用时可用。
 
 <a id="the-pairing-contract"></a>
 
 ## 配对约定
 
-- **两种语言同权。** 一篇文档可以先用任一语言撰写和评审（先写中文的 Agent Note 与先写英文的一样正当），另一侧由它翻译而来。两个文件谁也不高于谁；约束它们的是二者必须说同样的话。
+- **英文是规范维护版本。** 无后缀的英文文件是默认参考与维护源。中文（`.zh.md`）文件仍是可选的经评审对侧，且两侧必须表达相同内容。
 - **一对文档是三个同目录文件。** 英文 `foo.md`、中文 `foo.zh.md`，加一份一致性记录 `foo.i18n.yaml`，都在同一目录。不用语言目录，不用独立翻译仓库，不用中英混排的单文件。配对必须整体合并：PR（Pull Request）永远不会只带一种语言而缺其余两个文件。
 - **一致性记录。**`foo.i18n.yaml` 保存两侧文件在上一次被确认「说同样的话」时各自的完整 Git blob hash：
 

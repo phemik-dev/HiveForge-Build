@@ -85,7 +85,7 @@ describe.skipIf(MODE === 'record')('web e2e: background job list', () => {
     // Point assertion, not a poll: `expect.poll` retries until a predicate
     // holds, so polling for zero passes at t=0 and proves nothing. The
     // "renders nothing without a task" branch is owned by the component suite.
-    const trigger = page.getByRole('button', { name: '1 background job running' })
+    const trigger = page.getByRole('button', { name: '1 background task running' })
     expect(await trigger.count()).toBe(0)
 
     const started = await scaffold.ctx.tools.execute({
@@ -102,7 +102,7 @@ describe.skipIf(MODE === 'record')('web e2e: background job list', () => {
 
     await trigger.waitFor({ timeout: 15_000 })
     await trigger.click()
-    const row = page.getByRole('list', { name: 'Background jobs' }).getByRole('listitem').first()
+    const row = page.getByRole('list', { name: 'Background tasks' }).getByRole('listitem').first()
     await row.waitFor({ timeout: 10_000 })
     await expect.poll(() => row.textContent()).toContain(COMMAND)
 

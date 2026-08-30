@@ -1,14 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
   <title>HiveForge</title>
-  <desc>HiveForge placeholder app icon</desc>
+  <desc>HiveForge app icon</desc>
   <style>
-    :root { --hf-bg: #2563eb; --hf-fg: #ffffff; }
     @media (prefers-color-scheme: dark) {
-      :root { --hf-bg: #3b82f6; --hf-fg: #ffffff; }
+      path { fill: #fff; }
     }
   </style>
-  <rect x="4" y="4" width="56" height="56" rx="14" fill="var(--hf-bg)" />
-  <path d="M20 24h24v6H20z" fill="var(--hf-fg)" opacity="0.95" />
-  <path d="M20 34h24v6H20z" fill="var(--hf-fg)" opacity="0.75" />
-  <path d="M20 44h18v6H20z" fill="var(--hf-fg)" opacity="0.55" />
+  <path d="M20 24h24v6H20z" fill="#000" />
+  <path d="M20 34h24v6H20z" fill="#000" opacity="0.8" />
+  <path d="M20 44h18v6H20z" fill="#000" opacity="0.6" />
 </svg>

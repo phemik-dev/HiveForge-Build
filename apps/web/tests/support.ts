@@ -11,18 +11,20 @@ export const DIST_INDEX = fileURLToPath(new URL('../dist/index.html', import.met
 export const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url))
 
 /**
- * Browser language a page must advertise to boot into the product's Chinese
- * surface: with no stored preference the client derives its initial locale
- * from the browser, and Playwright's default browser asks for English.
+ * Chinese browser locale for intentional multilingual e2e lanes.
+ *
+ * The product's default UI language is English; a scenario that needs Chinese UI
+ * must also seed an explicit Host-backed locale preference (see the web e2e
+ * scaffold's seedLocalePreference option).
  */
 export const ZH_BROWSER_LOCALE = 'zh-CN'
 
 /**
  * Open the standard browser-test page advertising English before client boot.
  * This keeps role locators and goldens deterministic while leaving the Host
- * settings document free to override the provisional browser-derived locale;
- * scenarios asserting the Chinese surface advertise
- * {@link ZH_BROWSER_LOCALE} instead.
+ * settings document free to override the provisional browser locale;
+ * scenarios asserting Chinese UI should advertise {@link ZH_BROWSER_LOCALE}
+ * and seed an explicit Host locale preference.
  * @param browser - Playwright browser owning the page.
  * @param height - Viewport height; width is fixed to the lane baseline.
  * @returns the initialized page.
@@ -89,9 +91,10 @@ export async function connectFreshWorkspace(page: Page, root: string, name = 'wo
 
 /**
  * {@link connectFreshWorkspace} over a page that advertises
- * {@link ZH_BROWSER_LOCALE}: the English helper's anchors assume the locale
- * most other scenarios boot, so a scenario that deliberately keeps zh needs
- * the localized picker copy.
+ * {@link ZH_BROWSER_LOCALE} and a scaffold seeded with an explicit zh locale
+ * preference: the English helper's anchors assume the locale most other
+ * scenarios boot, so a scenario that deliberately keeps zh needs the localized
+ * picker copy.
  * @param page - the browser page under test.
  * @param root - workspace parent directory.
  * @param name - directory created under `root` and connected.

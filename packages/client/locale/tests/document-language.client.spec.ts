@@ -2,9 +2,8 @@
 /**
  * `<html lang>` tracks the active locale.
  *
- * The served markup declares one language, but the resolved locale may differ
- * (browser detection, or a stored Host preference adopted after activation),
- * and it changes again whenever the user switches. Assistive technology and
+ * The served markup declares English, but an explicit stored Host preference
+ * may select another locale after activation, and it changes again whenever the user switches. Assistive technology and
  * browser features read this attribute, so a stale value misreports the
  * document language rather than merely looking untidy.
  */
@@ -67,28 +66,26 @@ describe('document language', () => {
     delete own.language
   })
 
-  it('states the resolved locale at activation, not the value the markup shipped', async () => {
-    // A Chinese browser resolves zh even though the markup said en.
+  it('states the English default at activation regardless of browser language', async () => {
     const { locale } = await bench()
-    expect(locale.getLocale().active).toBe('zh')
-    expect(langOf()).toBe('zh-CN')
+    expect(locale.getLocale().active).toBe('en')
+    expect(langOf()).toBe('en')
   })
 
   it('follows a locale switch in both directions with BCP 47 tags', async () => {
     const { locale } = await bench()
-    expect(langOf()).toBe('zh-CN')
-    locale.setLocale('en')
-    // `en` needs no region; `zh` names its script variant, which bare `zh`
-    // leaves ambiguous for pronunciation and font selection.
     expect(langOf()).toBe('en')
     locale.setLocale('zh')
+    // `en` needs no region; `zh` names its script variant, which bare `zh`
+    // leaves ambiguous for pronunciation and font selection.
     expect(langOf()).toBe('zh-CN')
+    locale.setLocale('en')
+    expect(langOf()).toBe('en')
   })
 
-  it('follows an explicit Host preference that overrides browser detection', async () => {
-    // Stored preference wins over the zh browser pinned above.
-    const { locale } = await bench('en')
-    await vi.waitFor(() => { expect(locale.getLocale().active).toBe('en') })
-    await vi.waitFor(() => { expect(langOf()).toBe('en') })
+  it('follows an explicit Host preference that overrides the English default', async () => {
+    const { locale } = await bench('zh')
+    await vi.waitFor(() => { expect(locale.getLocale().active).toBe('zh') })
+    await vi.waitFor(() => { expect(langOf()).toBe('zh-CN') })
   })
 })
