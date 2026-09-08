@@ -19,7 +19,7 @@ This fork is installable as a command-line bootstrap. Install it globally from a
 `node_modules/.bin`):
 
 ```sh
-npm install --global github:phemik-dev/HiveForge-Build#<full-commit-sha>
+npm install --global github:phemik-dev/HiveForge-Build#git-runtime-<version>
 dsh web
 ```
 
@@ -32,7 +32,7 @@ commit intentionally fails rather than downloading an unverified runtime.
 To install it into a project instead:
 
 ```sh
-npm install github:phemik-dev/HiveForge-Build#<full-commit-sha>
+npm install github:phemik-dev/HiveForge-Build#git-runtime-<version>
 ./node_modules/.bin/dsh web
 ```
 

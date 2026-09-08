@@ -19,7 +19,7 @@ HiveForge Harness 目前处于 _开发者预览_ 阶段，正在快速迭代。*
 此 fork 可作为命令行引导程序安装。请从**固定的提交**全局安装（常规本地 npm 安装只会通过 `node_modules/.bin` 暴露可执行文件）：
 
 ```sh
-npm install --global github:phemik-dev/HiveForge-Build#<full-commit-sha>
+npm install --global github:phemik-dev/HiveForge-Build#git-runtime-<version>
 dsh web
 ```
 
@@ -28,7 +28,7 @@ dsh web
 要在项目中安装：
 
 ```sh
-npm install github:phemik-dev/HiveForge-Build#<full-commit-sha>
+npm install github:phemik-dev/HiveForge-Build#git-runtime-<version>
 ./node_modules/.bin/dsh web
 ```
 

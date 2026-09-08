@@ -68,7 +68,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # The tag must point at the manifest commit, not at the source commit
+          # that started this workflow; users install from this immutable tag.
           gh release create "${{ inputs.tag }}" dist/releases/hiveforge-dsh-runtime.tgz \
-            --target "${{ github.sha }}" \
+            --target "${{ github.ref_name }}" \
             --title "HiveForge runtime ${{ inputs.tag }}" \
             --generate-notes
