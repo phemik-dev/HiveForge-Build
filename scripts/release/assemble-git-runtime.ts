@@ -15,9 +15,12 @@ import { c as createTar } from 'tar'
 import { packedIdentity } from './tarball.ts'
 
 function run(command: string, args: readonly string[], cwd: string): void {
+  // Windows exposes npm as a PowerShell shim in this release environment, while
+  // Linux runners expose a normal `npm` executable on PATH.
   const npmCli = join(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
-  const executable = command === 'npm' ? process.execPath : command
-  const invocation = command === 'npm' ? [npmCli, ...args] : args
+  const useWindowsNpmCli = process.platform === 'win32' && command === 'npm'
+  const executable = useWindowsNpmCli ? process.execPath : command
+  const invocation = useWindowsNpmCli ? [npmCli, ...args] : args
   const result = spawnSync(executable, invocation, { cwd, stdio: 'inherit' })
   if (result.error !== undefined) throw result.error
   if (result.status !== 0) throw new Error(`${command} exited with ${String(result.status)}`)
