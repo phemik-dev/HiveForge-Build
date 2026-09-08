@@ -1,0 +1,74 @@
+name: Git Runtime Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Immutable GitHub Release tag for this runtime
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: pnpm
+
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build:official
+
+      - name: Build the native Linux launcher
+        run: pnpm --dir native/landlock-run build:native
+
+      - name: Pack the runtime package families
+        run: |
+          pnpm run release:pack -- --family vendor --out dist/npm/vendor
+          pnpm run release:pack -- --family dsh --out dist/npm/dsh
+          node native/landlock-run/scripts/pack-release.mjs dist/npm/native --current-platform-only
+
+      - name: Assemble runtime and update bootstrap manifest
+        env:
+          RELEASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ inputs.tag }}/hiveforge-dsh-runtime.tgz
+        run: |
+          pnpm run release:assemble-git-runtime -- \
+            --from dist/npm/vendor \
+            --from dist/npm/dsh \
+            --from dist/npm/native \
+            --out dist/releases/hiveforge-dsh-runtime.tgz \
+            --url "$RELEASE_URL" \
+            --manifest runtime-manifest.json
+
+      - name: Verify packaged CLI
+        run: |
+          mkdir smoke
+          tar -xzf dist/releases/hiveforge-dsh-runtime.tgz -C smoke
+          node smoke/runtime/node_modules/@hiveforge-ai/dsh/lib/bin.js --version
+
+      - name: Commit verified bootstrap manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runtime-manifest.json
+          git commit -m "chore: publish runtime manifest for ${{ inputs.tag }}"
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Create release and upload runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ inputs.tag }}" dist/releases/hiveforge-dsh-runtime.tgz \
+            --target "${{ github.sha }}" \
+            --title "HiveForge runtime ${{ inputs.tag }}" \
+            --generate-notes
