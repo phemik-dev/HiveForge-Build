@@ -63,10 +63,10 @@
     "@hiveforge-ai/dsh-system-prompt": "workspace:^",
     "@hiveforge-ai/dsh-tools": "workspace:^",
     "@hiveforge-ai/dsh-user-questions": "workspace:^",
-    "@types/react": "~18.3.1",
+    "@types/react": "~19.2.18",
     "@hiveforge-ai/dsh-client-ui-primitives": "workspace:^",
     "@hiveforge-ai/dsh-client-ui-slots": "workspace:^",
-    "react": "^18.2.0",
+    "react": "^19.2.8",
     "@hiveforge-ai/dsh-client-runtime": "workspace:^",
     "@hiveforge-ai/dsh-client-ui-conversation": "workspace:^",
     "@hiveforge-ai/dsh-client-connection": "workspace:^"
