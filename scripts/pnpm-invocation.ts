@@ -11,9 +11,9 @@ export function pnpmInvocation(
   environment: NodeJS.ProcessEnv = process.env,
 ): { command: string; args: string[] } {
   const entrypoint = environment.npm_execpath
-  if (entrypoint === undefined || entrypoint === '') {
-    throw new Error('pnpm invocation: npm_execpath is unavailable; invoke the script through pnpm run.')
-  }
+  // `pnpm exec` does not set npm_execpath. Its own executable remains on PATH,
+  // so retain the shell-free invocation on ordinary CI and user environments.
+  if (entrypoint === undefined || entrypoint === '') return { command: 'pnpm', args: [...args] }
   if (/\.[cm]?js$/iu.test(entrypoint)) {
     return { command: process.execPath, args: [entrypoint, ...args] }
   }
