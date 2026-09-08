@@ -40,15 +40,15 @@ jobs:
 
       - name: Pack the runtime package families
         run: |
-          pnpm run release:pack -- --family vendor --out dist/npm/vendor
-          pnpm run release:pack -- --family dsh --out dist/npm/dsh
+          pnpm exec tsx scripts/release/pack.ts --family vendor --out dist/npm/vendor
+          pnpm exec tsx scripts/release/pack.ts --family dsh --out dist/npm/dsh
           node native/landlock-run/scripts/pack-release.mjs dist/npm/native --current-platform-only
 
       - name: Assemble runtime and update bootstrap manifest
         env:
           RELEASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ inputs.tag }}/hiveforge-dsh-runtime.tgz
         run: |
-          pnpm run release:assemble-git-runtime -- \
+          pnpm exec tsx scripts/release/assemble-git-runtime.ts \
             --from dist/npm/vendor \
             --from dist/npm/dsh \
             --from dist/npm/native \
