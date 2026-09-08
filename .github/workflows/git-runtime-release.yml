@@ -30,6 +30,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build:official
 
+      - name: Install native launcher toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes musl-tools
+
       - name: Build the native Linux launcher
         run: pnpm --dir native/landlock-run build:native
 
