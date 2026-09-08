@@ -23,13 +23,13 @@
 pnpm install
 ```
 
-安装过程还会通过 `scripts/install-lefthook.mjs` 配置 worktree 本地的 Lefthook 钩子和 `dsh-translation-pairing` Git 合并驱动。[worktree 本地钩子 Agent Note](../.agents/notes/implemented/process/2026-07-27-worktree-local-lefthook.zh.md) 负责钩子路径的安全约定；[自动配对合并 Agent Note](../.agents/notes/implemented/process/2026-08-08-automatic-translation-pairing-merges.zh.md) 负责合并驱动。
-
-如果依赖是从缓存恢复或 `postinstall` 被跳过而导致任一集成缺失，请手动安装：
+安装依赖后，请显式配置 worktree 本地的 Lefthook 钩子和 `dsh-translation-pairing` Git 合并驱动：
 
 ```sh
-node scripts/install-lefthook.mjs
+pnpm run hooks:install
 ```
+
+这刻意不是 npm 生命周期钩子：Git 消费者安装的是小型运行时引导程序，不得修改其 Git 配置。[worktree 本地钩子 Agent Note](../.agents/notes/implemented/process/2026-07-27-worktree-local-lefthook.zh.md) 负责钩子路径的安全约定；[自动配对合并 Agent Note](../.agents/notes/implemented/process/2026-08-08-automatic-translation-pairing-merges.zh.md) 负责合并驱动。
 
 如果包装脚本拒绝现有 Git 配置或报告陈旧锁，请遵循其诊断和所链接的 Agent Note，不要凭猜测编辑 worktree 元数据。移动检出目录后，请重新运行包装脚本以重新生成自有路径。
 

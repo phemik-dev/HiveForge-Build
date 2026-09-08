@@ -12,12 +12,28 @@ HiveForge Harness is currently in _developer preview_ and is iterating rapidly. 
 
 ## Run
 
-### Run from `npm`
+### Install this fork from GitHub
 
-Install `Node.js`, then run:
+This fork is installable as a command-line bootstrap. Install it globally from a
+**pinned commit** (a normal local npm install exposes the executable only through
+`node_modules/.bin`):
 
 ```sh
-npx @hiveforge-ai/dsh web
+npm install --global github:phemik-dev/HiveForge-Build#<full-commit-sha>
+dsh web
+```
+
+On its first run, `dsh` downloads the immutable, checksum-verified runtime
+selected by [`runtime-manifest.json`](runtime-manifest.json) into the user's
+local cache. Later runs use that cache. The commit must carry a populated runtime
+manifest whose release asset has already been published; an unconfigured source
+commit intentionally fails rather than downloading an unverified runtime.
+
+To install it into a project instead:
+
+```sh
+npm install github:phemik-dev/HiveForge-Build#<full-commit-sha>
+./node_modules/.bin/dsh web
 ```
 
 The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. An SSH launch only prints the host URL because the SSH client or editor owns the local forwarded address. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
@@ -27,8 +43,8 @@ The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it
 To run from a repository checkout:
 
 ```sh
-git clone https://github.com/hiveforge-ai/hiveforge-harness.git
-cd hiveforge-harness
+git clone https://github.com/phemik-dev/HiveForge-Build.git
+cd HiveForge-Build
 pnpm install
 pnpm run build
 pnpm dsh web

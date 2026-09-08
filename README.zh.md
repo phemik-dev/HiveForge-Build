@@ -14,12 +14,22 @@ HiveForge Harness 目前处于 _开发者预览_ 阶段，正在快速迭代。*
 
 ## 运行
 
-### 通过 `npm` 运行
+### 从 GitHub 安装此 fork
 
-安装 `Node.js`，然后运行：
+此 fork 可作为命令行引导程序安装。请从**固定的提交**全局安装（常规本地 npm 安装只会通过 `node_modules/.bin` 暴露可执行文件）：
 
 ```sh
-npx @hiveforge-ai/dsh web
+npm install --global github:phemik-dev/HiveForge-Build#<full-commit-sha>
+dsh web
+```
+
+首次运行时，`dsh` 会把 [`runtime-manifest.json`](runtime-manifest.json) 选定的、经校验和验证的不可变运行时下载到用户本地缓存。后续运行会使用该缓存。提交必须携带已填充的运行时清单，且其中的发布资产必须已存在；未配置的源码提交会刻意失败，而不会下载未经验证的运行时。
+
+要在项目中安装：
+
+```sh
+npm install github:phemik-dev/HiveForge-Build#<full-commit-sha>
+./node_modules/.bin/dsh web
 ```
 
 该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，本机启动时还会用默认浏览器打开页面。通过 SSH 启动时只打印宿主机 URL，因为本地转发地址由 SSH 客户端或编辑器持有。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
@@ -31,8 +41,8 @@ npx @hiveforge-ai/dsh web
 如需从仓库源码运行：
 
 ```sh
-git clone https://github.com/hiveforge-ai/hiveforge-harness.git
-cd hiveforge-harness
+git clone https://github.com/phemik-dev/HiveForge-Build.git
+cd HiveForge-Build
 pnpm install
 pnpm run build
 pnpm dsh web

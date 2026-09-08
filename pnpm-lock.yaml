@@ -14,6 +14,10 @@ patchedDependencies:
 importers:
 
   .:
+    dependencies:
+      tar:
+        specifier: ^7.5.5
+        version: 7.5.22
     devDependencies:
       '@agentclientprotocol/sdk':
         specifier: 0.25.1
@@ -5540,12 +5544,12 @@ importers:
 
   packages/llm/llm-pi-ai:
     dependencies:
-      '@hiveforge-ai/schemastery':
-        specifier: link:../../../vendor/schemastery
-        version: link:../../../vendor/schemastery
       '@earendil-works/pi-ai':
         specifier: ^0.82.1
         version: 0.82.1(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)
+      '@hiveforge-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
     devDependencies:
       '@hiveforge-ai/cordis':
         specifier: workspace:^
@@ -8429,6 +8433,25 @@ importers:
         specifier: workspace:^
         version: link:../web
 
+  packages/web/web-search-exa:
+    dependencies:
+      '@hiveforge-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@hiveforge-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@hiveforge-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+      '@hiveforge-ai/dsh-launch-environment':
+        specifier: workspace:^
+        version: link:../../util/launch-environment
+      '@hiveforge-ai/dsh-web':
+        specifier: workspace:^
+        version: link:../web
+
   packages/web/web-search-hiveforge:
     dependencies:
       '@hiveforge-ai/schemastery':
@@ -8459,25 +8482,6 @@ importers:
       '@hiveforge-ai/dsh-settings':
         specifier: workspace:^
         version: link:../../settings/settings
-      '@hiveforge-ai/dsh-web':
-        specifier: workspace:^
-        version: link:../web
-
-  packages/web/web-search-exa:
-    dependencies:
-      '@hiveforge-ai/schemastery':
-        specifier: link:../../../vendor/schemastery
-        version: link:../../../vendor/schemastery
-    devDependencies:
-      '@hiveforge-ai/cordis':
-        specifier: workspace:^
-        version: link:../../../vendor/cordis
-      '@hiveforge-ai/dsh-invariants':
-        specifier: workspace:^
-        version: link:../../runtime-diagnostics/invariants
-      '@hiveforge-ai/dsh-launch-environment':
-        specifier: workspace:^
-        version: link:../../util/launch-environment
       '@hiveforge-ai/dsh-web':
         specifier: workspace:^
         version: link:../web
@@ -9026,12 +9030,12 @@ importers:
       '@hiveforge-ai/dsh-web-fetch-http':
         specifier: workspace:^
         version: link:../../packages/web/web-fetch-http
-      '@hiveforge-ai/dsh-web-search-hiveforge':
-        specifier: workspace:^
-        version: link:../../packages/web/web-search-hiveforge
       '@hiveforge-ai/dsh-web-search-exa':
         specifier: workspace:^
         version: link:../../packages/web/web-search-exa
+      '@hiveforge-ai/dsh-web-search-hiveforge':
+        specifier: workspace:^
+        version: link:../../packages/web/web-search-hiveforge
       '@hiveforge-ai/dsh-web-search-perplexity':
         specifier: workspace:^
         version: link:../../packages/web/web-search-perplexity

@@ -1,0 +1,8 @@
+{
+  "runtime": {
+    "version": "UNRELEASED",
+    "url": "",
+    "sha256": "",
+    "entry": "runtime/node_modules/@hiveforge-ai/dsh/lib/bin.js"
+  }
+}
