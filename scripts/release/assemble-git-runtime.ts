@@ -80,6 +80,9 @@ async function main(): Promise<void> {
       name: 'hiveforge-git-runtime',
       version: '0.0.0',
       private: true,
+      // The staging directory sits outside the workspace, so Corepack needs
+      // this explicit declaration rather than falling back to a runner default.
+      packageManager: 'pnpm@11.7.0',
       dependencies,
     }, null, 2)}\n`)
     // npm 11 can crash while resolving this deliberately large graph of local
