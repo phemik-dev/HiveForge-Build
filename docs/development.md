@@ -21,13 +21,13 @@ Install dependencies from the repo root:
 pnpm install
 ```
 
-The install also configures worktree-local Lefthook hooks and the `dsh-translation-pairing` Git merge driver through `scripts/install-lefthook.mjs`. The [worktree-local hooks Agent Note](../.agents/notes/implemented/process/2026-07-27-worktree-local-lefthook.md) owns the hook-path safety contract; the [automatic pairing merges Agent Note](../.agents/notes/implemented/process/2026-08-08-automatic-translation-pairing-merges.md) owns the merge driver.
-
-If either integration is missing because dependencies were restored from cache or `postinstall` was skipped, install them manually:
+Configure worktree-local Lefthook hooks and the `dsh-translation-pairing` Git merge driver explicitly after the dependency install:
 
 ```sh
-node scripts/install-lefthook.mjs
+pnpm run hooks:install
 ```
+
+This is deliberately not an npm lifecycle hook: Git consumers install the small runtime bootstrap and must not have their Git configuration changed. The [worktree-local hooks Agent Note](../.agents/notes/implemented/process/2026-07-27-worktree-local-lefthook.md) owns the hook-path safety contract; the [automatic pairing merges Agent Note](../.agents/notes/implemented/process/2026-08-08-automatic-translation-pairing-merges.md) owns the merge driver.
 
 If the wrapper rejects existing Git configuration or reports a stale lock, follow its diagnostic and the linked Agent Note rather than editing worktree metadata speculatively. After moving a checkout, rerun the wrapper to regenerate the owned path.
 
