@@ -85,7 +85,7 @@ async function main(): Promise<void> {
     // npm 11 can crash while resolving this deliberately large graph of local
     // tarballs (`edgesOut` null). pnpm owns the source workspace and resolves
     // the same file graph deterministically on the Linux release runner.
-    run('pnpm', ['install', '--prod', '--no-frozen-lockfile', '--omit=optional'], runtime)
+    run('corepack', ['pnpm', 'install', '--prod', '--no-frozen-lockfile', '--omit=optional'], runtime)
 
     const cliManifest = JSON.parse(await readFile(join(runtime, 'node_modules', '@hiveforge-ai', 'dsh', 'package.json'), 'utf8')) as { version: string }
     const entry = join(runtime, 'node_modules', '@hiveforge-ai', 'dsh', 'lib', 'bin.js')
