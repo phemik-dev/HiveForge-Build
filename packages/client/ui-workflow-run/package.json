@@ -71,8 +71,8 @@
     "@hiveforge-ai/dsh-session": "workspace:^",
     "@hiveforge-ai/dsh-tool-workflow": "workspace:^",
     "@hiveforge-ai/dsh-workflow": "workspace:^",
-    "@types/react": "~18.3.1",
+    "@types/react": "~19.2.18",
     "@hiveforge-ai/cordis": "workspace:^",
-    "react": "^18.2.0"
+    "react": "^19.2.8"
   }
 }
