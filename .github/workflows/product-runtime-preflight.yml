@@ -1,6 +1,9 @@
 name: Product runtime preflight
 
 on:
+  push:
+    branches:
+      - agent/cross-platform-distribution
   workflow_dispatch:
   pull_request:
     paths:
