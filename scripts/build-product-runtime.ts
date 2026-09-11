@@ -7,6 +7,7 @@ import { createReadStream, existsSync } from 'node:fs'
 import { chmod, copyFile, cp, lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { join, resolve, sep } from 'node:path'
 import { parseArgs } from 'node:util'
+import { repositoryCommitHash } from './client-build-environment.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
 
 const root = resolve(import.meta.dirname, '..')
@@ -167,6 +168,7 @@ async function main(): Promise<void> {
   const manifest = {
     product: 'HiveForge Harness',
     version: rootManifest.version,
+    commit: repositoryCommitHash(root),
     target: target.id,
     entry: target.platform === 'windows' ? 'dsh.cmd' : 'dsh',
     node: nodeName,
