@@ -121,13 +121,6 @@ async function pruneNestedPackageNodeModules(nodeModules: string): Promise<void>
   }
 }
 
-async function prunePackageManagerState(runtime: string): Promise<void> {
-  const nodeModules = join(runtime, 'node_modules')
-  await pruneNestedPackageNodeModules(nodeModules)
-  await rm(join(nodeModules, '.pnpm'), { recursive: true, force: true })
-  await rm(join(nodeModules, '.modules.yaml'), { force: true })
-}
-
 async function sha256(path: string): Promise<string> {
   const hash = createHash('sha256')
   for await (const chunk of createReadStream(path)) {
@@ -170,7 +163,6 @@ async function main(): Promise<void> {
   ])
   await restoreDirectWorkspacePackages(runtime)
   await materializeLinks(runtime)
-  await prunePackageManagerState(runtime)
 
   const cli = join(runtime, CLI_ENTRY)
   const web = join(runtime, WEB_ENTRY)
