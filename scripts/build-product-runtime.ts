@@ -107,6 +107,27 @@ async function materializeLinks(directory: string): Promise<void> {
   }
 }
 
+async function pruneNestedPackageNodeModules(nodeModules: string): Promise<void> {
+  for (const entry of await readdir(nodeModules, { withFileTypes: true })) {
+    if (!entry.isDirectory() || entry.name === '.pnpm') continue
+    const parent = join(nodeModules, entry.name)
+    if (entry.name.startsWith('@')) {
+      for (const scoped of await readdir(parent, { withFileTypes: true })) {
+        if (scoped.isDirectory()) await rm(join(parent, scoped.name, 'node_modules'), { recursive: true, force: true })
+      }
+    } else {
+      await rm(join(parent, 'node_modules'), { recursive: true, force: true })
+    }
+  }
+}
+
+async function prunePackageManagerState(runtime: string): Promise<void> {
+  const nodeModules = join(runtime, 'node_modules')
+  await pruneNestedPackageNodeModules(nodeModules)
+  await rm(join(nodeModules, '.pnpm'), { recursive: true, force: true })
+  await rm(join(nodeModules, '.modules.yaml'), { force: true })
+}
+
 async function sha256(path: string): Promise<string> {
   const hash = createHash('sha256')
   for await (const chunk of createReadStream(path)) {
@@ -120,7 +141,7 @@ async function main(): Promise<void> {
   const { values } = parseArgs({
     options: {
       out: { type: 'string', default: 'dist-product' },
-      'skip-build': { type: 'boolean', default: false },
+      'skip-build': { type: 'boolean', default: process.env.DSH_PRODUCT_SKIP_BUILD === '1' },
     },
     allowPositionals: false,
   })
@@ -133,17 +154,23 @@ async function main(): Promise<void> {
   if (!values['skip-build']) runPnpm(['run', 'build:official'])
   await rm(resolve(root, values.out, target.id), { recursive: true, force: true })
   await mkdir(output, { recursive: true })
+  // Legacy deploy may leave peer-specialized nested trees under its source
+  // manifest. They are disposable install state and can collide on a later
+  // Windows deploy, so start from the root-flat closure every time.
+  await pruneNestedPackageNodeModules(resolve(root, 'distribution/cli-runtime/node_modules'))
 
   runPnpm([
     '--filter', DEPLOY_ROOT,
     'deploy', '--legacy', '--prod',
     '--config.node-linker=hoisted',
+    '--config.child-concurrency=1',
     '--config.auto-install-peers=false',
     '--config.link-workspace-packages=true',
     runtime,
   ])
   await restoreDirectWorkspacePackages(runtime)
   await materializeLinks(runtime)
+  await prunePackageManagerState(runtime)
 
   const cli = join(runtime, CLI_ENTRY)
   const web = join(runtime, WEB_ENTRY)

@@ -60,7 +60,9 @@ jobs:
         run: pnpm run build:official
 
       - name: Build host-native product bundle
-        run: pnpm run build:product-runtime -- --skip-build
+        env:
+          DSH_PRODUCT_SKIP_BUILD: '1'
+        run: pnpm run build:product-runtime
 
       - name: Archive Windows bundle
         if: runner.os == 'Windows'
@@ -83,19 +85,23 @@ jobs:
       - name: Verify archived Windows bundle
         if: runner.os == 'Windows'
         shell: pwsh
+        env:
+          DSH_PRODUCT_BUNDLE: dist-archive-smoke/hiveforge
         run: |
           New-Item -ItemType Directory -Force dist-archive-smoke | Out-Null
           tar.exe -xf "dist-release/hiveforge-harness-${{ matrix.target }}.zip" -C dist-archive-smoke
-          pnpm run smoke:product-runtime -- --bundle dist-archive-smoke/hiveforge
+          pnpm run smoke:product-runtime
 
       - name: Verify archived Unix bundle
         if: runner.os != 'Windows'
         shell: bash
+        env:
+          DSH_PRODUCT_BUNDLE: dist-archive-smoke/hiveforge
         run: |
           set -euo pipefail
           mkdir -p dist-archive-smoke
           tar -xzf "dist-release/hiveforge-harness-${{ matrix.target }}.tar.gz" -C dist-archive-smoke
-          pnpm run smoke:product-runtime -- --bundle dist-archive-smoke/hiveforge
+          pnpm run smoke:product-runtime
 
       - uses: actions/upload-artifact@v7
         with:

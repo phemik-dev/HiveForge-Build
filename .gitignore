@@ -28,6 +28,7 @@ mise.toml
 dist-exe/
 dist-product/
 dist-release/
+dist-install-smoke/
 tmp-product-*/
 python/sdk-runtime/src/hiveforge_harness_runtime/runtime/dsh-jsonrpc-agent-*
 python/sdk-runtime/src/hiveforge_harness_runtime/runtime/node/

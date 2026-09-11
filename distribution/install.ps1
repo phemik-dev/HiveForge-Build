@@ -18,7 +18,9 @@ try {
   if ($actual -ne $expected) { throw "HiveForge archive checksum mismatch (expected $expected, received $actual)." }
 
   $unpacked = Join-Path $temp 'unpacked'
-  Expand-Archive $archive -DestinationPath $unpacked
+  New-Item -ItemType Directory -Force $unpacked | Out-Null
+  & tar.exe -xf $archive -C $unpacked
+  if ($LASTEXITCODE -ne 0) { throw "HiveForge archive extraction failed with exit code $LASTEXITCODE." }
   $manifest = Get-Content (Join-Path $unpacked 'hiveforge\manifest.json') -Raw | ConvertFrom-Json
   if ($manifest.target -ne $target) { throw "HiveForge archive target is $($manifest.target), expected $target." }
 

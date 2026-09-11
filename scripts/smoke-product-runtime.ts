@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
 
-const { values } = parseArgs({ options: { bundle: { type: 'string' } } })
+const { values } = parseArgs({ options: { bundle: { type: 'string', default: process.env.DSH_PRODUCT_BUNDLE } } })
 if (values.bundle === undefined) throw new Error('usage: smoke-product-runtime.ts --bundle <hiveforge directory>')
 
 const source = resolve(values.bundle)
