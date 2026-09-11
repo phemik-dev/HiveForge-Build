@@ -143,10 +143,6 @@ async function main(): Promise<void> {
   ])
   await restoreDirectWorkspacePackages(runtime)
   await materializeLinks(runtime)
-  // The hoisted, link-free root is the runtime. The virtual store is duplicate
-  // package-manager state and must not inflate or influence the shipped bundle.
-  await rm(join(runtime, 'node_modules', '.pnpm'), { recursive: true, force: true })
-  await rm(join(runtime, 'node_modules', '.modules.yaml'), { force: true })
 
   const cli = join(runtime, CLI_ENTRY)
   const web = join(runtime, WEB_ENTRY)
