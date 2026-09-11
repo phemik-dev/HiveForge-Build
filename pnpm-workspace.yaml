@@ -19,6 +19,9 @@ packages:
   # Deploy root of the single-exe build: a pure dependency manifest whose
   # closure is what the exe bundles and what the Python runtime distributes.
   - python/sdk-runtime
+  # Product distribution root: a dependency-only manifest deployed into each
+  # target-native, self-contained dsh bundle.
+  - distribution/cli-runtime
 
 # Vendored framework packages keep their upstream semver ranges, while local
 # builds must resolve those matching names to this workspace's pinned sources.

@@ -1,0 +1,90 @@
+name: Product runtime preflight
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/**'
+      - 'distribution/**'
+      - 'packages/**'
+      - 'vendor/**'
+      - 'scripts/build-product-runtime.ts'
+      - 'scripts/gen-product-runtime-manifest.ts'
+      - 'scripts/smoke-product-runtime.ts'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/product-runtime-preflight.yml'
+
+permissions:
+  contents: read
+
+env:
+  DSH_TELEMETRY_DISABLED: '1'
+
+jobs:
+  runtime:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: windows-x64
+            runner: windows-2022
+          - target: linux-x64
+            runner: ubuntu-22.04
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: macos-arm64
+            runner: macos-14
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install immutable workspace
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify generated product closure
+        run: |
+          pnpm run verify-product-runtime-manifest
+          pnpm exec tsx scripts/verify-runtime-closure.ts --manifest distribution/cli-runtime/package.json
+
+      - name: Build official artifacts
+        run: pnpm run build:official
+
+      - name: Build host-native product bundle
+        run: pnpm run build:product-runtime -- --skip-build
+
+      - name: Clean-room dsh web smoke
+        run: pnpm run smoke:product-runtime -- --bundle dist-product/${{ matrix.target }}/hiveforge
+
+      - name: Archive Windows bundle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist-release | Out-Null
+          Compress-Archive -Path "dist-product/${{ matrix.target }}/hiveforge" -DestinationPath "dist-release/hiveforge-harness-${{ matrix.target }}.zip"
+          (Get-FileHash "dist-release/hiveforge-harness-${{ matrix.target }}.zip" -Algorithm SHA256).Hash.ToLower() + "  hiveforge-harness-${{ matrix.target }}.zip" | Set-Content "dist-release/hiveforge-harness-${{ matrix.target }}.zip.sha256" -NoNewline
+
+      - name: Archive Unix bundle
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist-release
+          tar -C "dist-product/${{ matrix.target }}" -czf "dist-release/hiveforge-harness-${{ matrix.target }}.tar.gz" hiveforge
+          (cd dist-release && shasum -a 256 "hiveforge-harness-${{ matrix.target }}.tar.gz" > "hiveforge-harness-${{ matrix.target }}.tar.gz.sha256")
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: hiveforge-harness-${{ matrix.target }}
+          path: dist-release/*
+          if-no-files-found: error
+          retention-days: 7
