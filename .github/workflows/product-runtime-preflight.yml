@@ -62,15 +62,13 @@ jobs:
       - name: Build host-native product bundle
         run: pnpm run build:product-runtime -- --skip-build
 
-      - name: Clean-room dsh web smoke
-        run: pnpm run smoke:product-runtime -- --bundle dist-product/${{ matrix.target }}/hiveforge
-
       - name: Archive Windows bundle
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist-release | Out-Null
-          Compress-Archive -Path "dist-product/${{ matrix.target }}/hiveforge" -DestinationPath "dist-release/hiveforge-harness-${{ matrix.target }}.zip"
+          tar.exe -a -c -f "dist-release/hiveforge-harness-${{ matrix.target }}.zip" -C "dist-product/${{ matrix.target }}" hiveforge
+          if ($LASTEXITCODE -ne 0) { throw "tar.exe failed with exit code $LASTEXITCODE" }
           (Get-FileHash "dist-release/hiveforge-harness-${{ matrix.target }}.zip" -Algorithm SHA256).Hash.ToLower() + "  hiveforge-harness-${{ matrix.target }}.zip" | Set-Content "dist-release/hiveforge-harness-${{ matrix.target }}.zip.sha256" -NoNewline
 
       - name: Archive Unix bundle
@@ -81,6 +79,23 @@ jobs:
           mkdir -p dist-release
           tar -C "dist-product/${{ matrix.target }}" -czf "dist-release/hiveforge-harness-${{ matrix.target }}.tar.gz" hiveforge
           (cd dist-release && shasum -a 256 "hiveforge-harness-${{ matrix.target }}.tar.gz" > "hiveforge-harness-${{ matrix.target }}.tar.gz.sha256")
+
+      - name: Verify archived Windows bundle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist-archive-smoke | Out-Null
+          tar.exe -xf "dist-release/hiveforge-harness-${{ matrix.target }}.zip" -C dist-archive-smoke
+          pnpm run smoke:product-runtime -- --bundle dist-archive-smoke/hiveforge
+
+      - name: Verify archived Unix bundle
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist-archive-smoke
+          tar -xzf "dist-release/hiveforge-harness-${{ matrix.target }}.tar.gz" -C dist-archive-smoke
+          pnpm run smoke:product-runtime -- --bundle dist-archive-smoke/hiveforge
 
       - uses: actions/upload-artifact@v7
         with:
