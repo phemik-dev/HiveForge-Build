@@ -22,8 +22,13 @@ archive_name="hiveforge-harness-$target.tar.gz"
 temp=$(mktemp -d "${TMPDIR:-/tmp}/hiveforge-install.XXXXXX")
 trap 'rm -rf "$temp"' EXIT INT TERM
 
-curl -fsSL "$base/$archive_name" -o "$temp/$archive_name"
-curl -fsSL "$base/$archive_name.sha256" -o "$temp/$archive_name.sha256"
+if [ -n "${HIVEFORGE_DOWNLOAD_DIRECTORY:-}" ]; then
+  cp "$HIVEFORGE_DOWNLOAD_DIRECTORY/$archive_name" "$temp/$archive_name"
+  cp "$HIVEFORGE_DOWNLOAD_DIRECTORY/$archive_name.sha256" "$temp/$archive_name.sha256"
+else
+  curl -fsSL "$base/$archive_name" -o "$temp/$archive_name"
+  curl -fsSL "$base/$archive_name.sha256" -o "$temp/$archive_name.sha256"
+fi
 (
   cd "$temp"
   if command -v sha256sum >/dev/null 2>&1; then

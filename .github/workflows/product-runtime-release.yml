@@ -1,0 +1,54 @@
+name: Product runtime release
+
+on:
+  push:
+    tags:
+      - 'product-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/product-runtime-preflight.yml
+
+  publish:
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Verify release tag matches product version
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="product-v$(node -p "require('./package.json').version")"
+          [ "$GITHUB_REF_NAME" = "$expected" ] || {
+            echo "::error::Release tag $GITHUB_REF_NAME does not match $expected"
+            exit 1
+          }
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: hiveforge-harness-*
+          path: dist-release
+          merge-multiple: true
+
+      - name: Assemble release checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat dist-release/*.sha256 | sort -k2 > dist-release/SHA256SUMS
+          cp distribution/install.sh distribution/install.ps1 dist-release/
+
+      - name: Publish immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" dist-release/* \
+            --target "$GITHUB_SHA" \
+            --title "HiveForge Harness ${GITHUB_REF_NAME#product-v}" \
+            --generate-notes

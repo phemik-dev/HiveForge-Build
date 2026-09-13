@@ -11,8 +11,13 @@ try {
   New-Item -ItemType Directory -Force $temp | Out-Null
   $archive = Join-Path $temp $archiveName
   $checksumFile = "$archive.sha256"
-  Invoke-WebRequest "$base/$archiveName" -OutFile $archive
-  Invoke-WebRequest "$base/$archiveName.sha256" -OutFile $checksumFile
+  if ($env:HIVEFORGE_DOWNLOAD_DIRECTORY) {
+    Copy-Item (Join-Path $env:HIVEFORGE_DOWNLOAD_DIRECTORY $archiveName) $archive
+    Copy-Item (Join-Path $env:HIVEFORGE_DOWNLOAD_DIRECTORY "$archiveName.sha256") $checksumFile
+  } else {
+    Invoke-WebRequest "$base/$archiveName" -OutFile $archive
+    Invoke-WebRequest "$base/$archiveName.sha256" -OutFile $checksumFile
+  }
   $expected = ((Get-Content $checksumFile -Raw).Trim() -split '\s+')[0].ToLowerInvariant()
   $actual = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
   if ($actual -ne $expected) { throw "HiveForge archive checksum mismatch (expected $expected, received $actual)." }
