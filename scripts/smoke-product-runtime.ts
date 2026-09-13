@@ -27,6 +27,13 @@ function command(args: readonly string[]): { executable: string; args: string[] 
 
 let webChild: ChildProcess | undefined
 
+function reportFailure(error: unknown): void {
+  if (process.env.GITHUB_ACTIONS !== 'true') return
+  const message = (error instanceof Error ? error.stack ?? error.message : String(error))
+    .replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A')
+  console.error(`::error title=Product runtime smoke failed::${message}`)
+}
+
 async function stopWebChild(): Promise<void> {
   const child = webChild
   if (child === undefined || child.exitCode !== null) return
@@ -93,7 +100,15 @@ try {
   }
   await stopWebChild()
   console.log(`product smoke: ${version.stdout.trim()} served Web successfully from a path containing spaces`)
+} catch (error) {
+  reportFailure(error)
+  throw error
 } finally {
-  await stopWebChild()
-  await rm(parent, { recursive: true, force: true, maxRetries: 10, retryDelay: 250 })
+  try {
+    await stopWebChild()
+    await rm(parent, { recursive: true, force: true, maxRetries: 10, retryDelay: 250 })
+  } catch (error) {
+    reportFailure(error)
+    throw error
+  }
 }
