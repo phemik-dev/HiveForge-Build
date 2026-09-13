@@ -93,7 +93,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist-archive-smoke | Out-Null
           tar.exe -xf "dist-release/hiveforge-harness-${{ matrix.target }}.zip" -C dist-archive-smoke
-          pnpm run smoke:product-runtime
+          node --import tsx/esm scripts/smoke-product-runtime.ts
 
       - name: Verify archived Unix bundle
         if: runner.os != 'Windows'
@@ -104,9 +104,10 @@ jobs:
           set -euo pipefail
           mkdir -p dist-archive-smoke
           tar -xzf "dist-release/hiveforge-harness-${{ matrix.target }}.tar.gz" -C dist-archive-smoke
-          pnpm run smoke:product-runtime
+          node --import tsx/esm scripts/smoke-product-runtime.ts
 
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: hiveforge-harness-${{ matrix.target }}
           path: dist-release/*
