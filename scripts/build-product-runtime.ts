@@ -156,7 +156,6 @@ async function main(): Promise<void> {
     '--filter', DEPLOY_ROOT,
     'deploy', '--legacy', '--prod',
     '--config.node-linker=hoisted',
-    '--config.child-concurrency=1',
     '--config.auto-install-peers=false',
     '--config.link-workspace-packages=true',
     runtime,
