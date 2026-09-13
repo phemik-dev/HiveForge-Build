@@ -14,15 +14,29 @@ HiveForge Harness 目前处于 _开发者预览_ 阶段，正在快速迭代。*
 
 ## 运行
 
-### 通过 `npm` 运行
+### 安装发行版
 
-安装 `Node.js`，然后运行：
+无需安装 Node.js、npm、pnpm、编译器或 Git。
 
-```sh
-npx @hiveforge-ai/dsh web
+Windows PowerShell：
+
+```powershell
+irm https://github.com/phemik-dev/HiveForge-Build/releases/latest/download/install.ps1 | iex
 ```
 
-该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，本机启动时还会用默认浏览器打开页面。通过 SSH 启动时只打印宿主机 URL，因为本地转发地址由 SSH 客户端或编辑器持有。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
+Linux 与 macOS：
+
+```sh
+curl -fsSL https://github.com/phemik-dev/HiveForge-Build/releases/latest/download/install.sh | sh
+```
+
+安装后打开一个新终端，然后运行：
+
+```sh
+dsh web
+```
+
+安装程序会选择当前平台的原生构建、验证 SHA-256 校验和，并安装到当前用户目录。该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，并在本机启动时用默认浏览器打开页面。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
 
 <a id="run-from-source"></a>
 
@@ -31,8 +45,8 @@ npx @hiveforge-ai/dsh web
 如需从仓库源码运行：
 
 ```sh
-git clone https://github.com/hiveforge-ai/hiveforge-harness.git
-cd hiveforge-harness
+git clone https://github.com/phemik-dev/HiveForge-Build.git
+cd HiveForge-Build
 pnpm install
 pnpm run build
 pnpm dsh web

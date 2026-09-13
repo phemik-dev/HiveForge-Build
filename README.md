@@ -12,23 +12,37 @@ HiveForge Harness is currently in _developer preview_ and is iterating rapidly. 
 
 ## Run
 
-### Run from `npm`
+### Install a release
 
-Install `Node.js`, then run:
+No Node.js, npm, pnpm, compiler, or Git installation is required.
 
-```sh
-npx @hiveforge-ai/dsh web
+Windows PowerShell:
+
+```powershell
+irm https://github.com/phemik-dev/HiveForge-Build/releases/latest/download/install.ps1 | iex
 ```
 
-The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. An SSH launch only prints the host URL because the SSH client or editor owns the local forwarded address. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
+Linux and macOS:
+
+```sh
+curl -fsSL https://github.com/phemik-dev/HiveForge-Build/releases/latest/download/install.sh | sh
+```
+
+Open a new terminal after installation, then run:
+
+```sh
+dsh web
+```
+
+The installers select the native artifact for the current platform, verify its SHA-256 checksum, and install it under the current user's profile. The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
 
 ### Run from source
 
 To run from a repository checkout:
 
 ```sh
-git clone https://github.com/hiveforge-ai/hiveforge-harness.git
-cd hiveforge-harness
+git clone https://github.com/phemik-dev/HiveForge-Build.git
+cd HiveForge-Build
 pnpm install
 pnpm run build
 pnpm dsh web
