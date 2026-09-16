@@ -38,7 +38,19 @@ hiveforge web
 
 `hiveforge` 命令、状态目录以及默认 Web 端口（`3081`）均与现有的 `dsh` 安装隔离。
 
-安装程序会选择当前平台的原生构建、验证 SHA-256 校验和，并安装到当前用户目录。该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，并在本机启动时用默认浏览器打开页面。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
+安装程序会选择当前平台的原生构建、验证 SHA-256 校验和，并安装到当前用户目录。该命令默认会在 `http://127.0.0.1:3081` 启动 Web UI，并在本机启动时用默认浏览器打开页面。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
+
+#### 从 rc2 的 `dsh` 冲突中恢复（macOS/Linux）
+
+`0.1.1-rc.2` 曾短暂安装 HiveForge 自有的 `~/.local/bin/dsh` 符号链接。删除之前，请确认它指向 `~/.local/share/hiveforge` 内部；然后只删除该符号链接，并通过原来的安装方式重新安装 DeepSeek Harness。不要删除 `~/.dsh`，其中可能包含 DeepSeek 的设置或会话。
+
+```sh
+readlink ~/.local/bin/dsh
+rm ~/.local/bin/dsh
+hash -r
+```
+
+安装 rc3 会创建 `~/.local/bin/hiveforge`，并且仅在旧符号链接归 HiveForge 所有时自动删除它。
 
 <a id="run-from-source"></a>
 

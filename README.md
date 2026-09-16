@@ -36,7 +36,19 @@ hiveforge web
 
 The `hiveforge` command, state directory, and default Web port (`3081`) are isolated from any existing `dsh` installation.
 
-The installers select the native artifact for the current platform, verify its SHA-256 checksum, and install it under the current user's profile. The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
+The installers select the native artifact for the current platform, verify its SHA-256 checksum, and install it under the current user's profile. The command starts the Web UI at `http://127.0.0.1:3081` by default and opens it in the default browser for a local launch. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
+
+#### Recovering from the rc2 `dsh` collision on macOS/Linux
+
+Release `0.1.1-rc.2` briefly installed a HiveForge-owned `~/.local/bin/dsh` symlink. Before removing it, verify that it points inside `~/.local/share/hiveforge`; then remove only that symlink and reinstall DeepSeek Harness through its original installation method. Do not delete `~/.dsh`, because it may contain DeepSeek settings or sessions.
+
+```sh
+readlink ~/.local/bin/dsh
+rm ~/.local/bin/dsh
+hash -r
+```
+
+Installing rc3 creates `~/.local/bin/hiveforge` and automatically removes the old symlink only when HiveForge owns it.
 
 ### Run from source
 

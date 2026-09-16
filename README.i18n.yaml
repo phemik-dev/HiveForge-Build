@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. English is the canonical maintained copy;
 # keep the reviewed Chinese counterpart aligned and re-record with:
 #   pnpm run verify-translation-pairing --write README.md
-README.md: 3ff322164bae7a5b6e255d28c60d8fd99ddb1ed9
-README.zh.md: b629ddd507ddf4ba6c2c5eb365d36b52b34224d9
+README.md: 548a01e9309e6a594351f0ae378d46bdb082b71c
+README.zh.md: e2cce2a852b71584dfad85bfc50665dd34f1a23e
