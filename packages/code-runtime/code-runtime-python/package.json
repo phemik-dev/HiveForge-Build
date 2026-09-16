@@ -1,7 +1,7 @@
 {
   "name": "@hiveforge-ai/dsh-code-runtime-python",
   "description": "CPython subprocess implementation of the HiveForge Harness code-execution seam",
-  "version": "0.1.1-rc.2",
+  "version": "0.1.1-rc.3",
   "publishConfig": {
     "access": "public"
   },

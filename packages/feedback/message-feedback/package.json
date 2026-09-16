@@ -1,7 +1,7 @@
 {
   "name": "@hiveforge-ai/dsh-message-feedback",
   "description": "Lifecycle-bound per-message rating and note sidecar for the HiveForge Harness",
-  "version": "0.1.1-rc.2",
+  "version": "0.1.1-rc.3",
   "publishConfig": {
     "access": "public"
   },

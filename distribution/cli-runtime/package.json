@@ -1,7 +1,7 @@
 {
   "name": "@hiveforge-ai/dsh-product-runtime",
   "description": "Generated dependency-only deploy root for the self-contained dsh product bundle",
-  "version": "0.1.1-rc.2",
+  "version": "0.1.1-rc.3",
   "private": true,
   "type": "module",
   "dependencies": {

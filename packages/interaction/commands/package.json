@@ -1,7 +1,7 @@
 {
   "name": "@hiveforge-ai/dsh-commands",
   "description": "Plugin-owned human command registry for HiveForge Harness UIs",
-  "version": "0.1.1-rc.2",
+  "version": "0.1.1-rc.3",
   "publishConfig": {
     "access": "public"
   },
