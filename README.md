@@ -31,8 +31,10 @@ curl -fsSL https://github.com/phemik-dev/HiveForge-Build/releases/latest/downloa
 Open a new terminal after installation, then run:
 
 ```sh
-dsh web
+hiveforge web
 ```
+
+The `hiveforge` command, state directory, and default Web port (`3081`) are isolated from any existing `dsh` installation.
 
 The installers select the native artifact for the current platform, verify its SHA-256 checksum, and install it under the current user's profile. The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it in the default browser for a local launch. Pass `--no-open` to run the server without opening a browser. See [Web UI guide](docs/user/guide/index.md).
 

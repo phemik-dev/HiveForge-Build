@@ -117,7 +117,7 @@ jobs:
           HIVEFORGE_SKIP_PATH_UPDATE: '1'
         run: |
           & ./distribution/install.ps1
-          & "$env:HIVEFORGE_INSTALL_ROOT/bin/dsh.cmd" --version
+          & "$env:HIVEFORGE_INSTALL_ROOT/bin/hiveforge.cmd" --version
 
       - name: Verify Unix installer
         if: runner.os != 'Windows'
@@ -129,7 +129,7 @@ jobs:
         run: |
           set -euo pipefail
           sh distribution/install.sh
-          "$HIVEFORGE_INSTALL_ROOT/$(node -p "require('./package.json').version")/dsh" --version
+          "$HIVEFORGE_INSTALL_ROOT/$(node -p "require('./package.json').version")/hiveforge" --version
 
       - uses: actions/upload-artifact@v7
         if: always()

@@ -33,8 +33,10 @@ curl -fsSL https://github.com/phemik-dev/HiveForge-Build/releases/latest/downloa
 安装后打开一个新终端，然后运行：
 
 ```sh
-dsh web
+hiveforge web
 ```
+
+`hiveforge` 命令、状态目录以及默认 Web 端口（`3081`）均与现有的 `dsh` 安装隔离。
 
 安装程序会选择当前平台的原生构建、验证 SHA-256 校验和，并安装到当前用户目录。该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，并在本机启动时用默认浏览器打开页面。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
 

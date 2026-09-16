@@ -43,16 +43,19 @@ try {
 
   $bin = Join-Path $root 'bin'
   New-Item -ItemType Directory -Force $bin | Out-Null
-  $shim = Join-Path $bin 'dsh.cmd'
-  "@echo off`r`n`"$versionDir\dsh.cmd`" %*`r`n" | Set-Content $shim -NoNewline
+  # Remove the legacy HiveForge-owned dsh shim so another installed dsh becomes
+  # visible again. Never create or replace a public `dsh` command.
+  Remove-Item (Join-Path $bin 'dsh.cmd') -Force -ErrorAction SilentlyContinue
+  $shim = Join-Path $bin 'hiveforge.cmd'
+  "@echo off`r`n`"$versionDir\hiveforge.cmd`" %*`r`n" | Set-Content $shim -NoNewline
   if (-not $env:HIVEFORGE_SKIP_PATH_UPDATE) {
     $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
     if (($userPath -split ';') -notcontains $bin) {
       [Environment]::SetEnvironmentVariable('Path', (($userPath.TrimEnd(';') + ';' + $bin).TrimStart(';')), 'User')
     }
   }
-  & (Join-Path $versionDir 'dsh.cmd') --version
-  Write-Host "HiveForge installed. Open a new terminal, then run: dsh web"
+  & (Join-Path $versionDir 'hiveforge.cmd') --version
+  Write-Host "HiveForge installed alongside any existing dsh. Open a new terminal, then run: hiveforge web"
 } finally {
   Remove-Item $temp -Recurse -Force -ErrorAction SilentlyContinue
 }

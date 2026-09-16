@@ -2,7 +2,7 @@
 /** Clean-room smoke for an unpacked self-contained dsh product directory. */
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
-import { cp, mkdtemp, rm } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
@@ -13,16 +13,15 @@ if (values.bundle === undefined) throw new Error('usage: smoke-product-runtime.t
 const source = resolve(values.bundle)
 const parent = await mkdtemp(join(tmpdir(), 'HiveForge Product Smoke '))
 const bundle = join(parent, 'HiveForge Runtime With Spaces')
-const home = join(parent, 'User Home With Spaces')
+const home = join(parent, 'HiveForge Home With Spaces')
+const deepSeekHome = join(parent, 'Existing DeepSeek Home')
+const deepSeekMarker = join(deepSeekHome, 'must-not-change.txt')
 
 function command(args: readonly string[]): { executable: string; args: string[] } {
-  if (process.platform === 'win32') {
-    return {
-      executable: join(bundle, 'node.exe'),
-      args: [join(bundle, 'runtime', 'node_modules', '@hiveforge-ai', 'dsh', 'lib', 'bin.js'), ...args],
-    }
+  return {
+    executable: join(bundle, process.platform === 'win32' ? 'node.exe' : 'node'),
+    args: [join(bundle, 'launcher.mjs'), ...args],
   }
-  return { executable: join(bundle, 'dsh'), args: [...args] }
 }
 
 let webChild: ChildProcess | undefined
@@ -53,7 +52,14 @@ async function stopWebChild(): Promise<void> {
 
 try {
   await cp(source, bundle, { recursive: true, dereference: true })
-  const environment = { ...process.env, DSH_HOME: home, DSH_TELEMETRY_DISABLED: '1' }
+  await mkdir(deepSeekHome)
+  await writeFile(deepSeekMarker, 'deepseek-owned\n')
+  const environment = {
+    ...process.env,
+    DSH_HOME: deepSeekHome,
+    HIVEFORGE_HOME: home,
+    DSH_TELEMETRY_DISABLED: '1',
+  }
   const versionCommand = command(['--version'])
   const version = spawnSync(versionCommand.executable, versionCommand.args, {
     cwd: parent,
@@ -65,7 +71,7 @@ try {
     throw new Error(`product smoke: --version failed (${String(version.status)}): ${version.stdout}${version.stderr}`)
   }
 
-  const webCommand = command(['web', '--no-open', '--host', '127.0.0.1', '--port', '0'])
+  const webCommand = command(['web', '--no-open', '--host', '127.0.0.1'])
   const child = spawn(webCommand.executable, webCommand.args, {
     cwd: parent,
     env: environment,
@@ -94,12 +100,19 @@ try {
     await new Promise(resolveWait => setTimeout(resolveWait, 100))
   }
   if (response?.ok !== true) throw new Error(`product smoke: Web endpoint did not become ready:\n${output}`)
+  const readyUrl = output.match(/http:\/\/127\.0\.0\.1:\d+/u)?.[0]
+  if (readyUrl !== 'http://127.0.0.1:3081') {
+    throw new Error(`product smoke: default HiveForge Web URL was ${String(readyUrl)}, expected http://127.0.0.1:3081`)
+  }
   const html = await response.text()
   if (!html.includes('<!doctype html>') && !html.includes('<!DOCTYPE html>')) {
     throw new Error('product smoke: Web endpoint did not return an HTML document')
   }
   await stopWebChild()
-  console.log(`product smoke: ${version.stdout.trim()} served Web successfully from a path containing spaces`)
+  if (await readFile(deepSeekMarker, 'utf8') !== 'deepseek-owned\n' || (await readdir(deepSeekHome)).length !== 1) {
+    throw new Error('product smoke: HiveForge modified the existing DeepSeek home')
+  }
+  console.log(`product smoke: ${version.stdout.trim()} served HiveForge Web on port 3081 without modifying DeepSeek state`)
 } catch (error) {
   reportFailure(error)
   throw error

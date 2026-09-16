@@ -9,12 +9,13 @@ Implemented on `agent/cross-platform-distribution`. The failed `archive/git-boot
 A released HiveForge Harness installation MUST:
 
 1. require no system Node.js, npm, pnpm, compiler, or Git;
-2. expose `dsh` (`dsh.cmd` on Windows);
-3. pass `dsh --version` from an unpacked path containing spaces;
-4. start `dsh web --no-open` on loopback and serve a successful HTTP response;
-5. carry the exact Web frontend and dynamically loaded Cordis package closure;
-6. verify downloaded bytes before installation;
-7. identify the immutable source commit and target platform in its manifest.
+2. expose `hiveforge` (`hiveforge.cmd` on Windows) without creating or replacing `dsh`;
+3. keep its state and default Web port isolated from an existing DeepSeek/dsh installation;
+4. pass `hiveforge --version` from an unpacked path containing spaces;
+5. start `hiveforge web --no-open` on loopback and serve a successful HTTP response;
+6. carry the exact Web frontend and dynamically loaded Cordis package closure;
+7. verify downloaded bytes before installation;
+8. identify the immutable source commit and target platform in its manifest.
 
 ## Architecture
 
@@ -47,8 +48,9 @@ Windows is an explicit native lane, not inferred from Linux/macOS success. Its a
 
 ```
 hiveforge/
-  dsh                    # Unix launcher
-  dsh.cmd                # Windows launcher
+  hiveforge              # Unix launcher
+  hiveforge.cmd          # Windows launcher
+  launcher.mjs           # product isolation boundary
   node / node.exe
   runtime/
     node_modules/
@@ -72,13 +74,13 @@ irm https://github.com/phemik-dev/HiveForge-Build/releases/latest/download/insta
 curl -fsSL https://github.com/phemik-dev/HiveForge-Build/releases/latest/download/install.sh | sh
 ```
 
-The scripts select OS/architecture, download an immutable bundle and checksum, verify the archive, extract to a versioned user-owned directory, atomically update a stable `dsh` launcher, and run `dsh --version`.
+The scripts select OS/architecture, download an immutable bundle and checksum, verify the archive, extract to a versioned user-owned directory, atomically update a stable `hiveforge` launcher, and run `hiveforge --version`. They remove only the legacy HiveForge-owned `dsh` shim and never replace another product's `dsh` command.
 
 A later npm wrapper may provide:
 
 ```sh
 npm install --global @phemik-dev/hiveforge-harness
-dsh web
+hiveforge web
 ```
 
 It may only select, verify, cache, and launch the same native bundles. Git URL installation is a secondary developer convenience and must use the same artifacts; it is not the canonical product installer.
@@ -89,13 +91,14 @@ Every target build runs without a repository checkout in the acceptance phase:
 
 1. verify archive SHA-256;
 2. extract beneath a path containing spaces;
-3. run `dsh --version`;
-4. run `dsh web --no-open --port <assigned-port>`;
+3. run `hiveforge --version`;
+4. run `hiveforge web --no-open` on the isolated default port `3081`;
 5. wait with a bounded readiness probe;
 6. require HTTP 200 and an HTML shell;
 7. terminate and require clean process settlement;
 8. install through the platform installer from local release assets;
-9. verify no system Node/npm/pnpm/Git is used by the installed product.
+9. verify no system Node/npm/pnpm/Git is used by the installed product;
+10. seed an existing `DSH_HOME` and verify HiveForge neither reads nor modifies it.
 
 The release publisher depends on every target's artifact, archive smoke, and installer smoke. It creates no release when one lane is absent or red.
 

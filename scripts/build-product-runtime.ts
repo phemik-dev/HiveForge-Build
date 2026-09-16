@@ -170,14 +170,15 @@ async function main(): Promise<void> {
 
   await copyFile(process.execPath, nodePath)
   if (target.platform !== 'windows') await chmod(nodePath, 0o755)
+  await copyFile(resolve(root, 'distribution/launcher.mjs'), join(output, 'launcher.mjs'))
   await copyFile(resolve(root, 'LICENSE'), join(output, 'LICENSE'))
   await copyFile(resolve(root, 'THIRD_PARTY_NOTICES.md'), join(output, 'THIRD_PARTY_NOTICES.md'))
 
   if (target.platform === 'windows') {
-    await writeFile(join(output, 'dsh.cmd'), '@echo off\r\n"%~dp0node.exe" "%~dp0runtime\\node_modules\\@hiveforge-ai\\dsh\\lib\\bin.js" %*\r\n')
+    await writeFile(join(output, 'hiveforge.cmd'), '@echo off\r\n"%~dp0node.exe" "%~dp0launcher.mjs" %*\r\n')
   } else {
-    const launcher = join(output, 'dsh')
-    await writeFile(launcher, '#!/bin/sh\nset -eu\nHERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"\nexec "$HERE/node" "$HERE/runtime/node_modules/@hiveforge-ai/dsh/lib/bin.js" "$@"\n')
+    const launcher = join(output, 'hiveforge')
+    await writeFile(launcher, '#!/bin/sh\nset -eu\nHERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"\nexec "$HERE/node" "$HERE/launcher.mjs" "$@"\n')
     await chmod(launcher, 0o755)
   }
 
@@ -188,13 +189,13 @@ async function main(): Promise<void> {
     version: rootManifest.version,
     commit: repositoryCommitHash(root),
     target: target.id,
-    entry: target.platform === 'windows' ? 'dsh.cmd' : 'dsh',
+    entry: target.platform === 'windows' ? 'hiveforge.cmd' : 'hiveforge',
     node: nodeName,
     sha256: { [nodeName]: await sha256(nodePath) },
   }
   await writeFile(join(output, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
 
-  const result = spawnSync(nodePath, [cli, '--version'], { cwd: output, encoding: 'utf8' })
+  const result = spawnSync(nodePath, [join(output, 'launcher.mjs'), '--version'], { cwd: output, encoding: 'utf8' })
   if (result.error !== undefined) throw result.error
   if (result.status !== 0 || result.stdout.trim() !== rootManifest.version) {
     throw new Error(`build-product-runtime: packaged CLI smoke failed (${String(result.status)}): ${result.stdout}${result.stderr}`)

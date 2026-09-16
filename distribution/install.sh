@@ -51,11 +51,17 @@ mv "$temp/unpacked/hiveforge" "$incoming"
 rm -rf "$version_dir"
 mv "$incoming" "$version_dir"
 if [ -z "${HIVEFORGE_SKIP_PATH_UPDATE:-}" ]; then
-  ln -sfn "$version_dir/dsh" "$HOME/.local/bin/dsh"
+  legacy_dsh="$HOME/.local/bin/dsh"
+  if [ -L "$legacy_dsh" ]; then
+    case "$(readlink "$legacy_dsh")" in
+      "$root"/*) rm -f "$legacy_dsh" ;;
+    esac
+  fi
+  ln -sfn "$version_dir/hiveforge" "$HOME/.local/bin/hiveforge"
   case ":$PATH:" in
     *":$HOME/.local/bin:"*) ;;
-    *) echo "Add $HOME/.local/bin to PATH, then run: dsh web" ;;
+    *) echo "Add $HOME/.local/bin to PATH, then run: hiveforge web" ;;
   esac
 fi
-"$version_dir/dsh" --version
-echo 'HiveForge installed. Run: dsh web'
+"$version_dir/hiveforge" --version
+echo 'HiveForge installed alongside any existing dsh. Run: hiveforge web'
