@@ -2,7 +2,10 @@ $ErrorActionPreference = 'Stop'
 
 $repository = if ($env:HIVEFORGE_REPOSITORY) { $env:HIVEFORGE_REPOSITORY } else { 'phemik-dev/HiveForge-Build' }
 $tag = if ($env:HIVEFORGE_RELEASE_TAG) { $env:HIVEFORGE_RELEASE_TAG } else { 'latest' }
-$target = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq 'X64') { 'windows-x64' } else { throw 'HiveForge currently supports Windows x64 only.' }
+# Compare the architecture's text explicitly: Windows PowerShell 5.1 does not
+# reliably coerce the Architecture enum when it is compared with a string.
+$architecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
+$target = if ($architecture -eq 'X64') { 'windows-x64' } else { throw "HiveForge currently supports Windows x64 only. Detected architecture: $architecture" }
 $base = if ($env:HIVEFORGE_DOWNLOAD_BASE) { $env:HIVEFORGE_DOWNLOAD_BASE.TrimEnd('/') } elseif ($tag -eq 'latest') { "https://github.com/$repository/releases/latest/download" } else { "https://github.com/$repository/releases/download/$tag" }
 $archiveName = "hiveforge-harness-$target.zip"
 $temp = Join-Path ([System.IO.Path]::GetTempPath()) ("hiveforge-install-" + [guid]::NewGuid())

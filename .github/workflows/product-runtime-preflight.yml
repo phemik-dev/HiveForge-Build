@@ -109,7 +109,8 @@ jobs:
 
       - name: Verify Windows installer
         if: runner.os == 'Windows'
-        shell: pwsh
+        # The public one-liner commonly runs under inbox Windows PowerShell 5.1.
+        shell: powershell
         env:
           HIVEFORGE_DOWNLOAD_DIRECTORY: ${{ github.workspace }}\dist-release
           HIVEFORGE_INSTALL_ROOT: ${{ runner.temp }}\HiveForge Installer Smoke
