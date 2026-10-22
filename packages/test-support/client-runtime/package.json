@@ -38,7 +38,7 @@
     "@hiveforge-ai/dsh-host-apiproxy": "workspace:^",
     "@hiveforge-ai/dsh-invariants": "workspace:^",
     "@hiveforge-ai/cordis": "workspace:^",
-    "react": "^18.2.0",
+    "react": "^19.2.8",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
@@ -47,10 +47,10 @@
     "@hiveforge-ai/dsh-client-ui-renderer": "workspace:^",
     "@hiveforge-ai/dsh-host-apiproxy": "workspace:^",
     "@hiveforge-ai/dsh-invariants": "workspace:^",
-    "@types/react": "~18.3.1",
+    "@types/react": "~19.2.18",
     "@types/react-dom": "~18.3.0",
     "@hiveforge-ai/cordis": "workspace:^",
-    "react": "^18.2.0",
+    "react": "^19.2.8",
     "react-dom": "^18.2.0"
   },
   "files": [
